@@ -18,7 +18,18 @@ class DeliverymanResource extends Resource
 {
     protected static ?string $model = Deliveryman::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    // Icono de camión para repartidores
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTruck;
+
+    // Traducción en el menú lateral
+    protected static ?string $navigationLabel = 'Repartidores';
+
+    // Traducción para los botones (Ej: "Crear Repartidor")
+    protected static ?string $modelLabel = 'Repartidor';
+    protected static ?string $pluralModelLabel = 'Repartidores';
+
+    // Agrupación en el menú lateral
+    protected static string | \UnitEnum | null $navigationGroup = 'Operaciones';
 
     protected static ?string $recordTitleAttribute = 'name';
 

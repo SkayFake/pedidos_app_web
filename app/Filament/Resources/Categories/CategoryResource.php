@@ -18,7 +18,18 @@ class CategoryResource extends Resource
 {
     protected static ?string $model = Category::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    // Icono de etiqueta para categorías
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTag;
+
+    // Traducción en el menú lateral
+    protected static ?string $navigationLabel = 'Categorías';
+
+    // Traducción para los botones (Ej: "Crear Categoría")
+    protected static ?string $modelLabel = 'Categoría';
+    protected static ?string $pluralModelLabel = 'Categorías';
+
+    // Agrupación en el menú lateral
+    protected static string | \UnitEnum | null $navigationGroup = 'Catálogo';
 
     protected static ?string $recordTitleAttribute = 'name';
 

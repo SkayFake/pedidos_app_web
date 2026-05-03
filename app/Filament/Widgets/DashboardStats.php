@@ -8,10 +8,31 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Livewire\Attributes\On;
 
 class DashboardStats extends BaseWidget
 {
     protected static ?int $sort = 1;
+
+    /**
+     * Polling de respaldo: refresca automáticamente cada 15 segundos
+     * por si el evento de Livewire no se despacha correctamente.
+     */
+    protected ?string $pollingInterval = '15s';
+
+    /**
+     * Listener reactivo: cuando se despacha el evento 'order-status-changed'
+     * desde cualquier parte del sistema, este método fuerza la actualización
+     * de todas las tarjetas de estadísticas sin recargar la página.
+     */
+    #[On('order-status-changed')]
+    public function refreshStats(): void
+    {
+        // Simplemente con llamar a $this->getStats() internamente,
+        // Filament re-renderiza el widget porque Livewire detecta
+        // que el componente se ha "tocado".
+        // No se necesita lógica adicional aquí.
+    }
 
     protected function getStats(): array
     {
@@ -22,6 +43,20 @@ class DashboardStats extends BaseWidget
         if ($user && !$user->isSuperAdmin() && $user->branch_id) {
             $ordersQuery->where('branch_id', $user->branch_id);
         }
+
+        // ── Contadores de Pedidos por Estado ──────────────────────
+        $totalOrders = Order::when(
+            $user && !$user->isSuperAdmin() && $user->branch_id,
+            fn($q) => $q->where('branch_id', $user->branch_id)
+        )->count();
+
+        $deliveredCount = (clone $ordersQuery)->count();
+        $pendingCount = Order::where('status', 'pending')
+            ->when($user && !$user->isSuperAdmin() && $user->branch_id, fn($q) => $q->where('branch_id', $user->branch_id))
+            ->count();
+        $cancelledCount = Order::where('status', 'cancelled')
+            ->when($user && !$user->isSuperAdmin() && $user->branch_id, fn($q) => $q->where('branch_id', $user->branch_id))
+            ->count();
 
         // ── Producto Más Vendido ─────────────────────────────────
         $topProduct = OrderItem::select('product_id', DB::raw('SUM(quantity) as total_sold'))
@@ -96,6 +131,13 @@ class DashboardStats extends BaseWidget
         }
 
         return [
+            Stat::make('Total Pedidos 📋', $totalOrders)
+                ->description("✅ {$deliveredCount} entregados · ⏳ {$pendingCount} pendientes · ❌ {$cancelledCount} cancelados")
+                ->descriptionIcon('heroicon-m-clipboard-document-list')
+                ->color('primary')
+                ->chart([$pendingCount, $deliveredCount, $cancelledCount])
+                ->chartColor('primary'),
+
             Stat::make('Producto Estrella 🏆', $topProductName)
                 ->description("{$topProductQty} unidades vendidas")
                 ->descriptionIcon('heroicon-m-arrow-trending-up')

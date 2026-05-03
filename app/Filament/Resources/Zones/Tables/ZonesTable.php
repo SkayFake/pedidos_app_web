@@ -16,21 +16,28 @@ class ZonesTable
         return $table
             ->columns([
                 TextColumn::make('name')
+                    ->label('Nombre')
                     ->searchable(),
                 TextColumn::make('city')
+                    ->label('Ciudad')
                     ->searchable(),
                 TextColumn::make('delivery_fee')
+                    ->label('Tarifa Envío')
                     ->numeric()
                     ->sortable(),
                 IconColumn::make('is_deliverable')
+                    ->label('Tiene Cobertura')
                     ->boolean(),
                 IconColumn::make('is_active')
+                    ->label('Activa')
                     ->boolean(),
                 TextColumn::make('created_at')
+                    ->label('Fecha de Creación')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
+                    ->label('Última Actualización')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

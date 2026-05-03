@@ -18,7 +18,18 @@ class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    // Icono de usuarios para clientes
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUsers;
+
+    // Traducción en el menú lateral
+    protected static ?string $navigationLabel = 'Clientes';
+
+    // Traducción para los botones (Ej: "Crear Cliente")
+    protected static ?string $modelLabel = 'Cliente';
+    protected static ?string $pluralModelLabel = 'Clientes';
+
+    // Agrupación en el menú lateral
+    protected static string | \UnitEnum | null $navigationGroup = 'Administración';
 
     protected static ?string $recordTitleAttribute = 'name';
 

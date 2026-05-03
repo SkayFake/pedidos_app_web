@@ -17,17 +17,20 @@ class AdminUserForm
                     ->relationship('branch', 'name')
                     ->label('Sucursal (Vacío = Super Admin)'),
                 TextInput::make('name')
+                    ->label('Nombre')
                     ->required(),
                 TextInput::make('email')
-                    ->label('Email address')
+                    ->label('Correo Electrónico')
                     ->email()
                     ->required(),
                 TextInput::make('password')
+                    ->label('Contraseña')
                     ->password()
                     ->dehydrated(fn ($state) => filled($state))
                     ->required(fn (string $context): bool => $context === 'create')
                     ->maxLength(255),
                 Select::make('role')
+                    ->label('Rol')
                     ->options([
                         'super_admin' => 'Super Admin',
                         'branch_admin' => 'Branch Admin',
@@ -36,6 +39,7 @@ class AdminUserForm
                     ->default('operator')
                     ->required(),
                 Toggle::make('is_active')
+                    ->label('Activo')
                     ->required(),
             ]);
     }

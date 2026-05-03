@@ -18,7 +18,18 @@ class OrderResource extends Resource
 {
     protected static ?string $model = Order::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    // Icono de portapapeles para pedidos
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClipboardDocumentList;
+
+    // Traducción en el menú lateral
+    protected static ?string $navigationLabel = 'Pedidos';
+
+    // Traducción para los botones (Ej: "Crear Pedido")
+    protected static ?string $modelLabel = 'Pedido';
+    protected static ?string $pluralModelLabel = 'Pedidos';
+
+    // Agrupación en el menú lateral
+    protected static string | \UnitEnum | null $navigationGroup = 'Operaciones';
 
     protected static ?string $recordTitleAttribute = 'id';
 

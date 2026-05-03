@@ -18,7 +18,18 @@ class CouponResource extends Resource
 {
     protected static ?string $model = Coupon::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    // Icono de ticket para cupones
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTicket;
+
+    // Traducción en el menú lateral
+    protected static ?string $navigationLabel = 'Cupones';
+
+    // Traducción para los botones (Ej: "Crear Cupón")
+    protected static ?string $modelLabel = 'Cupón';
+    protected static ?string $pluralModelLabel = 'Cupones';
+
+    // Agrupación en el menú lateral
+    protected static string | \UnitEnum | null $navigationGroup = 'Catálogo';
 
     protected static ?string $recordTitleAttribute = 'code';
 

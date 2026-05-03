@@ -6,7 +6,7 @@ use Filament\Widgets\ChartWidget;
 use App\Models\Order;
 use Carbon\Carbon;
 use Filament\Support\RawJs;
-
+use Livewire\Attributes\On;
 class RevenueChart extends ChartWidget
 {
     protected ?string $heading = 'Ingresos Mensuales';
@@ -20,6 +20,14 @@ class RevenueChart extends ChartWidget
     protected string $color = 'info';
 
     public ?string $filter = '6_months';
+
+    protected ?string $pollingInterval = '15s';
+
+    #[On('order-status-changed')]
+    public function refreshChart(): void
+    {
+        // Al llamar este método, Livewire detectará la actualización y refrescará el chart
+    }
 
     protected function getType(): string
     {

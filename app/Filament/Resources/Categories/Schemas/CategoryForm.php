@@ -14,14 +14,18 @@ class CategoryForm
         return $schema
             ->components([
                 TextInput::make('name')
+                    ->label('Nombre')
                     ->required(),
                 FileUpload::make('image')
+                    ->label('Imagen')
                     ->image(),
                 TextInput::make('sort_order')
+                    ->label('Orden')
                     ->required()
                     ->numeric()
                     ->default(0),
                 Toggle::make('is_active')
+                    ->label('Activa')
                     ->required(),
             ]);
     }

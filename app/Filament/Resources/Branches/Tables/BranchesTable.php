@@ -16,23 +16,31 @@ class BranchesTable
         return $table
             ->columns([
                 TextColumn::make('name')
+                    ->label('Nombre')
                     ->searchable(),
                 TextColumn::make('address')
+                    ->label('Dirección')
                     ->searchable(),
                 TextColumn::make('phone')
+                    ->label('Teléfono')
                     ->searchable(),
                 TextColumn::make('city')
+                    ->label('Ciudad')
                     ->searchable(),
                 TextColumn::make('first_order_discount_percent')
+                    ->label('% Desc. Primer Pedido')
                     ->numeric()
                     ->sortable(),
                 IconColumn::make('is_active')
+                    ->label('Activa')
                     ->boolean(),
                 TextColumn::make('created_at')
+                    ->label('Fecha de Creación')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
+                    ->label('Última Actualización')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

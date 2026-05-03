@@ -14,6 +14,7 @@ class Product extends Model
             'is_available' => 'boolean',
             'is_recommended' => 'boolean',
             'is_popular' => 'boolean',
+            'stars' => 'float',
         ];
     }
 

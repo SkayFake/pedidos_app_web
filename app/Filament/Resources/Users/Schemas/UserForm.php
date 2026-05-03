@@ -14,26 +14,34 @@ class UserForm
         return $schema
             ->components([
                 TextInput::make('name')
+                    ->label('Nombre')
                     ->required(),
                 TextInput::make('email')
-                    ->label('Email address')
+                    ->label('Correo Electrónico')
                     ->email()
                     ->required(),
                 TextInput::make('phone')
+                    ->label('Teléfono')
                     ->tel()
                     ->required(),
                 TextInput::make('password')
+                    ->label('Contraseña')
                     ->password()
                     ->required(),
-                DateTimePicker::make('email_verified_at'),
-                TextInput::make('profile_photo'),
+                DateTimePicker::make('email_verified_at')
+                    ->label('Email Verificado'),
+                TextInput::make('profile_photo')
+                    ->label('Foto de Perfil'),
                 Toggle::make('is_active')
+                    ->label('Activo')
                     ->required(),
                 TextInput::make('loyalty_points')
+                    ->label('Puntos Fidelidad')
                     ->required()
                     ->numeric()
                     ->default(0),
                 TextInput::make('total_completed_orders')
+                    ->label('Pedidos Completados')
                     ->required()
                     ->numeric()
                     ->default(0),

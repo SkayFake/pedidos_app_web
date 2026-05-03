@@ -18,7 +18,18 @@ class AdminUserResource extends Resource
 {
     protected static ?string $model = AdminUser::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    // Icono de escudo para administradores
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShieldCheck;
+
+    // Traducción en el menú lateral
+    protected static ?string $navigationLabel = 'Administradores';
+
+    // Traducción para los botones (Ej: "Crear Administrador")
+    protected static ?string $modelLabel = 'Administrador';
+    protected static ?string $pluralModelLabel = 'Administradores';
+
+    // Agrupación en el menú lateral
+    protected static string | \UnitEnum | null $navigationGroup = 'Administración';
 
     protected static ?string $recordTitleAttribute = 'name';
 

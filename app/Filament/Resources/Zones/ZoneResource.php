@@ -18,7 +18,18 @@ class ZoneResource extends Resource
 {
     protected static ?string $model = Zone::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    // Icono de mapa para zonas
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedMapPin;
+
+    // Traducción en el menú lateral
+    protected static ?string $navigationLabel = 'Zonas';
+
+    // Traducción para los botones (Ej: "Crear Zona")
+    protected static ?string $modelLabel = 'Zona';
+    protected static ?string $pluralModelLabel = 'Zonas';
+
+    // Agrupación en el menú lateral
+    protected static string | \UnitEnum | null $navigationGroup = 'Administración';
 
     protected static ?string $recordTitleAttribute = 'name';
 

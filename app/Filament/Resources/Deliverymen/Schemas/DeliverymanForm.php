@@ -14,27 +14,35 @@ class DeliverymanForm
         return $schema
             ->components([
                 TextInput::make('name')
+                    ->label('Nombre')
                     ->required(),
                 TextInput::make('email')
-                    ->label('Email address')
+                    ->label('Correo Electrónico')
                     ->email()
                     ->required(),
                 TextInput::make('phone')
+                    ->label('Teléfono')
                     ->tel()
                     ->required(),
                 TextInput::make('password')
+                    ->label('Contraseña')
                     ->password()
                     ->required(),
                 Select::make('vehicle_type')
-                    ->options(['motorcycle' => 'Motorcycle', 'bicycle' => 'Bicycle', 'car' => 'Car'])
+                    ->label('Tipo Vehículo')
+                    ->options(['motorcycle' => 'Motocicleta', 'bicycle' => 'Bicicleta', 'car' => 'Carro'])
                     ->default('motorcycle')
                     ->required(),
-                TextInput::make('license_plate'),
+                TextInput::make('license_plate')
+                    ->label('Placa'),
                 Toggle::make('is_available')
+                    ->label('Disponible')
                     ->required(),
                 Toggle::make('is_active')
+                    ->label('Activo')
                     ->required(),
                 TextInput::make('active_orders_count')
+                    ->label('Pedidos Activos')
                     ->required()
                     ->numeric()
                     ->default(0),

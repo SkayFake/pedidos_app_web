@@ -18,7 +18,18 @@ class BranchResource extends Resource
 {
     protected static ?string $model = Branch::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    // Icono de edificio para sucursales
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBuildingStorefront;
+
+    // Traducción en el menú lateral
+    protected static ?string $navigationLabel = 'Sucursales';
+
+    // Traducción para los botones (Ej: "Crear Sucursal")
+    protected static ?string $modelLabel = 'Sucursal';
+    protected static ?string $pluralModelLabel = 'Sucursales';
+
+    // Agrupación en el menú lateral
+    protected static string | \UnitEnum | null $navigationGroup = 'Administración';
 
     protected static ?string $recordTitleAttribute = 'name';
 

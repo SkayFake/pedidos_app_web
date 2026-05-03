@@ -18,7 +18,18 @@ class ProductResource extends Resource
 {
     protected static ?string $model = Product::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    // 1. Cambiamos el icono a una bolsa de compras
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShoppingBag;
+
+    // 2. Traducción en el menú lateral
+    protected static ?string $navigationLabel = 'Productos';
+
+    // 3. Traducción para los botones (Ej: "Crear Producto")
+    protected static ?string $modelLabel = 'Producto';
+    protected static ?string $pluralModelLabel = 'Productos';
+
+    // 4. Agrupación en el menú lateral
+    protected static string | \UnitEnum | null $navigationGroup = 'Catálogo';
 
     protected static ?string $recordTitleAttribute = 'name';
 
