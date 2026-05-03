@@ -1,0 +1,55 @@
+<?php
+
+namespace App\Filament\Resources\Deliverymen;
+
+use App\Filament\Resources\Deliverymen\Pages\CreateDeliveryman;
+use App\Filament\Resources\Deliverymen\Pages\EditDeliveryman;
+use App\Filament\Resources\Deliverymen\Pages\ListDeliverymen;
+use App\Filament\Resources\Deliverymen\Schemas\DeliverymanForm;
+use App\Filament\Resources\Deliverymen\Tables\DeliverymenTable;
+use App\Models\Deliveryman;
+use BackedEnum;
+use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Table;
+
+class DeliverymanResource extends Resource
+{
+    protected static ?string $model = Deliveryman::class;
+
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+
+    protected static ?string $recordTitleAttribute = 'name';
+
+    public static function canAccess(): bool
+    {
+        return auth()->user()->isSuperAdmin();
+    }
+
+    public static function form(Schema $schema): Schema
+    {
+        return DeliverymanForm::configure($schema);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return DeliverymenTable::configure($table);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => ListDeliverymen::route('/'),
+            'create' => CreateDeliveryman::route('/create'),
+            'edit' => EditDeliveryman::route('/{record}/edit'),
+        ];
+    }
+}
