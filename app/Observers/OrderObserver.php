@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use App\Jobs\ProcessOrderNotification;
 use App\Models\Order;
 use App\Services\LoyaltyService;
 
@@ -15,16 +16,41 @@ class OrderObserver
     }
 
     /**
+     * Handle the Order "created" event.
+     *
+     * Despacha notificación de nuevo pedido al crear.
+     */
+    public function created(Order $order): void
+    {
+        ProcessOrderNotification::dispatch($order, 'pending', 'new');
+    }
+
+    /**
      * Handle the Order "updated" event.
      */
     public function updated(Order $order): void
     {
         // Revisar si el estado (status) fue el que cambió
         if ($order->wasChanged('status')) {
+            $oldStatus = $order->getOriginal('status');
+            $newStatus = $order->status;
+
+            // 1. Lógica síncrona (crítica, debe ser inmediata)
             $this->handleStatusChange($order);
+
+            // 2. Notificaciones asíncronas (en cola, no bloquean la respuesta)
+            ProcessOrderNotification::dispatch($order, $newStatus, $oldStatus);
         }
     }
 
+    /**
+     * Lógica síncrona de negocio al cambiar de estado.
+     *
+     * Esta lógica es CRÍTICA y se ejecuta de inmediato (no en cola):
+     * - Puntos de lealtad
+     * - Contadores de pedidos completados
+     * - Contadores de repartidor
+     */
     protected function handleStatusChange(Order $order): void
     {
         switch ($order->status) {

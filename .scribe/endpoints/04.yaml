@@ -1,0 +1,441 @@
+name: 'Direcciones del Cliente'
+description: |-
+
+  CRUD de direcciones de entrega del cliente autenticado.
+  La primera dirección creada se marca automáticamente como predeterminada.
+endpoints:
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/addresses
+    metadata:
+      custom: []
+      groupName: 'Direcciones del Cliente'
+      groupDescription: |-
+
+        CRUD de direcciones de entrega del cliente autenticado.
+        La primera dirección creada se marca automáticamente como predeterminada.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Listar mis direcciones'
+      description: |-
+        Retorna todas las direcciones del cliente autenticado,
+        ordenadas por predeterminada primero.
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {TOKEN_SANCTUM}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "success": true,
+            "message": "Listado de direcciones.",
+            "data": [
+              {
+                "id": 3,
+                "label": "Casa",
+                "street": "Col. Escalón, Calle 5 #42",
+                "references": "Frente al parque",
+                "is_default": true,
+                "zone": { "id": 1, "name": "Zona Centro" }
+              },
+              {
+                "id": 5,
+                "label": "Trabajo",
+                "street": "Blvd. Los Héroes, Edificio ABC, Piso 3",
+                "references": null,
+                "is_default": false,
+                "zone": { "id": 2, "name": "Zona Norte" }
+              }
+            ]
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 3V5EgbkvZcDPa166h8fd4ae'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/v1/addresses
+    metadata:
+      custom: []
+      groupName: 'Direcciones del Cliente'
+      groupDescription: |-
+
+        CRUD de direcciones de entrega del cliente autenticado.
+        La primera dirección creada se marca automáticamente como predeterminada.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Crear dirección'
+      description: |-
+        Crea una nueva dirección de entrega para el cliente.
+        Si es la primera dirección, se marca como predeterminada automáticamente.
+        Si se marca como predeterminada, las demás se desmarcan.
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {TOKEN_SANCTUM}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      zone_id:
+        custom: []
+        name: zone_id
+        description: 'ID de la zona de entrega.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      label:
+        custom: []
+        name: label
+        description: 'Etiqueta descriptiva (ej: Casa, Trabajo).'
+        required: true
+        example: Casa
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      street:
+        custom: []
+        name: street
+        description: 'Dirección de la calle.'
+        required: true
+        example: 'Col. Escalón, Calle 5 #42'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      references:
+        custom: []
+        name: references
+        description: 'Referencias adicionales.'
+        required: false
+        example: 'Frente al parque, portón negro'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+      is_default:
+        custom: []
+        name: is_default
+        description: 'Marcar como dirección predeterminada.'
+        required: false
+        example: true
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      zone_id: 1
+      label: Casa
+      street: 'Col. Escalón, Calle 5 #42'
+      references: 'Frente al parque, portón negro'
+      is_default: true
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 201
+        content: |-
+          {
+            "success": true,
+            "message": "Dirección creada exitosamente.",
+            "data": {
+              "id": 6,
+              "label": "Casa",
+              "street": "Col. Escalón, Calle 5 #42",
+              "references": "Frente al parque, portón negro",
+              "is_default": true,
+              "zone": { "id": 1, "name": "Zona Centro" }
+            }
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 3V5EgbkvZcDPa166h8fd4ae'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+      - PATCH
+    uri: 'api/v1/addresses/{id}'
+    metadata:
+      custom: []
+      groupName: 'Direcciones del Cliente'
+      groupDescription: |-
+
+        CRUD de direcciones de entrega del cliente autenticado.
+        La primera dirección creada se marca automáticamente como predeterminada.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Actualizar dirección'
+      description: |-
+        Actualiza una dirección existente del cliente. Solo se pueden actualizar
+        las propias direcciones. Soporta actualizaciones parciales.
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {TOKEN_SANCTUM}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the address.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      address:
+        custom: []
+        name: address
+        description: 'ID de la dirección.'
+        required: true
+        example: 6
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+      address: 6
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      zone_id:
+        custom: []
+        name: zone_id
+        description: 'ID de la zona de entrega.'
+        required: false
+        example: 2
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      label:
+        custom: []
+        name: label
+        description: 'Etiqueta descriptiva.'
+        required: false
+        example: Oficina
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      street:
+        custom: []
+        name: street
+        description: 'Dirección de la calle.'
+        required: false
+        example: 'Blvd. Los Héroes, Edificio XYZ'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      references:
+        custom: []
+        name: references
+        description: 'Referencias adicionales.'
+        required: false
+        example: 'Piso 5, suite 501'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+      is_default:
+        custom: []
+        name: is_default
+        description: 'Marcar como predeterminada.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      zone_id: 2
+      label: Oficina
+      street: 'Blvd. Los Héroes, Edificio XYZ'
+      references: 'Piso 5, suite 501'
+      is_default: false
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "success": true,
+            "message": "Dirección actualizada exitosamente.",
+            "data": {
+              "id": 6,
+              "label": "Oficina",
+              "street": "Blvd. Los Héroes, Edificio XYZ",
+              "references": "Piso 5, suite 501",
+              "is_default": false,
+              "zone": { "id": 2, "name": "Zona Norte" }
+            }
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 403
+        content: |-
+          {
+            "success": false,
+            "message": "No tienes permiso para editar esta dirección."
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 3V5EgbkvZcDPa166h8fd4ae'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'api/v1/addresses/{id}'
+    metadata:
+      custom: []
+      groupName: 'Direcciones del Cliente'
+      groupDescription: |-
+
+        CRUD de direcciones de entrega del cliente autenticado.
+        La primera dirección creada se marca automáticamente como predeterminada.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Eliminar dirección'
+      description: |-
+        Elimina una dirección del cliente. No se puede eliminar si tiene pedidos
+        activos asociados (pendientes, confirmados, en preparación, asignados o en camino).
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {TOKEN_SANCTUM}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the address.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      address:
+        custom: []
+        name: address
+        description: 'ID de la dirección a eliminar.'
+        required: true
+        example: 6
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+      address: 6
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "success": true,
+            "message": "Dirección eliminada exitosamente.",
+            "data": null
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 403
+        content: |-
+          {
+            "success": false,
+            "message": "No tienes permiso para eliminar esta dirección."
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 422
+        content: |-
+          {
+            "success": false,
+            "message": "No puedes eliminar esta dirección porque tiene pedidos activos."
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 3V5EgbkvZcDPa166h8fd4ae'
+    controller: null
+    method: null
+    route: null
