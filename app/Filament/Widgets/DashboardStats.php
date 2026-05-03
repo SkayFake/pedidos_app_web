@@ -5,37 +5,138 @@ namespace App\Filament\Widgets;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use App\Models\Order;
-use App\Models\User;
-use App\Models\Deliveryman;
+use App\Models\OrderItem;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class DashboardStats extends BaseWidget
 {
+    protected static ?int $sort = 1;
+
     protected function getStats(): array
     {
         $user = auth()->user();
-        
-        $ordersQuery = Order::query();
+
+        // Base query respecting branch access
+        $ordersQuery = Order::where('status', 'delivered');
         if ($user && !$user->isSuperAdmin() && $user->branch_id) {
             $ordersQuery->where('branch_id', $user->branch_id);
         }
 
-        $todayOrders = (clone $ordersQuery)->whereDate('created_at', today())->count();
-        $todaySales = (clone $ordersQuery)->whereDate('created_at', today())->where('status', 'delivered')->sum('total');
-        $activeDeliverymen = Deliveryman::where('is_active', true)->where('active_orders_count', '>', 0)->count();
+        // ── Producto Más Vendido ─────────────────────────────────
+        $topProduct = OrderItem::select('product_id', DB::raw('SUM(quantity) as total_sold'))
+            ->groupBy('product_id')
+            ->orderByDesc('total_sold')
+            ->with('product:id,name')
+            ->first();
+
+        $topProductName = $topProduct?->product?->name ?? 'Sin datos';
+        $topProductQty = $topProduct?->total_sold ?? 0;
+
+        // ── Producto Menos Vendido ───────────────────────────────
+        $leastProduct = OrderItem::select('product_id', DB::raw('SUM(quantity) as total_sold'))
+            ->groupBy('product_id')
+            ->orderBy('total_sold', 'asc')
+            ->with('product:id,name')
+            ->first();
+
+        $leastProductName = $leastProduct?->product?->name ?? 'Sin datos';
+        $leastProductQty = $leastProduct?->total_sold ?? 0;
+
+        // ── Ganancias por Período ────────────────────────────────
+        $today = Carbon::today();
+
+        $dailyRevenue = (clone $ordersQuery)
+            ->whereDate('delivered_at', $today)
+            ->sum('total');
+
+        $weeklyRevenue = (clone $ordersQuery)
+            ->whereBetween('delivered_at', [$today->copy()->startOfWeek(), $today->copy()->endOfWeek()])
+            ->sum('total');
+
+        $monthlyRevenue = (clone $ordersQuery)
+            ->whereMonth('delivered_at', $today->month)
+            ->whereYear('delivered_at', $today->year)
+            ->sum('total');
+
+        $yearlyRevenue = (clone $ordersQuery)
+            ->whereYear('delivered_at', $today->year)
+            ->sum('total');
+
+        // ── Sparkline: últimos 7 días de ganancias ───────────────
+        $dailySparkline = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $date = $today->copy()->subDays($i);
+            $dailySparkline[] = (float) Order::where('status', 'delivered')
+                ->whereDate('delivered_at', $date)
+                ->when($user && !$user->isSuperAdmin() && $user->branch_id, fn($q) => $q->where('branch_id', $user->branch_id))
+                ->sum('total');
+        }
+
+        // ── Sparkline: últimas 4 semanas ─────────────────────────
+        $weeklySparkline = [];
+        for ($i = 3; $i >= 0; $i--) {
+            $weekStart = $today->copy()->subWeeks($i)->startOfWeek();
+            $weekEnd = $today->copy()->subWeeks($i)->endOfWeek();
+            $weeklySparkline[] = (float) Order::where('status', 'delivered')
+                ->whereBetween('delivered_at', [$weekStart, $weekEnd])
+                ->when($user && !$user->isSuperAdmin() && $user->branch_id, fn($q) => $q->where('branch_id', $user->branch_id))
+                ->sum('total');
+        }
+
+        // ── Sparkline: últimos 6 meses ───────────────────────────
+        $monthlySparkline = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $month = $today->copy()->subMonths($i);
+            $monthlySparkline[] = (float) Order::where('status', 'delivered')
+                ->whereMonth('delivered_at', $month->month)
+                ->whereYear('delivered_at', $month->year)
+                ->when($user && !$user->isSuperAdmin() && $user->branch_id, fn($q) => $q->where('branch_id', $user->branch_id))
+                ->sum('total');
+        }
 
         return [
-            Stat::make('Pedidos de Hoy', $todayOrders)
-                ->description('Nuevos pedidos')
-                ->descriptionIcon('heroicon-m-shopping-bag')
-                ->color('primary'),
-            Stat::make('Ventas de Hoy', '$' . number_format($todaySales, 2))
-                ->description('Ingresos confirmados')
-                ->descriptionIcon('heroicon-m-currency-dollar')
-                ->color('success'),
-            Stat::make('Repartidores Activos', $activeDeliverymen)
-                ->description('Entregando pedidos actualmente')
-                ->descriptionIcon('heroicon-m-truck')
-                ->color('warning'),
+            Stat::make('Producto Estrella 🏆', $topProductName)
+                ->description("{$topProductQty} unidades vendidas")
+                ->descriptionIcon('heroicon-m-arrow-trending-up')
+                ->color('success')
+                ->chart([3, 5, 8, 12, 8, 15, (int)$topProductQty])
+                ->chartColor('success'),
+
+            Stat::make('Menor Rotación 📉', $leastProductName)
+                ->description("{$leastProductQty} unidades vendidas")
+                ->descriptionIcon('heroicon-m-arrow-trending-down')
+                ->color('danger')
+                ->chart([10, 8, 6, 4, 3, 2, (int)$leastProductQty])
+                ->chartColor('danger'),
+
+            Stat::make('Ganancias Hoy 💰', '$' . number_format($dailyRevenue, 2))
+                ->description($dailyRevenue > 0 ? 'Ingreso del día' : 'Sin ventas hoy')
+                ->descriptionIcon($dailyRevenue > 0 ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-minus')
+                ->color($dailyRevenue > 0 ? 'success' : 'gray')
+                ->chart($dailySparkline)
+                ->chartColor($dailyRevenue > 0 ? 'success' : 'gray'),
+
+            Stat::make('Ganancias Semana 📅', '$' . number_format($weeklyRevenue, 2))
+                ->description('Semana actual')
+                ->descriptionIcon('heroicon-m-calendar-days')
+                ->color($weeklyRevenue > 100 ? 'success' : ($weeklyRevenue > 0 ? 'warning' : 'gray'))
+                ->chart($weeklySparkline)
+                ->chartColor($weeklyRevenue > 0 ? 'success' : 'gray'),
+
+            Stat::make('Ganancias Mes 📆', '$' . number_format($monthlyRevenue, 2))
+                ->description(Carbon::now()->translatedFormat('F Y'))
+                ->descriptionIcon('heroicon-m-banknotes')
+                ->color($monthlyRevenue > 500 ? 'success' : ($monthlyRevenue > 0 ? 'warning' : 'gray'))
+                ->chart($monthlySparkline)
+                ->chartColor($monthlyRevenue > 0 ? 'success' : 'gray'),
+
+            Stat::make('Ganancias Año 📊', '$' . number_format($yearlyRevenue, 2))
+                ->description('Acumulado ' . $today->year)
+                ->descriptionIcon('heroicon-m-chart-bar')
+                ->color($yearlyRevenue > 5000 ? 'success' : ($yearlyRevenue > 0 ? 'info' : 'gray'))
+                ->chart($monthlySparkline)
+                ->chartColor($yearlyRevenue > 0 ? 'info' : 'gray'),
         ];
     }
 }
