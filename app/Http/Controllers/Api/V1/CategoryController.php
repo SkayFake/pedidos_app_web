@@ -7,6 +7,7 @@ use App\Http\Resources\V1\CategoryResource;
 use App\Models\Category;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 /**
  * @group Categorías
@@ -21,6 +22,8 @@ class CategoryController extends Controller
      * Listar categorías
      *
      * Retorna todas las categorías activas con el conteo de productos disponibles en cada una.
+     *
+     * @queryParam branch_id integer Filtrar el conteo de productos por ID de sucursal. Example: 1
      *
      * @response 200 {
      *   "success": true,
@@ -39,11 +42,21 @@ class CategoryController extends Controller
      *   ]
      * }
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
+        $branchId = $request->filled('branch_id') ? $request->integer('branch_id') : null;
+
         $categories = Category::query()
             ->where('is_active', true)
-            ->withCount(['products' => fn ($q) => $q->where('is_available', true)])
+            ->withCount(['products' => function ($q) use ($branchId) {
+                $q->where('is_available', true);
+                if ($branchId) {
+                    $q->where(function ($query) use ($branchId) {
+                        $query->where('branch_id', $branchId)
+                              ->orWhereNull('branch_id');
+                    });
+                }
+            }])
             ->orderBy('name')
             ->get();
 

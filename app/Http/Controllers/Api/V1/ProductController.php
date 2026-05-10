@@ -27,6 +27,7 @@ class ProductController extends Controller
      * Soporta filtros por categoría, búsqueda por texto, y flags de recomendados/populares.
      *
      * @queryParam category_id integer Filtrar por ID de categoría. Example: 1
+     * @queryParam branch_id integer Filtrar por ID de sucursal. Example: 1
      * @queryParam search string Buscar por nombre o descripción. Example: hamburguesa
      * @queryParam recommended boolean Mostrar solo productos recomendados. Example: 1
      * @queryParam popular boolean Mostrar solo productos populares. Example: 1
@@ -58,7 +59,16 @@ class ProductController extends Controller
     {
         $query = Product::query()
             ->where('is_available', true)
-            ->with('category');
+            ->with(['category', 'branch']);
+
+        // Filtro por sucursal
+        if ($request->filled('branch_id')) {
+            $branchId = $request->integer('branch_id');
+            $query->where(function ($q) use ($branchId) {
+                $q->where('branch_id', $branchId)
+                  ->orWhereNull('branch_id');
+            });
+        }
 
         // Filtro por categoría
         if ($request->filled('category_id')) {

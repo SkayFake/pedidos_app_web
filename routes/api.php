@@ -26,6 +26,7 @@ Route::prefix('auth')->middleware('throttle:auth')->group(function () {
 
 // ── Rutas Públicas (Catálogo y Configuración) ───────────────────────────
 Route::get('/zones', [ZoneController::class, 'index']);
+Route::get('/branches', [\App\Http\Controllers\Api\V1\BranchController::class, 'index']);
 
 // ── Rutas Protegidas (requieren token Sanctum) ─────────────────────────
 Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {

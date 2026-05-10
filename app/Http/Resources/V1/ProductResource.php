@@ -13,23 +13,25 @@ class ProductResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'             => $this->id,
-            'name'           => $this->name,
+            'id' => $this->id,
+            'name' => $this->name,
             'description'    => $this->description,
+            'time_preparation' => $this->time_preparation,
             'base_price'     => number_format((float) $this->base_price, 2, '.', ''),
             'base_price_fmt' => '$' . number_format((float) $this->base_price, 2),
-            'image'          => $this->image
+            'image' => $this->image
                 ? (str_starts_with($this->image, 'http') ? $this->image : asset('storage/' . $this->image))
                 : null,
-            'is_available'   => (bool) $this->is_available,
+            'is_available' => (bool) $this->is_available,
             'is_recommended' => (bool) $this->is_recommended,
-            'is_popular'     => (bool) $this->is_popular,
-            'category'       => [
-                'id'   => $this->category?->id,
+            'is_popular' => (bool) $this->is_popular,
+            'stars' => $this->stars ? (float) $this->stars : 0.0,
+            'category' => [
+                'id' => $this->category?->id,
                 'name' => $this->category?->name,
             ],
-            'variants'       => ProductVariantResource::collection($this->whenLoaded('variants')),
-            'extras'         => ProductExtraResource::collection($this->whenLoaded('extras')),
+            'variants' => ProductVariantResource::collection($this->whenLoaded('variants')),
+            'extras' => ProductExtraResource::collection($this->whenLoaded('extras')),
         ];
     }
 }

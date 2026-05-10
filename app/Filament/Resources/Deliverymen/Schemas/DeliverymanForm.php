@@ -16,6 +16,10 @@ class DeliverymanForm
                 TextInput::make('name')
                     ->label('Nombre')
                     ->required(),
+                Select::make('branch_id')
+                    ->label('Sucursal (Opcional, Nulo = Global)')
+                    ->relationship('branch', 'name')
+                    ->nullable(),
                 TextInput::make('email')
                     ->label('Correo Electrónico')
                     ->email()

@@ -32,4 +32,9 @@ class Deliveryman extends Authenticatable
     {
         return $this->hasMany(DeliverymanReview::class);
     }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
+    }
 }

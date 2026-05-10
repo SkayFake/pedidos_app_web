@@ -19,6 +19,10 @@ class CouponForm
                     ->required(),
                 TextInput::make('description')
                     ->label('Descripción'),
+                Select::make('branch_id')
+                    ->label('Sucursal (Opcional, Nulo = Global)')
+                    ->relationship('branch', 'name')
+                    ->nullable(),
                 Select::make('type')
                     ->label('Tipo')
                     ->options(['percent' => 'Porcentaje', 'fixed' => 'Fijo', 'free_delivery' => 'Envío gratis'])

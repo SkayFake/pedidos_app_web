@@ -29,6 +29,10 @@ class ProductForm
                                     ->label('Categoría')
                                     ->relationship('category', 'name')
                                     ->required(),
+                                Select::make('branch_id')
+                                    ->label('Sucursal (Opcional, Nulo = Global)')
+                                    ->relationship('branch', 'name')
+                                    ->nullable(),
                                 TextInput::make('name')
                                     ->label('Nombre')
                                     ->required(),
@@ -40,6 +44,10 @@ class ProductForm
                                     ->required()
                                     ->numeric()
                                     ->prefix('$'),
+                                TextInput::make('time_preparation')
+                                    ->label('Tiempo de Preparación')
+                                    ->placeholder('Ej: 15-20 min')
+                                    ->maxLength(255),
                                 TextInput::make('stars')
                                     ->label('Calificación (Estrellas)')
                                     ->numeric()

@@ -52,8 +52,12 @@ class PromotionService
             if (!$coupon->expires_at || $coupon->expires_at->isFuture()) {
                 if ($subtotal >= $coupon->min_order_amount) {
                     $canUse = true;
+                    // Verificar que el cupón pertenece a la sucursal o es global
+                    if ($coupon->branch_id !== null && $coupon->branch_id !== $branch->id) {
+                        $canUse = false;
+                    }
                     // Verificar usos globales
-                    if ($coupon->max_uses_total !== null && $coupon->used_count >= $coupon->max_uses_total) {
+                    if ($canUse && $coupon->max_uses_total !== null && $coupon->used_count >= $coupon->max_uses_total) {
                         $canUse = false;
                     }
                     // Verificar si este usuario ya lo usó
