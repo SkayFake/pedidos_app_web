@@ -20,6 +20,8 @@ class UpdateAddressRequest extends FormRequest
             'label'      => ['sometimes', 'string', 'max:50'],
             'street'     => ['sometimes', 'string', 'max:255'],
             'references' => ['nullable', 'string', 'max:255'],
+            'latitude'   => ['nullable', 'numeric', 'between:-90,90'],
+            'longitude'  => ['nullable', 'numeric', 'between:-180,180'],
             'is_default' => ['nullable', 'boolean'],
         ];
     }

@@ -15,6 +15,7 @@ class OrderResource extends JsonResource
         return [
             'id'     => $this->id,
             'status' => $this->status,
+            'otp'    => $this->otp,
 
             // ── Montos formateados ─────────────────────────────
             'subtotal'        => number_format((float) $this->subtotal, 2, '.', ''),

@@ -176,6 +176,7 @@ class OrderService
                 'branch_id'              => $validated['branch_id'],
                 'address_id'             => $validated['address_id'],
                 'coupon_id'              => $promoResult['applied_coupon_id'],
+                'otp'                    => (string) mt_rand(1000, 9999),
                 'status'                 => 'pending',
                 'subtotal'               => $promoResult['subtotal'],
                 'delivery_fee'           => $promoResult['delivery_fee_final'],

@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\CustomerAddressController;
 use App\Http\Controllers\Api\V1\OrderController;
 use App\Http\Controllers\Api\V1\ProductController;
+use App\Http\Controllers\Api\V1\ZoneController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -23,13 +24,18 @@ Route::prefix('auth')->middleware('throttle:auth')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
 });
 
+// ── Rutas Públicas (Catálogo y Configuración) ───────────────────────────
+Route::get('/zones', [ZoneController::class, 'index']);
+
 // ── Rutas Protegidas (requieren token Sanctum) ─────────────────────────
 Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
 
-    // Auth (sesión)
+    // Auth (sesión y perfil)
     Route::prefix('auth')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/me', [AuthController::class, 'me']);
+        Route::put('/update-profile', [AuthController::class, 'updateProfile']);
+        Route::put('/change-password', [AuthController::class, 'changePassword']);
     });
 
     // Productos (solo lectura)

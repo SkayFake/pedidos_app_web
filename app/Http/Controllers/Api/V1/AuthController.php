@@ -190,6 +190,56 @@ class AuthController extends Controller
     }
 
     /**
+     * Actualizar perfil
+     *
+     * @bodyParam name string required Nombre del cliente.
+     * @bodyParam phone string required Teléfono del cliente.
+     */
+    public function updateProfile(\Illuminate\Http\Request $request): JsonResponse
+    {
+        $request->validate([
+            'name'  => 'required|string|max:100',
+            'phone' => 'required|string|max:20|unique:users,phone,' . auth()->id(),
+        ]);
+
+        $user = auth()->user();
+        $user->update([
+            'name'  => $request->name,
+            'phone' => $request->phone,
+        ]);
+
+        return $this->success([
+            'user' => $this->formatUser($user),
+        ], 'Perfil actualizado exitosamente.');
+    }
+
+    /**
+     * Cambiar contraseña
+     *
+     * @bodyParam current_password string required Contraseña actual.
+     * @bodyParam new_password string required Nueva contraseña (min 8).
+     */
+    public function changePassword(\Illuminate\Http\Request $request): JsonResponse
+    {
+        $request->validate([
+            'current_password' => 'required|string',
+            'new_password'     => 'required|string|min:8',
+        ]);
+
+        $user = auth()->user();
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            return $this->error('La contraseña actual es incorrecta.', 422);
+        }
+
+        $user->update([
+            'password' => Hash::make($request->new_password),
+        ]);
+
+        return $this->success(null, 'Contraseña actualizada exitosamente.');
+    }
+
+    /**
      * Formatear datos del usuario para la respuesta.
      */
     private function formatUser(User $user): array
