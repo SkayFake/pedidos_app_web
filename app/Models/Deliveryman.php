@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Deliveryman extends Authenticatable
 {
@@ -31,6 +32,20 @@ class Deliveryman extends Authenticatable
     public function reviews()
     {
         return $this->hasMany(DeliverymanReview::class);
+    }
+
+    protected function averageRating(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => round($this->reviews()->avg('rating') ?? 0, 1),
+        );
+    }
+
+    protected function totalReviews(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->reviews()->count(),
+        );
     }
 
     public function branch()

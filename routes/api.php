@@ -3,6 +3,8 @@
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\CustomerAddressController;
+use App\Http\Controllers\Api\V1\DeliveryAuthController;
+use App\Http\Controllers\Api\V1\DeliveryOrderController;
 use App\Http\Controllers\Api\V1\OrderController;
 use App\Http\Controllers\Api\V1\ProductController;
 use App\Http\Controllers\Api\V1\ZoneController;
@@ -22,6 +24,11 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('auth')->middleware('throttle:auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
+});
+
+// ── Rutas Públicas de Repartidor ─────────────────────────────────────────
+Route::prefix('delivery/auth')->middleware('throttle:auth')->group(function () {
+    Route::post('/login', [DeliveryAuthController::class, 'login']);
 });
 
 // ── Rutas Públicas (Catálogo y Configuración) ───────────────────────────
@@ -55,4 +62,23 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     // Direcciones del cliente
     Route::apiResource('addresses', CustomerAddressController::class)
         ->except(['show']);
+
+    // ── Rutas Protegidas de Repartidor ─────────────────────────────────────
+    Route::prefix('delivery')->group(function () {
+        // Auth de Repartidor
+        Route::prefix('auth')->group(function () {
+            Route::post('/logout', [DeliveryAuthController::class, 'logout']);
+            Route::get('/me', [DeliveryAuthController::class, 'me']);
+            Route::put('/update-profile', [DeliveryAuthController::class, 'updateProfile']);
+        });
+
+        // Pedidos del Repartidor
+        Route::prefix('orders')->group(function () {
+            Route::get('/available', [DeliveryOrderController::class, 'availableOrders']);
+            Route::get('/history', [DeliveryOrderController::class, 'history']);
+            Route::post('/{order}/accept', [DeliveryOrderController::class, 'acceptOrder']);
+            Route::put('/{order}/status', [DeliveryOrderController::class, 'updateStatus']);
+            Route::post('/{order}/verify-otp', [DeliveryOrderController::class, 'verifyOtp']);
+        });
+    });
 });

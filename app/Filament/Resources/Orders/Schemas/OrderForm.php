@@ -27,7 +27,17 @@ class OrderForm
                     ->disabled(),
                 Select::make('deliveryman_id')
                     ->label('Repartidor')
-                    ->relationship('deliveryman', 'name')
+                    ->relationship(
+                        name: 'deliveryman', 
+                        titleAttribute: 'name',
+                        modifyQueryUsing: fn (\Illuminate\Database\Eloquent\Builder $query, $get) => 
+                            $query->where(function ($q) use ($get) {
+                                if ($get('branch_id')) {
+                                    $q->where('branch_id', $get('branch_id'))
+                                      ->orWhereNull('branch_id');
+                                }
+                            })
+                    )
                     ->searchable(),
                 Select::make('address_id')
                     ->label('Dirección')

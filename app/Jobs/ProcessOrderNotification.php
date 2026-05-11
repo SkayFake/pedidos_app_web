@@ -67,7 +67,7 @@ class ProcessOrderNotification implements ShouldQueue
         $this->notifyBranch($orderId, $branchName);
 
         // ── Notificar al repartidor (si aplica) ────────────────
-        if (in_array($this->newStatus, ['assigned', 'on_way'])) {
+        if (in_array($this->newStatus, ['preparing', 'assigned', 'on_way'])) {
             $this->notifyDeliveryman($orderId);
         }
 
@@ -124,6 +124,12 @@ class ProcessOrderNotification implements ShouldQueue
      */
     private function notifyDeliveryman(int $orderId): void
     {
+        if ($this->newStatus === 'preparing') {
+            $branchName = $this->order->branch?->name ?? 'tu sucursal';
+            Log::channel('stack')->info("[BROADCAST PUSH → Repartidores de la Sucursal] Un nuevo pedido (#{$orderId}) está listo para recoger en {$branchName}. ¡Acéptalo ahora!");
+            return;
+        }
+
         $deliverymanName = $this->order->deliveryman?->name ?? 'Repartidor';
 
         if ($this->newStatus === 'assigned') {
