@@ -60,7 +60,7 @@ class ProductForm
                                     ->image()
                                     ->disk('public')
                                     ->directory('products')
-                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                    ->acceptedFileTypes(['image/jpeg', 'image/jpg', 'image/png', 'image/webp'])
                                     ->maxSize(10240)
                                     ->columnSpanFull(),
                             ]),
