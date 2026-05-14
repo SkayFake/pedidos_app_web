@@ -149,8 +149,7 @@ class OrderController extends Controller
      */
     public function show(Order $order): JsonResponse
     {
-        // Policy: solo el dueño puede ver su pedido
-        if ($order->user_id !== auth()->id()) {
+        if (\Illuminate\Support\Facades\Gate::denies('view', $order)) {
             return $this->error('No tienes permiso para ver este pedido.', 403);
         }
 
@@ -227,7 +226,8 @@ class OrderController extends Controller
         $user = auth()->user();
 
         try {
-            $order = $this->orderService->createOrder($user, $request->validated());
+            $dto = \App\DTOs\Order\CreateOrderDTO::fromArray($request->validated());
+            $order = $this->orderService->createOrder($user, $dto);
         } catch (OrderValidationException $e) {
             return $this->error($e->getMessage(), 422);
         } catch (\Throwable $e) {
@@ -282,8 +282,7 @@ class OrderController extends Controller
      */
     public function cancel(CancelOrderRequest $request, Order $order): JsonResponse
     {
-        // Policy: solo el dueño puede cancelar
-        if ($order->user_id !== auth()->id()) {
+        if (\Illuminate\Support\Facades\Gate::denies('cancel', $order)) {
             return $this->error('No tienes permiso para cancelar este pedido.', 403);
         }
 

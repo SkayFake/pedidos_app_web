@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
+
+use App\DTOs\Order\CreateOrderDTO;
 
 use App\Models\Branch;
 use App\Models\Coupon;
@@ -29,7 +33,7 @@ class OrderService
      * JAMÁS confía en montos enviados por el cliente.
      * Lee precios de: products.base_price, product_variants.price_modifier, product_extras.price
      *
-     * @param  array  $items  Array de ítems del payload validado.
+     * @param  array<int, \App\DTOs\Order\OrderItemDTO>  $items  Array de ítems como DTOs.
      * @return array  ['items_data' => [...], 'subtotal' => float]
      *
      * @throws \App\Exceptions\OrderValidationException
@@ -39,13 +43,36 @@ class OrderService
         $orderItemsData = [];
         $subtotal = 0;
 
+        // ── 1. Extraer todos los IDs para precargar (Resolver N+1) ───────
+        $productIds = [];
+        $variantIds = [];
+        $extraIds = [];
+
+        foreach ($items as $item) {
+            $productIds[] = $item->productId;
+            if ($item->variantId !== null) {
+                $variantIds[] = $item->variantId;
+            }
+            if (!empty($item->extras)) {
+                foreach ($item->extras as $extra) {
+                    $extraIds[] = $extra->extraId;
+                }
+            }
+        }
+
+        // ── 2. Precargar colecciones en memoria ───────────────────────────
+        $products = Product::whereIn('id', array_unique($productIds))->get()->keyBy('id');
+        $variants = ProductVariant::whereIn('id', array_unique($variantIds))->get()->keyBy('id');
+        $extras = ProductExtra::whereIn('id', array_unique($extraIds))->get()->keyBy('id');
+
+        // ── 3. Procesar ítems sin consultas a la BD ───────────────────────
         foreach ($items as $itemPayload) {
             // ── Producto ───────────────────────────────────────
-            $product = Product::find($itemPayload['product_id']);
+            $product = $products->get($itemPayload->productId);
 
             if (!$product || !$product->is_available) {
                 throw new \App\Exceptions\OrderValidationException(
-                    "El producto \"{$product?->name}\" no está disponible."
+                    "El producto \"" . ($product?->name ?? 'Desconocido') . "\" no está disponible."
                 );
             }
 
@@ -53,13 +80,11 @@ class OrderService
             $unitPrice = (float) $product->base_price;
 
             // ── Variante (price_modifier) ──────────────────────
-            $variantId = $itemPayload['variant_id'] ?? null;
+            $variantId = $itemPayload->variantId;
             if ($variantId) {
-                $variant = ProductVariant::where('id', $variantId)
-                    ->where('product_id', $product->id)
-                    ->first();
+                $variant = $variants->get($variantId);
 
-                if (!$variant || !$variant->is_available) {
+                if (!$variant || !$variant->is_available || $variant->product_id !== $product->id) {
                     throw new \App\Exceptions\OrderValidationException(
                         "La variante seleccionada para \"{$product->name}\" no está disponible."
                     );
@@ -72,24 +97,22 @@ class OrderService
             // Asegurar que el precio unitario nunca sea negativo
             $unitPrice = max(0, $unitPrice);
 
-            $quantity = (int) $itemPayload['quantity'];
+            $quantity = $itemPayload->quantity;
             $itemSubtotal = round($unitPrice * $quantity, 2);
 
             // ── Extras ─────────────────────────────────────────
             $extrasData = [];
-            if (!empty($itemPayload['extras'])) {
-                foreach ($itemPayload['extras'] as $extraPayload) {
-                    $extra = ProductExtra::where('id', $extraPayload['extra_id'])
-                        ->where('product_id', $product->id)
-                        ->first();
+            if (!empty($itemPayload->extras)) {
+                foreach ($itemPayload->extras as $extraPayload) {
+                    $extra = $extras->get($extraPayload->extraId);
 
-                    if (!$extra || !$extra->is_available) {
+                    if (!$extra || !$extra->is_available || $extra->product_id !== $product->id) {
                         throw new \App\Exceptions\OrderValidationException(
                             "El extra seleccionado para \"{$product->name}\" no está disponible."
                         );
                     }
 
-                    $extraQty = (int) $extraPayload['quantity'];
+                    $extraQty = $extraPayload->quantity;
                     $extraUnitPrice = (float) $extra->price;
                     $itemSubtotal += round($extraUnitPrice * $extraQty, 2);
 
@@ -132,10 +155,10 @@ class OrderService
      * @throws \App\Exceptions\OrderValidationException
      * @throws \Throwable
      */
-    public function createOrder(User $user, array $validated): Order
+    public function createOrder(User $user, CreateOrderDTO $dto): Order
     {
         // ── 1. Validar propiedad de la dirección ───────────────
-        $address = $user->addresses()->find($validated['address_id']);
+        $address = $user->addresses()->find($dto->addressId);
         if (!$address) {
             throw new \App\Exceptions\OrderValidationException(
                 'La dirección seleccionada no te pertenece.'
@@ -143,7 +166,7 @@ class OrderService
         }
 
         // ── 2. Validar sucursal activa ─────────────────────────
-        $branch = Branch::find($validated['branch_id']);
+        $branch = Branch::find($dto->branchId);
         if (!$branch || !$branch->is_active) {
             throw new \App\Exceptions\OrderValidationException(
                 'La sucursal seleccionada no está disponible.'
@@ -151,12 +174,12 @@ class OrderService
         }
 
         // ── 3. Calcular precios server-side ────────────────────
-        $pricing = $this->calculateItemsPricing($validated['items']);
+        $pricing = $this->calculateItemsPricing($dto->items);
 
         // ── 4. Resolver cupón ──────────────────────────────────
         $coupon = null;
-        if (!empty($validated['coupon_code'])) {
-            $coupon = Coupon::where('code', $validated['coupon_code'])->first();
+        if ($dto->couponCode !== null) {
+            $coupon = Coupon::where('code', $dto->couponCode)->first();
         }
 
         // ── 5. Calcular promociones y descuentos ───────────────
@@ -165,16 +188,16 @@ class OrderService
             branch: $branch,
             subtotal: $pricing['subtotal'],
             deliveryFee: self::DELIVERY_FEE,
-            usePoints: $validated['use_loyalty_points'] ?? false,
+            usePoints: $dto->useLoyaltyPoints,
             coupon: $coupon,
         );
 
         // ── 6. Crear en transacción atómica ────────────────────
-        return DB::transaction(function () use ($user, $validated, $promoResult, $pricing, $coupon) {
+        return DB::transaction(function () use ($user, $dto, $promoResult, $pricing, $coupon) {
             $order = Order::create([
                 'user_id'                => $user->id,
-                'branch_id'              => $validated['branch_id'],
-                'address_id'             => $validated['address_id'],
+                'branch_id'              => $dto->branchId,
+                'address_id'             => $dto->addressId,
                 'coupon_id'              => $promoResult['applied_coupon_id'],
                 'otp'                    => (string) mt_rand(1000, 9999),
                 'status'                 => 'pending',
@@ -185,7 +208,7 @@ class OrderService
                 'is_first_order_promo'   => $promoResult['is_first_order_promo'],
                 'is_free_delivery_promo' => $promoResult['is_free_delivery_promo'],
                 'is_loyalty_discount'    => $promoResult['is_loyalty_discount'],
-                'notes'                  => $validated['notes'] ?? null,
+                'notes'                  => $dto->notes,
             ]);
 
             // Crear ítems del pedido con precios snapshot
@@ -218,6 +241,8 @@ class OrderService
             if ($promoResult['is_loyalty_discount'] && $promoResult['points_to_deduct'] > 0) {
                 $this->loyaltyService->deductPointsForOrder($order, $promoResult['points_to_deduct']);
             }
+
+            \App\Events\OrderCreated::dispatch($order);
 
             return $order;
         });

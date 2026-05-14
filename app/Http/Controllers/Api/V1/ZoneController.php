@@ -39,7 +39,9 @@ class ZoneController extends Controller
      */
     public function index(): JsonResponse
     {
-        $zones = Zone::where('is_active', true)->orderBy('name')->get();
+        $zones = \Illuminate\Support\Facades\Cache::remember('api.zones.active', 3600, function () {
+            return Zone::where('is_active', true)->orderBy('name')->get();
+        });
 
         return $this->success($zones, 'Zonas de entrega.');
     }

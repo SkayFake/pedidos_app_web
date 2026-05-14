@@ -57,48 +57,53 @@ class ProductController extends Controller
      */
     public function index(Request $request): AnonymousResourceCollection
     {
-        $query = Product::query()
-            ->where('is_available', true)
-            ->with(['category', 'branch']);
+        $version = \Illuminate\Support\Facades\Cache::get('products_cache_version', 1);
+        $cacheKey = "api.products.v{$version}." . md5($request->fullUrl());
 
-        // Filtro por sucursal
-        if ($request->filled('branch_id')) {
-            $branchId = $request->integer('branch_id');
-            $query->where(function ($q) use ($branchId) {
-                $q->where('branch_id', $branchId)
-                  ->orWhereNull('branch_id');
-            });
-        }
+        $paginator = \Illuminate\Support\Facades\Cache::remember($cacheKey, 3600, function () use ($request) {
+            $query = Product::query()
+                ->where('is_available', true)
+                ->with(['category', 'branch']);
 
-        // Filtro por categoría
-        if ($request->filled('category_id')) {
-            $query->where('category_id', $request->integer('category_id'));
-        }
+            // Filtro por sucursal
+            if ($request->filled('branch_id')) {
+                $branchId = $request->integer('branch_id');
+                $query->where(function ($q) use ($branchId) {
+                    $q->where('branch_id', $branchId)
+                      ->orWhereNull('branch_id');
+                });
+            }
 
-        // Búsqueda por nombre o descripción
-        if ($request->filled('search')) {
-            $search = $request->string('search')->trim();
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
-            });
-        }
+            // Filtro por categoría
+            if ($request->filled('category_id')) {
+                $query->where('category_id', $request->integer('category_id'));
+            }
 
-        // Filtro por recomendados
-        if ($request->boolean('recommended')) {
-            $query->where('is_recommended', true);
-        }
+            // Búsqueda por nombre o descripción
+            if ($request->filled('search')) {
+                $search = $request->string('search')->trim();
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                      ->orWhere('description', 'like', "%{$search}%");
+                });
+            }
 
-        // Filtro por populares
-        if ($request->boolean('popular')) {
-            $query->where('is_popular', true);
-        }
+            // Filtro por recomendados
+            if ($request->boolean('recommended')) {
+                $query->where('is_recommended', true);
+            }
 
-        $perPage = min($request->integer('per_page', 15), 50);
+            // Filtro por populares
+            if ($request->boolean('popular')) {
+                $query->where('is_popular', true);
+            }
 
-        return ProductResource::collection(
-            $query->orderBy('name')->paginate($perPage)
-        );
+            $perPage = min($request->integer('per_page', 15), 50);
+
+            return $query->orderBy('name')->paginate($perPage);
+        });
+
+        return ProductResource::collection($paginator);
     }
 
     /**
@@ -151,18 +156,27 @@ class ProductController extends Controller
      */
     public function show(Product $product): JsonResponse
     {
-        if (!$product->is_available) {
+        $version = \Illuminate\Support\Facades\Cache::get('products_cache_version', 1);
+        $cacheKey = "api.product.v{$version}.{$product->id}";
+
+        $productData = \Illuminate\Support\Facades\Cache::remember($cacheKey, 3600, function () use ($product) {
+            if (!$product->is_available) {
+                return null;
+            }
+
+            return $product->load([
+                'category',
+                'variants' => fn ($q) => $q->where('is_available', true),
+                'extras'   => fn ($q) => $q->where('is_available', true),
+            ]);
+        });
+
+        if (!$productData) {
             return $this->error('Este producto no está disponible actualmente.', 404);
         }
 
-        $product->load([
-            'category',
-            'variants' => fn ($q) => $q->where('is_available', true),
-            'extras'   => fn ($q) => $q->where('is_available', true),
-        ]);
-
         return $this->success(
-            new ProductResource($product),
+            new ProductResource($productData),
             'Detalle del producto.'
         );
     }

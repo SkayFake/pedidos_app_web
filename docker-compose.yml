@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    ports:
+      - "3000:80"
+    environment:
+      - DB_CONNECTION=mysql
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=shop_db
+      - DB_USERNAME=shop_user
+      - DB_PASSWORD=shop_password
+      - SESSION_DRIVER=file
+      - APP_DEBUG=true
+      - APP_ENV=production
+      - APP_URL=https://publication-missed-introduce-communist.trycloudflare.com
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mariadb:10.6
+    environment:
+      - MYSQL_ROOT_PASSWORD=root_password
+      - MYSQL_DATABASE=shop_db
+      - MYSQL_USER=shop_user
+      - MYSQL_PASSWORD=shop_password
+    volumes:
+      - ./shop_db.sql:/docker-entrypoint-initdb.d/init.sql
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  db_data:

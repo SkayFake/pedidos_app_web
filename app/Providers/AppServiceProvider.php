@@ -22,8 +22,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if (config('app.env') !== 'local') {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
+
         // ── Observers ──────────────────────────────────────────
         \App\Models\Order::observe(\App\Observers\OrderObserver::class);
+        \App\Models\Product::observe(\App\Observers\ProductObserver::class);
+        \App\Models\Category::observe(\App\Observers\CategoryObserver::class);
+        \App\Models\Zone::observe(\App\Observers\ZoneObserver::class);
 
         // ── Rate Limiters para la API ──────────────────────────
         RateLimiter::for('api', function (Request $request) {

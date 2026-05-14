@@ -46,19 +46,24 @@ class CategoryController extends Controller
     {
         $branchId = $request->filled('branch_id') ? $request->integer('branch_id') : null;
 
-        $categories = Category::query()
-            ->where('is_active', true)
-            ->withCount(['products' => function ($q) use ($branchId) {
-                $q->where('is_available', true);
-                if ($branchId) {
-                    $q->where(function ($query) use ($branchId) {
-                        $query->where('branch_id', $branchId)
-                              ->orWhereNull('branch_id');
-                    });
-                }
-            }])
-            ->orderBy('name')
-            ->get();
+        $version = \Illuminate\Support\Facades\Cache::get('categories_cache_version', 1);
+        $cacheKey = "api.categories.active.v{$version}.branch_" . ($branchId ?? 'all');
+
+        $categories = \Illuminate\Support\Facades\Cache::remember($cacheKey, 3600, function () use ($branchId) {
+            return Category::query()
+                ->where('is_active', true)
+                ->withCount(['products' => function ($q) use ($branchId) {
+                    $q->where('is_available', true);
+                    if ($branchId) {
+                        $q->where(function ($query) use ($branchId) {
+                            $query->where('branch_id', $branchId)
+                                  ->orWhereNull('branch_id');
+                        });
+                    }
+                }])
+                ->orderBy('name')
+                ->get();
+        });
 
         return $this->success(
             CategoryResource::collection($categories),
