@@ -18,7 +18,11 @@ class CategoryForm
                     ->required(),
                 FileUpload::make('image')
                     ->label('Imagen')
-                    ->image(),
+                    ->image()
+                    ->disk('public')
+                    ->directory('categories')
+                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                    ->maxSize(10240),
                 TextInput::make('sort_order')
                     ->label('Orden')
                     ->required()

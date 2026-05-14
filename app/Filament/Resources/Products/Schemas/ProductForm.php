@@ -58,6 +58,10 @@ class ProductForm
                                 FileUpload::make('image')
                                     ->label('Imagen')
                                     ->image()
+                                    ->disk('public')
+                                    ->directory('products')
+                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                    ->maxSize(10240)
                                     ->columnSpanFull(),
                             ]),
                         ]),
