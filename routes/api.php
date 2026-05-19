@@ -74,6 +74,7 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
 
         // Pedidos del Repartidor
         Route::prefix('orders')->group(function () {
+            Route::get('/active', [DeliveryOrderController::class, 'activeOrders']);
             Route::get('/available', [DeliveryOrderController::class, 'availableOrders']);
             Route::get('/history', [DeliveryOrderController::class, 'history']);
             Route::post('/{order}/accept', [DeliveryOrderController::class, 'acceptOrder']);

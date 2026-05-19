@@ -17,10 +17,7 @@ use Illuminate\Support\Facades\DB;
 
 class OrderService
 {
-    /**
-     * Tarifa fija de envío.
-     */
-    private const DELIVERY_FEE = 2.00;
+
 
     public function __construct(
         private readonly PromotionService $promotionService,
@@ -158,12 +155,14 @@ class OrderService
     public function createOrder(User $user, CreateOrderDTO $dto): Order
     {
         // ── 1. Validar propiedad de la dirección ───────────────
-        $address = $user->addresses()->find($dto->addressId);
+        $address = $user->addresses()->with('zone')->find($dto->addressId);
         if (!$address) {
             throw new \App\Exceptions\OrderValidationException(
                 'La dirección seleccionada no te pertenece.'
             );
         }
+
+        $deliveryFee = $address->zone ? (float) $address->zone->delivery_fee : 0.00;
 
         // ── 2. Validar sucursal activa ─────────────────────────
         $branch = Branch::find($dto->branchId);
@@ -187,7 +186,7 @@ class OrderService
             user: $user,
             branch: $branch,
             subtotal: $pricing['subtotal'],
-            deliveryFee: self::DELIVERY_FEE,
+            deliveryFee: $deliveryFee,
             usePoints: $dto->useLoyaltyPoints,
             coupon: $coupon,
         );
@@ -248,11 +247,5 @@ class OrderService
         });
     }
 
-    /**
-     * Obtiene la tarifa de envío fija.
-     */
-    public function getDeliveryFee(): float
-    {
-        return self::DELIVERY_FEE;
-    }
+
 }

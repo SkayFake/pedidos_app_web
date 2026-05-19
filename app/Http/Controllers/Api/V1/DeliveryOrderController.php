@@ -18,6 +18,26 @@ class DeliveryOrderController extends Controller
     use ApiResponse;
 
     /**
+     * Pedidos Activos (En curso)
+     *
+     * Retorna los pedidos que el repartidor ya aceptó y están pendientes de entregar
+     * (estados: assigned, on_way).
+     */
+    public function activeOrders(): JsonResponse
+    {
+        $deliveryman = auth()->user();
+
+        $query = Order::with(['user', 'address', 'branch'])
+            ->where('deliveryman_id', $deliveryman->id)
+            ->whereIn('status', ['assigned', 'on_way'])
+            ->orderBy('updated_at', 'desc');
+
+        return $this->success([
+            'orders' => $query->get()
+        ]);
+    }
+
+    /**
      * Pedidos Disponibles
      *
      * Retorna una lista de pedidos en estado "preparing" de la sucursal del repartidor.
