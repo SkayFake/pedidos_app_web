@@ -40,7 +40,7 @@ class DeliveryOrderController extends Controller
     /**
      * Pedidos Disponibles
      *
-     * Retorna una lista de pedidos en estado "preparing" de la sucursal del repartidor.
+     * Retorna una lista de pedidos en estado "assigned" (Listo para enviar) de la sucursal del repartidor.
      */
     public function availableOrders(): JsonResponse
     {
@@ -51,7 +51,8 @@ class DeliveryOrderController extends Controller
         }
 
         $query = Order::with(['user', 'address', 'branch'])
-            ->where('status', 'preparing')
+            ->where('status', 'assigned')
+            ->whereNull('deliveryman_id')
             ->orderBy('updated_at', 'desc');
 
         // Si el repartidor tiene una sucursal específica, filtramos.
@@ -84,7 +85,7 @@ class DeliveryOrderController extends Controller
             return $this->error('Este pedido pertenece a otra sucursal. Estás asignado a una sucursal diferente.', 403);
         }
 
-        if ($order->status !== 'preparing') {
+        if ($order->status !== 'assigned') {
             return $this->error('El pedido ya no está disponible para ser asignado.', 422);
         }
 
@@ -94,7 +95,7 @@ class DeliveryOrderController extends Controller
 
         DB::transaction(function () use ($order, $deliveryman) {
             $order->update([
-                'status'         => 'assigned',
+                'status'         => 'on_way',
                 'deliveryman_id' => $deliveryman->id,
                 'assigned_at'    => now(),
             ]);
@@ -132,9 +133,6 @@ class DeliveryOrderController extends Controller
         ]);
     }
 
-    /**
-     * Actualizar Estado del Pedido (Ej. 'on_way')
-     */
     public function updateStatus(\Illuminate\Http\Request $request, Order $order): JsonResponse
     {
         $request->validate([
@@ -145,6 +143,12 @@ class DeliveryOrderController extends Controller
 
         if ($order->deliveryman_id !== $deliveryman->id) {
             return $this->error('No tienes permiso para actualizar este pedido.', 403);
+        }
+
+        if ($order->status === 'on_way') {
+            return $this->success([
+                'order' => $order->fresh(['user', 'address'])
+            ], 'El pedido ya está en camino.');
         }
 
         if ($order->status !== 'assigned') {

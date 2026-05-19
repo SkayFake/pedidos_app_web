@@ -85,7 +85,7 @@ class ProcessOrderNotification implements ShouldQueue
             'pending'   => "¡Hola {$userName}! Tu pedido #{$orderId} ha sido recibido. Estamos procesándolo.",
             'confirmed' => "¡{$userName}! Tu pedido #{$orderId} ha sido confirmado por el restaurante. 🎉",
             'preparing' => "Tu pedido #{$orderId} se está preparando. ¡Ya casi! 🍳",
-            'assigned'  => "Un repartidor ha sido asignado a tu pedido #{$orderId}. 🏍️",
+            'assigned'  => "Tu pedido #{$orderId} está listo para enviar. 📦",
             'on_way'    => "¡Tu pedido #{$orderId} va en camino! Prepárate para recibirlo. 🚀",
             'delivered' => "Tu pedido #{$orderId} ha sido entregado. ¡Buen provecho! 🎉",
             'cancelled' => "Tu pedido #{$orderId} ha sido cancelado.",
@@ -124,7 +124,7 @@ class ProcessOrderNotification implements ShouldQueue
      */
     private function notifyDeliveryman(int $orderId): void
     {
-        if ($this->newStatus === 'preparing') {
+        if ($this->newStatus === 'assigned' && !$this->order->deliveryman_id) {
             $branchName = $this->order->branch?->name ?? 'tu sucursal';
             Log::channel('stack')->info("[BROADCAST PUSH → Repartidores de la Sucursal] Un nuevo pedido (#{$orderId}) está listo para recoger en {$branchName}. ¡Acéptalo ahora!");
             return;
@@ -132,7 +132,7 @@ class ProcessOrderNotification implements ShouldQueue
 
         $deliverymanName = $this->order->deliveryman?->name ?? 'Repartidor';
 
-        if ($this->newStatus === 'assigned') {
+        if ($this->newStatus === 'assigned' && $this->order->deliveryman_id) {
             Log::channel('stack')->info("[PUSH → Repartidor] {$deliverymanName}, tienes un nuevo pedido #{$orderId} asignado.");
         } elseif ($this->newStatus === 'on_way') {
             Log::channel('stack')->info("[PUSH → Repartidor] Pedido #{$orderId} marcado como en camino.");
