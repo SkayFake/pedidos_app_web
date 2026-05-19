@@ -3,12 +3,12 @@
     wire:poll.10000ms="loadOrders"
     class="kitchen-container"
     x-data="{
-        orders: @js($orders->map(fn($o) => ['id' => $o->id, 'start_timestamp' => $o->start_timestamp])->values()),
+        now: Math.floor(Date.now() / 1000),
         PREP_TIME_SECS: 20 * 60,
 
         getElapsed(startTs) {
             if (!startTs) return 0;
-            return Math.floor(Date.now() / 1000) - startTs;
+            return this.now - startTs;
         },
 
         getColorClass(startTs) {
@@ -28,7 +28,7 @@
 
         init() {
             setInterval(() => {
-                this.$nextTick(() => {});
+                this.now = Math.floor(Date.now() / 1000);
             }, 1000);
         }
     }"
@@ -405,7 +405,7 @@
     <div class="kitchen-header">
         <div class="kitchen-title-area">
             <div>
-                <h1 class="kitchen-title">🍳 Pantalla de Cocina</h1>
+                <h1 class="kitchen-title">Pantalla de Cocina</h1>
                 <div class="kitchen-subtitle">Monitoreo de pedidos en tiempo real</div>
             </div>
         </div>
@@ -430,7 +430,9 @@
     @if($orders->isEmpty())
         {{-- Estado vacío --}}
         <div class="empty-state">
-            <span class="empty-icon">🎉</span>
+            <svg style="width:80px; height:80px; margin: 0 auto 1.5rem; display:block; color:#10b981;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
             <div class="empty-title">¡Todo listo y despachado!</div>
             <div class="empty-sub">No hay pedidos pendientes para preparar en cocina.</div>
         </div>
@@ -481,9 +483,18 @@
 
                         {{-- Estado --}}
                         @if($order->status === 'confirmed')
-                            <span class="status-chip chip-confirmed">⏳ Confirmado</span>
+                            <span class="status-chip chip-confirmed">
+                                <svg style="width:14px; height:14px; display:inline-block; vertical-align:middle; margin-right:4px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>Confirmado
+                            </span>
                         @elseif($order->status === 'preparing')
-                            <span class="status-chip chip-preparing">🔥 En Preparación</span>
+                            <span class="status-chip chip-preparing">
+                                <svg style="width:14px; height:14px; display:inline-block; vertical-align:middle; margin-right:4px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z" />
+                                </svg>En Preparación
+                            </span>
                         @endif
 
                         <div class="divider"></div>
@@ -499,7 +510,10 @@
 
                                     @if($item->variant)
                                         <div class="item-variant">
-                                            📌 {{ $item->variant->name }}
+                                            <svg style="width:12px; height:12px; display:inline-block; vertical-align:middle; margin-right:4px; color:#4b5563;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            </svg>{{ $item->variant->name }}
                                         </div>
                                     @endif
 
@@ -513,7 +527,9 @@
 
                                     @if($item->special_instructions)
                                         <div class="item-variant" style="color:#b45309; background-color:#fffbeb; padding: 4px 8px; border-radius: 6px; margin-top: 4px; border: 1px solid #fde68a;">
-                                            📝 <strong>Instrucciones:</strong> {{ $item->special_instructions }}
+                                            <svg style="width:14px; height:14px; display:inline-block; vertical-align:middle; margin-right:4px; color:#b45309;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                            </svg><strong>Instrucciones:</strong> {{ $item->special_instructions }}
                                         </div>
                                     @endif
                                 </div>
@@ -522,7 +538,9 @@
 
                         {{-- Hint de interacción --}}
                         <div class="dblclick-hint">
-                            👆 Doble click en esta tarjeta para marcar como listo
+                            <svg style="width:14px; height:14px; display:inline-block; vertical-align:middle; margin-right:4px; color:#6b7280;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+                            </svg>Doble click en esta tarjeta para marcar como listo
                         </div>
                     </div>
                 </div>

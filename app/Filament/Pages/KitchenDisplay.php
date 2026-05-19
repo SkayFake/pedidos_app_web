@@ -18,7 +18,7 @@ class KitchenDisplay extends Page
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedFire;
 
-    protected static ?string $title = 'Pantalla de Cocina 🍳';
+    protected static ?string $title = 'Pantalla de Cocina';
 
     protected static string | \UnitEnum | null $navigationGroup = 'Operaciones';
 
