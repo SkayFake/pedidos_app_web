@@ -18,28 +18,29 @@ class OrdersTable
     /**
      * Mapa de estados en orden lógico de flujo.
      * El valor numérico define la posición en el flujo del pedido.
-     */
     private static array $statusOrder = [
-        'pending'   => 0,
-        'confirmed' => 1,
-        'preparing' => 2,
-        'assigned'  => 3,
-        'on_way'    => 4,
-        'delivered' => 5,
-        'cancelled' => 6,
+        'pending'     => 0,
+        'confirmed'   => 1,
+        'preparing'   => 2,
+        'ready_to_go' => 3,
+        'assigned'    => 4,
+        'on_way'      => 5,
+        'delivered'   => 6,
+        'cancelled'   => 7,
     ];
 
     /**
      * Labels en español para cada estado.
      */
     private static array $statusLabels = [
-        'pending'   => '⏳ Pendiente',
-        'confirmed' => '✅ Confirmado',
-        'preparing' => '🔥 En Preparación',
-        'assigned'  => '📦 Listo para enviar',
-        'on_way'    => '🚚 En Camino',
-        'delivered' => '✅ Entregado',
-        'cancelled' => '❌ Cancelado',
+        'pending'     => '⏳ Pendiente',
+        'confirmed'   => '✅ Confirmado',
+        'preparing'   => '🔥 En Preparación',
+        'ready_to_go' => '📦 Listo para enviar',
+        'assigned'    => '👤 Asignado a Repartidor',
+        'on_way'      => '🚚 En Camino',
+        'delivered'   => '✅ Entregado',
+        'cancelled'   => '❌ Cancelado',
     ];
 
     public static function configure(Table $table): Table
@@ -98,11 +99,12 @@ class OrdersTable
                     ->afterStateUpdated(function (Order $record, string $state, $livewire): void {
                         // Actualizar timestamps según el nuevo estado
                         $updates = match ($state) {
-                            'confirmed' => ['confirmed_at' => now()],
-                            'assigned'  => ['assigned_at' => now()],
-                            'delivered' => ['delivered_at' => now()],
-                            'cancelled' => ['cancelled_at' => now()],
-                            default     => [],
+                            'confirmed'   => ['confirmed_at' => now()],
+                            'ready_to_go' => ['assigned_at' => now()],
+                            'assigned'    => ['assigned_at' => now()],
+                            'delivered'   => ['delivered_at' => now()],
+                            'cancelled'   => ['cancelled_at' => now()],
+                            default       => [],
                         };
 
                         if (!empty($updates)) {

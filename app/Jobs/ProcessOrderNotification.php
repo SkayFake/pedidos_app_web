@@ -67,7 +67,7 @@ class ProcessOrderNotification implements ShouldQueue
         $this->notifyBranch($orderId, $branchName);
 
         // ── Notificar al repartidor (si aplica) ────────────────
-        if (in_array($this->newStatus, ['preparing', 'assigned', 'on_way'])) {
+        if (in_array($this->newStatus, ['preparing', 'ready_to_go', 'assigned', 'on_way'])) {
             $this->notifyDeliveryman($orderId);
         }
 
@@ -82,13 +82,14 @@ class ProcessOrderNotification implements ShouldQueue
     private function notifyCustomer(int $orderId, string $userName): void
     {
         $messages = [
-            'pending'   => "¡Hola {$userName}! Tu pedido #{$orderId} ha sido recibido. Estamos procesándolo.",
-            'confirmed' => "¡{$userName}! Tu pedido #{$orderId} ha sido confirmado por el restaurante. 🎉",
-            'preparing' => "Tu pedido #{$orderId} se está preparando. ¡Ya casi! 🍳",
-            'assigned'  => "Tu pedido #{$orderId} está listo para enviar. 📦",
-            'on_way'    => "¡Tu pedido #{$orderId} va en camino! Prepárate para recibirlo. 🚀",
-            'delivered' => "Tu pedido #{$orderId} ha sido entregado. ¡Buen provecho! 🎉",
-            'cancelled' => "Tu pedido #{$orderId} ha sido cancelado.",
+            'pending'     => "¡Hola {$userName}! Tu pedido #{$orderId} ha sido recibido. Estamos procesándolo.",
+            'confirmed'   => "¡{$userName}! Tu pedido #{$orderId} ha sido confirmado por el restaurante. 🎉",
+            'preparing'   => "Tu pedido #{$orderId} se está preparando. ¡Ya casi! 🍳",
+            'ready_to_go' => "Tu pedido #{$orderId} está listo para enviar. 📦",
+            'assigned'    => "Un repartidor ha sido asignado a tu pedido #{$orderId}. 🏍️",
+            'on_way'      => "¡Tu pedido #{$orderId} va en camino! Prepárate para recibirlo. 🚀",
+            'delivered'   => "Tu pedido #{$orderId} ha sido entregado. ¡Buen provecho! 🎉",
+            'cancelled'   => "Tu pedido #{$orderId} ha sido cancelado.",
         ];
 
         $message = $messages[$this->newStatus] ?? "Tu pedido #{$orderId} ha cambiado de estado.";
@@ -124,7 +125,7 @@ class ProcessOrderNotification implements ShouldQueue
      */
     private function notifyDeliveryman(int $orderId): void
     {
-        if ($this->newStatus === 'assigned' && !$this->order->deliveryman_id) {
+        if ($this->newStatus === 'ready_to_go') {
             $branchName = $this->order->branch?->name ?? 'tu sucursal';
             Log::channel('stack')->info("[BROADCAST PUSH → Repartidores de la Sucursal] Un nuevo pedido (#{$orderId}) está listo para recoger en {$branchName}. ¡Acéptalo ahora!");
             return;
@@ -132,7 +133,7 @@ class ProcessOrderNotification implements ShouldQueue
 
         $deliverymanName = $this->order->deliveryman?->name ?? 'Repartidor';
 
-        if ($this->newStatus === 'assigned' && $this->order->deliveryman_id) {
+        if ($this->newStatus === 'assigned') {
             Log::channel('stack')->info("[PUSH → Repartidor] {$deliverymanName}, tienes un nuevo pedido #{$orderId} asignado.");
         } elseif ($this->newStatus === 'on_way') {
             Log::channel('stack')->info("[PUSH → Repartidor] Pedido #{$orderId} marcado como en camino.");

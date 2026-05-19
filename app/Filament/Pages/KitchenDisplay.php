@@ -90,7 +90,7 @@ class KitchenDisplay extends Page
         }
 
         $order->update([
-            'status'      => 'assigned',
+            'status'      => 'ready_to_go',
             'assigned_at' => now(),
         ]);
 

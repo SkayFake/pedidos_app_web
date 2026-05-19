@@ -40,7 +40,7 @@ class DeliveryOrderController extends Controller
     /**
      * Pedidos Disponibles
      *
-     * Retorna una lista de pedidos en estado "assigned" (Listo para enviar) de la sucursal del repartidor.
+     * Retorna una lista de pedidos en estado "ready_to_go" (Listo para enviar) de la sucursal del repartidor.
      */
     public function availableOrders(): JsonResponse
     {
@@ -51,7 +51,7 @@ class DeliveryOrderController extends Controller
         }
 
         $query = Order::with(['user', 'address', 'branch'])
-            ->where('status', 'assigned')
+            ->where('status', 'ready_to_go')
             ->whereNull('deliveryman_id')
             ->orderBy('updated_at', 'desc');
 
@@ -85,7 +85,7 @@ class DeliveryOrderController extends Controller
             return $this->error('Este pedido pertenece a otra sucursal. Estás asignado a una sucursal diferente.', 403);
         }
 
-        if ($order->status !== 'assigned') {
+        if ($order->status !== 'ready_to_go') {
             return $this->error('El pedido ya no está disponible para ser asignado.', 422);
         }
 
@@ -95,7 +95,7 @@ class DeliveryOrderController extends Controller
 
         DB::transaction(function () use ($order, $deliveryman) {
             $order->update([
-                'status'         => 'on_way',
+                'status'         => 'assigned',
                 'deliveryman_id' => $deliveryman->id,
                 'assigned_at'    => now(),
             ]);

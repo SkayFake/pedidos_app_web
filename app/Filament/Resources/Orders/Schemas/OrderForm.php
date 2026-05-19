@@ -51,14 +51,15 @@ class OrderForm
                 Select::make('status')
                     ->label('Estado')
                     ->options([
-            'pending' => 'Pendiente',
-            'confirmed' => 'Confirmado',
-            'preparing' => 'En Preparación',
-            'assigned' => 'Listo para enviar',
-            'on_way' => 'En Camino',
-            'delivered' => 'Entregado',
-            'cancelled' => 'Cancelado',
-        ])
+                        'pending'     => 'Pendiente',
+                        'confirmed'   => 'Confirmado',
+                        'preparing'   => 'En Preparación',
+                        'ready_to_go' => 'Listo para enviar',
+                        'assigned'    => 'Asignado a Repartidor',
+                        'on_way'      => 'En Camino',
+                        'delivered'   => 'Entregado',
+                        'cancelled'   => 'Cancelado',
+                    ])
                     ->default('pending')
                     ->required(),
                 TextInput::make('subtotal')
