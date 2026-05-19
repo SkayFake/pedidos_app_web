@@ -27,6 +27,11 @@ class KitchenDisplay extends Page
     // Auto-refresco cada 10 segundos vía Livewire polling
     protected string $pollingInterval = '10s';
 
+    public function getLayout(): string
+    {
+        return 'filament-panels::components.layout.base';
+    }
+
     public $orders;
 
     public function mount(): void
