@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\V1\OrderResource;
 use App\Models\Order;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
@@ -33,7 +34,7 @@ class DeliveryOrderController extends Controller
             ->orderBy('updated_at', 'desc');
 
         return $this->success([
-            'orders' => $query->get()
+            'orders' => OrderResource::collection($query->get())
         ]);
     }
 
@@ -62,7 +63,7 @@ class DeliveryOrderController extends Controller
         }
 
         return $this->success([
-            'orders' => $query->get()
+            'orders' => OrderResource::collection($query->get())
         ]);
     }
 
@@ -102,7 +103,7 @@ class DeliveryOrderController extends Controller
         });
 
         return $this->success([
-            'order' => $order->fresh(['user', 'address'])
+            'order' => new OrderResource($order->fresh(['user', 'address', 'branch']))
         ], 'Has aceptado el pedido exitosamente.');
     }
 
@@ -113,7 +114,7 @@ class DeliveryOrderController extends Controller
     {
         $deliveryman = auth()->user();
 
-        $orders = Order::with(['user', 'address'])
+        $orders = Order::with(['user', 'address', 'branch'])
             ->where('deliveryman_id', $deliveryman->id)
             ->whereIn('status', ['delivered', 'cancelled'])
             ->orderBy('updated_at', 'desc')
@@ -129,7 +130,7 @@ class DeliveryOrderController extends Controller
         return $this->success([
             'total_earnings' => round($totalEarnings, 2),
             'today_earnings' => round($todayEarnings, 2),
-            'orders'         => $orders
+            'orders'         => OrderResource::collection($orders)
         ]);
     }
 
@@ -147,7 +148,7 @@ class DeliveryOrderController extends Controller
 
         if ($order->status === 'on_way') {
             return $this->success([
-                'order' => $order->fresh(['user', 'address'])
+                'order' => new OrderResource($order->fresh(['user', 'address', 'branch']))
             ], 'El pedido ya está en camino.');
         }
 
@@ -160,7 +161,7 @@ class DeliveryOrderController extends Controller
         ]);
 
         return $this->success([
-            'order' => $order->fresh(['user', 'address'])
+            'order' => new OrderResource($order->fresh(['user', 'address', 'branch']))
         ], 'Estado del pedido actualizado exitosamente.');
     }
 
@@ -193,7 +194,7 @@ class DeliveryOrderController extends Controller
         ]);
 
         return $this->success([
-            'order' => $order->fresh(['user', 'address'])
+            'order' => new OrderResource($order->fresh(['user', 'address', 'branch']))
         ], '¡Pedido entregado exitosamente!');
     }
 }
