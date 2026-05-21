@@ -57,8 +57,8 @@ class DeliveryOrderController extends Controller
             ->orderBy('updated_at', 'desc');
 
         // Si el repartidor tiene una sucursal específica, filtramos.
-        // Si su branch_id es null, significa que es "Global" y puede ver pedidos de todas las sucursales.
-        if ($deliveryman->branch_id !== null) {
+        // Si su branch_id es null o 0, significa que es "Global" y puede ver pedidos de todas las sucursales.
+        if (!empty($deliveryman->branch_id) && $deliveryman->branch_id > 0) {
             $query->where('branch_id', $deliveryman->branch_id);
         }
 
@@ -81,8 +81,8 @@ class DeliveryOrderController extends Controller
         }
 
         // Si el repartidor tiene sucursal asignada, no puede tomar pedidos de otras sucursales.
-        // Si es null (Global), puede tomar de cualquiera.
-        if ($deliveryman->branch_id !== null && $order->branch_id !== $deliveryman->branch_id) {
+        // Si es null o 0 (Global), puede tomar de cualquiera.
+        if (!empty($deliveryman->branch_id) && $deliveryman->branch_id > 0 && $order->branch_id !== $deliveryman->branch_id) {
             return $this->error('Este pedido pertenece a otra sucursal. Estás asignado a una sucursal diferente.', 403);
         }
 
