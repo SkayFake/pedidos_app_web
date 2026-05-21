@@ -15,7 +15,11 @@ class OrderResource extends JsonResource
         return [
             'id'     => $this->id,
             'status' => $this->status,
-            // OTP se omite intencionalmente — nunca se expone al repartidor
+            // OTP se omite intencionalmente para repartidores — solo se expone al cliente
+            'otp' => $this->when(
+                auth()->check() && !(auth()->user() instanceof \App\Models\Deliveryman),
+                $this->otp
+            ),
 
             // ── Montos formateados ────────────────────
             'subtotal'            => number_format((float) $this->subtotal, 2, '.', ''),
