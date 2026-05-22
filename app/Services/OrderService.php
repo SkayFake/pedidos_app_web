@@ -14,6 +14,7 @@ use App\Models\ProductExtra;
 use App\Models\ProductVariant;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use App\Services\DistanceMatrixService;
 
 class OrderService
 {
@@ -22,6 +23,7 @@ class OrderService
     public function __construct(
         private readonly PromotionService $promotionService,
         private readonly LoyaltyService $loyaltyService,
+        private readonly DistanceMatrixService $distanceService,
     ) {}
 
     /**
@@ -162,14 +164,36 @@ class OrderService
             );
         }
 
-        $deliveryFee = $address->zone ? (float) $address->zone->delivery_fee : 0.00;
-
         // ── 2. Validar sucursal activa ─────────────────────────
         $branch = Branch::find($dto->branchId);
         if (!$branch || !$branch->is_active) {
             throw new \App\Exceptions\OrderValidationException(
                 'La sucursal seleccionada no está disponible.'
             );
+        }
+
+        $lat = $dto->lat ?? $address->latitude;
+        $lng = $dto->lng ?? $address->longitude;
+
+        $deliveryFee = 0.00;
+        if ($lat && $lng && $branch->latitude && $branch->longitude) {
+            $zone = DB::table('delivery_zones')->where('branch_id', $branch->id)->where('is_active', true)->first();
+            if ($zone) {
+                $distanceKm = $this->distanceService->getDistanceInKm(
+                    (float) $branch->latitude, (float) $branch->longitude,
+                    (float) $lat, (float) $lng
+                );
+                
+                if ($distanceKm !== null) {
+                    $deliveryFee = (float) $zone->base_price;
+                    if ($distanceKm > (float) $zone->base_distance_km) {
+                        $extraDistance = $distanceKm - (float) $zone->base_distance_km;
+                        $deliveryFee += ($extraDistance * (float) $zone->extra_per_km);
+                    }
+                }
+            }
+        } elseif ($address->zone) {
+            $deliveryFee = (float) $address->zone->delivery_fee;
         }
 
         // ── 3. Calcular precios server-side ────────────────────
@@ -192,11 +216,13 @@ class OrderService
         );
 
         // ── 6. Crear en transacción atómica ────────────────────
-        return DB::transaction(function () use ($user, $dto, $promoResult, $pricing, $coupon) {
+        return DB::transaction(function () use ($user, $dto, $promoResult, $pricing, $coupon, $lat, $lng) {
             $order = Order::create([
                 'user_id'                => $user->id,
                 'branch_id'              => $dto->branchId,
                 'address_id'             => $dto->addressId,
+                'latitude'               => $lat,
+                'longitude'              => $lng,
                 'coupon_id'              => $promoResult['applied_coupon_id'],
                 'otp'                    => (string) mt_rand(1000, 9999),
                 'status'                 => 'pending',

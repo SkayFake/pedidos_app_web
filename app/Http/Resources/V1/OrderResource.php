@@ -13,8 +13,10 @@ class OrderResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'     => $this->id,
-            'status' => $this->status,
+            'id'        => $this->id,
+            'status'    => $this->status,
+            'latitude'  => $this->latitude,
+            'longitude' => $this->longitude,
             // OTP se omite intencionalmente para repartidores — solo se expone al cliente
             'otp' => $this->when(
                 auth()->check() && !(auth()->user() instanceof \App\Models\Deliveryman),
@@ -40,9 +42,11 @@ class OrderResource extends JsonResource
 
             // ── Sucursal ───────────────────────────
             'branch' => $this->whenLoaded('branch', fn () => [
-                'id'      => $this->branch->id,
-                'name'    => $this->branch->name,
-                'address' => $this->branch->address,
+                'id'        => $this->branch->id,
+                'name'      => $this->branch->name,
+                'address'   => $this->branch->address,
+                'latitude'  => $this->branch->latitude,
+                'longitude' => $this->branch->longitude,
             ]),
 
             // ── Dirección de entrega ─────────────────
@@ -51,6 +55,8 @@ class OrderResource extends JsonResource
                 'label'      => $this->address->label,
                 'street'     => $this->address->street,
                 'references' => $this->address->references,
+                'latitude'   => $this->address->latitude,
+                'longitude'  => $this->address->longitude,
             ]),
 
             'items' => OrderItemResource::collection($this->whenLoaded('items')),

@@ -18,6 +18,8 @@ class StoreOrderRequest extends FormRequest
         return [
             'branch_id'                 => ['required', 'integer', 'exists:branches,id'],
             'address_id'                => ['required', 'integer', 'exists:customer_addresses,id'],
+            'lat'                       => ['nullable', 'numeric'],
+            'lng'                       => ['nullable', 'numeric'],
             'coupon_code'               => ['nullable', 'string', 'max:50', 'exists:coupons,code'],
             'use_loyalty_points'        => ['nullable', 'boolean'],
             'notes'                     => ['nullable', 'string', 'max:500'],

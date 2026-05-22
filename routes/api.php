@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\V1\DeliveryOrderController;
 use App\Http\Controllers\Api\V1\OrderController;
 use App\Http\Controllers\Api\V1\ProductController;
 use App\Http\Controllers\Api\V1\ZoneController;
+use App\Http\Controllers\Api\V1\ShippingController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -62,6 +63,9 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     // Direcciones del cliente
     Route::apiResource('addresses', CustomerAddressController::class)
         ->except(['show']);
+
+    // Shipping Fee Calculator
+    Route::get('/shipping/fee', [ShippingController::class, 'getFee']);
 
     // ── Rutas Protegidas de Repartidor ─────────────────────────────────────
     Route::prefix('delivery')->group(function () {
