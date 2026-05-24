@@ -86,10 +86,10 @@ class OrderResource extends JsonResource
             'deliveryman' => $this->whenLoaded('deliveryman', fn () => [
                 'id'    => $this->deliveryman->id,
                 'name'  => $this->deliveryman->name,
-                'photo' => $this->deliveryman->photo
-                    ? (str_starts_with($this->deliveryman->photo, 'http')
-                        ? $this->deliveryman->photo
-                        : asset('storage/' . $this->deliveryman->photo))
+                'photo' => $this->deliveryman->profile_photo
+                    ? (str_starts_with($this->deliveryman->profile_photo, 'http')
+                        ? $this->deliveryman->profile_photo
+                        : asset('storage/' . $this->deliveryman->profile_photo))
                     : null,
             ]),
         ];

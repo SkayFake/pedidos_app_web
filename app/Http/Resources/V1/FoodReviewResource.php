@@ -17,7 +17,7 @@ class FoodReviewResource extends JsonResource
         return [
             'id' => $this->id,
             'user_name' => $this->user?->name ?? 'Anónimo',
-            'user_photo' => $this->user?->photo ? (str_starts_with($this->user->photo, 'http') ? $this->user->photo : asset('storage/' . $this->user->photo)) : null,
+            'user_photo' => $this->user?->profile_photo ? (str_starts_with($this->user->profile_photo, 'http') ? $this->user->profile_photo : asset('storage/' . $this->user->profile_photo)) : null,
             'rating' => (int) $this->rating,
             'comment' => $this->comment,
             'date' => $this->created_at?->diffForHumans(),
