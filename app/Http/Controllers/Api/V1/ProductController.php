@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\V1\ProductResource;
+use App\Http\Resources\V1\FoodReviewResource;
 use App\Models\Product;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
@@ -166,8 +167,9 @@ class ProductController extends Controller
 
             return $product->load([
                 'category',
-                'variants' => fn ($q) => $q->where('is_available', true),
+                'variants' => fn ($q) => $q->where('is_available', true)->orderBy('is_default', 'desc'),
                 'extras'   => fn ($q) => $q->where('is_available', true),
+                'reviews'  => fn ($q) => $q->with('user')->latest()->limit(5),
             ]);
         });
 
@@ -178,6 +180,29 @@ class ProductController extends Controller
         return $this->success(
             new ProductResource($productData),
             'Detalle del producto.'
+        );
+    }
+
+    /**
+     * Reseñas del producto
+     *
+     * Retorna un listado paginado de las reseñas asociadas a un producto.
+     *
+     * @urlParam product integer required ID del producto. Example: 1
+     * @queryParam per_page integer Cantidad de resultados por página (máx 50). Example: 15
+     */
+    public function reviews(Product $product): JsonResponse
+    {
+        if (!$product->is_available) {
+            return $this->error('Este producto no está disponible actualmente.', 404);
+        }
+
+        $perPage = min(request()->integer('per_page', 15), 50);
+        $reviews = $product->reviews()->with('user')->latest()->paginate($perPage);
+
+        return $this->success(
+            FoodReviewResource::collection($reviews)->response()->getData(true),
+            'Reseñas del producto.'
         );
     }
 }

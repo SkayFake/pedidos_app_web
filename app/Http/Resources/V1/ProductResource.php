@@ -4,6 +4,7 @@ namespace App\Http\Resources\V1;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\V1\FoodReviewResource;
 
 class ProductResource extends JsonResource
 {
@@ -32,6 +33,8 @@ class ProductResource extends JsonResource
             ],
             'variants' => ProductVariantResource::collection($this->whenLoaded('variants')),
             'extras' => ProductExtraResource::collection($this->whenLoaded('extras')),
+            'reviews' => FoodReviewResource::collection($this->whenLoaded('reviews')),
+            'reviews_count' => $this->whenLoaded('reviews', fn() => $this->reviews->count(), 0),
         ];
     }
 }

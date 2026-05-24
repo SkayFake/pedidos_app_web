@@ -50,6 +50,7 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     // Productos (solo lectura)
     Route::get('/products', [ProductController::class, 'index']);
     Route::get('/products/{product}', [ProductController::class, 'show']);
+    Route::get('/products/{product}/reviews', [ProductController::class, 'reviews']);
 
     // Categorías
     Route::get('/categories', [CategoryController::class, 'index']);
