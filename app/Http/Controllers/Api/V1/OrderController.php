@@ -81,7 +81,7 @@ class OrderController extends Controller
     public function index(Request $request): AnonymousResourceCollection
     {
         $query = auth()->user()->orders()
-            ->with(['items.product', 'branch'])
+            ->with(['items.product', 'branch', 'deliveryman'])
             ->latest();
 
         if ($request->filled('status')) {
@@ -157,6 +157,7 @@ class OrderController extends Controller
             'branch',
             'address',
             'coupon',
+            'deliveryman',
             'items.product',
             'items.variant',
             'items.extras.extra',

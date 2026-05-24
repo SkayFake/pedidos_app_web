@@ -14,6 +14,7 @@ class OrderItemResource extends JsonResource
     {
         return [
             'id'             => $this->id,
+            'product_id'     => $this->product?->id,
             'product_name'   => $this->product?->name,
             'product_image'  => $this->product?->image
                 ? (str_starts_with($this->product->image, 'http') ? $this->product->image : asset('storage/' . $this->product->image))

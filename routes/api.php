@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\V1\OrderController;
 use App\Http\Controllers\Api\V1\ProductController;
 use App\Http\Controllers\Api\V1\ZoneController;
 use App\Http\Controllers\Api\V1\ShippingController;
+use App\Http\Controllers\Api\V1\ReviewController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -60,6 +61,7 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     Route::get('/orders/{order}', [OrderController::class, 'show']);
     Route::post('/orders', [OrderController::class, 'store']);
     Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel']);
+    Route::post('/orders/{order}/review', [ReviewController::class, 'store']);
 
     // Direcciones del cliente
     Route::apiResource('addresses', CustomerAddressController::class)

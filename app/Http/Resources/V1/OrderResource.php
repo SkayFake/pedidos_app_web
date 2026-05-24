@@ -74,11 +74,24 @@ class OrderResource extends JsonResource
             'cancellation_reason' => $this->cancellation_reason,
 
             // ── Timestamps de estado ──────────────────
-            'confirmed_at' => $this->confirmed_at?->format('d M Y, h:i A'),
-            'assigned_at'  => $this->assigned_at?->format('d M Y, h:i A'),
-            'delivered_at' => $this->delivered_at?->format('d M Y, h:i A'),
-            'cancelled_at' => $this->cancelled_at?->format('d M Y, h:i A'),
-            'created_at'   => $this->created_at?->format('d M Y, h:i A'),
+            'confirmed_at'     => $this->confirmed_at?->format('d M Y, h:i A'),
+            'assigned_at'      => $this->assigned_at?->format('d M Y, h:i A'),
+            'delivered_at'     => $this->delivered_at?->format('d M Y, h:i A'),
+            'delivered_at_iso' => $this->delivered_at?->toIso8601String(),
+            'cancelled_at'     => $this->cancelled_at?->format('d M Y, h:i A'),
+            'created_at'       => $this->created_at?->format('d M Y, h:i A'),
+            'reviewed_at'      => $this->reviewed_at?->toIso8601String(),
+
+            // Repartidor (para pantalla de reseña en Flutter)
+            'deliveryman' => $this->whenLoaded('deliveryman', fn () => [
+                'id'    => $this->deliveryman->id,
+                'name'  => $this->deliveryman->name,
+                'photo' => $this->deliveryman->photo
+                    ? (str_starts_with($this->deliveryman->photo, 'http')
+                        ? $this->deliveryman->photo
+                        : asset('storage/' . $this->deliveryman->photo))
+                    : null,
+            ]),
         ];
     }
 }
