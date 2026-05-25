@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('food_reviews', function (Blueprint $table) {
+            $table->dropForeign(['order_id']);
             $table->dropUnique('food_reviews_order_id_unique');
+            $table->foreign('order_id')->references('id')->on('orders')->cascadeOnDelete();
             $table->unique(['order_id', 'product_id']);
         });
     }
