@@ -1,7 +1,7 @@
 FROM dunglas/frankenphp:php8.2-alpine
 
 RUN install-php-extensions \
-    pdo_mysql \
+    pdo_pgsql \
     gd \
     intl \
     zip \

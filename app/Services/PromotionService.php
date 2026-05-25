@@ -69,6 +69,10 @@ class PromotionService
                         $result['applied_coupon_id'] = $coupon->id;
                         if ($coupon->type === 'percent') {
                             $result['discount_amount'] = round(($subtotal * $coupon->value) / 100, 2);
+                            // Aplicar tope máximo de descuento si está configurado
+                            if ($coupon->max_discount !== null && $result['discount_amount'] > $coupon->max_discount) {
+                                $result['discount_amount'] = round($coupon->max_discount, 2);
+                            }
                         } elseif ($coupon->type === 'fixed') {
                             $result['discount_amount'] = min($subtotal, $coupon->value);
                         } elseif ($coupon->type === 'free_delivery') {

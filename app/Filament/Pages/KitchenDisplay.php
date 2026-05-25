@@ -24,6 +24,16 @@ class KitchenDisplay extends Page
 
     protected static ?int $navigationSort = 10;
 
+    /**
+     * Kitchen role users ONLY see this page.
+     * Other roles can also access it (except operators who don't manage orders).
+     */
+    public static function canAccess(): bool
+    {
+        $user = auth('admin')->user();
+        return $user && !$user->isOperator();
+    }
+
     // Auto-refresco cada 10 segundos vía Livewire polling
     protected string $pollingInterval = '10s';
 

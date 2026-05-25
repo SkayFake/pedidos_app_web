@@ -31,11 +31,19 @@ class CouponForm
                     ->label('Valor')
                     ->required()
                     ->numeric()
+                    ->minValue(0)
                     ->default(0.0),
+                TextInput::make('max_discount')
+                    ->label('Descuento Máximo')
+                    ->helperText('Tope máximo de descuento para cupones tipo porcentaje. Vacío = sin tope.')
+                    ->numeric()
+                    ->minValue(0)
+                    ->nullable(),
                 TextInput::make('min_order_amount')
                     ->label('Monto Mínimo de Pedido')
                     ->required()
                     ->numeric()
+                    ->minValue(0)
                     ->default(0.0),
                 TextInput::make('max_uses_total')
                     ->label('Usos Máximos Totales')

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\CategoryController;
+use App\Http\Controllers\Api\V1\CouponController;
 use App\Http\Controllers\Api\V1\CustomerAddressController;
 use App\Http\Controllers\Api\V1\DeliveryAuthController;
 use App\Http\Controllers\Api\V1\DeliveryOrderController;
@@ -26,6 +27,8 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('auth')->middleware('throttle:auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+    Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 });
 
 // ── Rutas Públicas de Repartidor ─────────────────────────────────────────
@@ -46,6 +49,7 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
         Route::get('/me', [AuthController::class, 'me']);
         Route::put('/update-profile', [AuthController::class, 'updateProfile']);
         Route::put('/change-password', [AuthController::class, 'changePassword']);
+        Route::post('/verify-email', [AuthController::class, 'verifyEmail']);
     });
 
     // Productos (solo lectura)
@@ -58,7 +62,7 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
 
     // Pedidos
     Route::get('/orders', [OrderController::class, 'index']);
-    Route::get('/orders/{order}', [OrderController::class, 'show']);
+    Route::get('/orders/{id}', [OrderController::class, 'show'])->where('id', '[0-9]+');
     Route::post('/orders', [OrderController::class, 'store']);
     Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel']);
     Route::post('/orders/{order}/review', [ReviewController::class, 'store']);
@@ -67,8 +71,12 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     Route::apiResource('addresses', CustomerAddressController::class)
         ->except(['show']);
 
-    // Shipping Fee Calculator
+    // Cupones — Validación pre-checkout
+    Route::post('/coupons/validate', [CouponController::class, 'validateCoupon']);
+
+    // Shipping Fee Calculator & Coverage Check
     Route::get('/shipping/fee', [ShippingController::class, 'getFee']);
+    Route::get('/shipping/check-coverage', [ShippingController::class, 'checkCoverage']);
 
     // ── Rutas Protegidas de Repartidor ─────────────────────────────────────
     Route::prefix('delivery')->group(function () {

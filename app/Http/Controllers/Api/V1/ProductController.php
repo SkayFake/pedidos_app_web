@@ -5,17 +5,21 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\V1\ProductResource;
 use App\Http\Resources\V1\FoodReviewResource;
+use App\Models\OrderItem;
 use App\Models\Product;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 /**
  * @group Productos
  *
  * Endpoints para consultar el catálogo de productos disponibles,
  * con soporte para filtrado, búsqueda y paginación.
+ * Incluye lógica inteligente de productos populares y recomendados.
  */
 class ProductController extends Controller
 {
@@ -27,41 +31,22 @@ class ProductController extends Controller
      * Retorna un listado paginado de productos disponibles.
      * Soporta filtros por categoría, búsqueda por texto, y flags de recomendados/populares.
      *
+     * - `popular=true` → Ordena por más vendidos (basado en ventas reales)
+     * - `recommended=true` → Productos personalizados según historial del usuario
+     *
      * @queryParam category_id integer Filtrar por ID de categoría. Example: 1
      * @queryParam branch_id integer Filtrar por ID de sucursal. Example: 1
      * @queryParam search string Buscar por nombre o descripción. Example: hamburguesa
-     * @queryParam recommended boolean Mostrar solo productos recomendados. Example: 1
-     * @queryParam popular boolean Mostrar solo productos populares. Example: 1
+     * @queryParam recommended boolean Mostrar productos recomendados inteligentes. Example: 1
+     * @queryParam popular boolean Mostrar productos ordenados por más vendidos. Example: 1
      * @queryParam per_page integer Cantidad de resultados por página (máx 50). Example: 15
-     *
-     * @response 200 {
-     *   "data": [
-     *     {
-     *       "id": 1,
-     *       "name": "Hamburguesa Clásica",
-     *       "description": "Hamburguesa con carne de res, lechuga, tomate y queso",
-     *       "base_price": "5.50",
-     *       "base_price_fmt": "$5.50",
-     *       "image": "http://pedidosapp.test/storage/products/hamburguesa.jpg",
-     *       "is_available": true,
-     *       "is_recommended": true,
-     *       "is_popular": false,
-     *       "category": {
-     *         "id": 1,
-     *         "name": "Hamburguesas"
-     *       }
-     *     }
-     *   ],
-     *   "links": { "first": "...", "last": "...", "prev": null, "next": "..." },
-     *   "meta": { "current_page": 1, "last_page": 3, "per_page": 15, "total": 42 }
-     * }
      */
     public function index(Request $request): AnonymousResourceCollection
     {
-        $version = \Illuminate\Support\Facades\Cache::get('products_cache_version', 1);
-        $cacheKey = "api.products.v{$version}." . md5($request->fullUrl());
+        $version = Cache::get('products_cache_version', 1);
+        $cacheKey = "api.products.v{$version}." . md5($request->fullUrl() . '.' . (auth()->id() ?? 'guest'));
 
-        $paginator = \Illuminate\Support\Facades\Cache::remember($cacheKey, 3600, function () use ($request) {
+        $paginator = Cache::remember($cacheKey, 3600, function () use ($request) {
             $query = Product::query()
                 ->where('is_available', true)
                 ->with(['category', 'branch']);
@@ -89,19 +74,56 @@ class ProductController extends Controller
                 });
             }
 
-            // Filtro por recomendados
-            if ($request->boolean('recommended')) {
-                $query->where('is_recommended', true);
+            // Filtro por populares — basado en ventas reales (dinámico)
+            if ($request->boolean('popular')) {
+                $query->withCount(['orderItems as total_sold' => function ($q) {
+                    $q->select(DB::raw('COALESCE(SUM(order_items.quantity), 0)'));
+                }])
+                ->orderByDesc('total_sold');
             }
 
-            // Filtro por populares
-            if ($request->boolean('popular')) {
-                $query->where('is_popular', true);
+            // Filtro por recomendados — personalizado por usuario
+            if ($request->boolean('recommended')) {
+                $user = auth()->user();
+
+                if ($user) {
+                    // Obtener categorías que el usuario más compra
+                    $preferredCategoryIds = OrderItem::whereHas('order', function ($q) use ($user) {
+                        $q->where('user_id', $user->id)->where('status', 'delivered');
+                    })
+                    ->join('products', 'order_items.product_id', '=', 'products.id')
+                    ->select('products.category_id', DB::raw('COUNT(*) as cnt'))
+                    ->groupBy('products.category_id')
+                    ->orderByDesc('cnt')
+                    ->limit(3)
+                    ->pluck('category_id');
+
+                    if ($preferredCategoryIds->isNotEmpty()) {
+                        // Productos de categorías preferidas que no ha comprado
+                        $purchasedProductIds = OrderItem::whereHas('order', function ($q) use ($user) {
+                            $q->where('user_id', $user->id);
+                        })->pluck('product_id');
+
+                        $query->whereIn('category_id', $preferredCategoryIds)
+                              ->whereNotIn('id', $purchasedProductIds);
+                    } else {
+                        // Sin historial: mostrar los mejor calificados
+                        $query->where('stars', '>=', 4.0)->orderByDesc('stars');
+                    }
+                } else {
+                    // Sin autenticación: mejores calificados
+                    $query->where('stars', '>=', 4.0)->orderByDesc('stars');
+                }
             }
 
             $perPage = min($request->integer('per_page', 15), 50);
 
-            return $query->orderBy('name')->paginate($perPage);
+            // Si no es popular, ordenar por nombre
+            if (!$request->boolean('popular')) {
+                $query->orderBy('name');
+            }
+
+            return $query->paginate($perPage);
         });
 
         return ProductResource::collection($paginator);
@@ -114,53 +136,13 @@ class ProductController extends Controller
      * y extras disponibles. Retorna 404 si el producto no está disponible.
      *
      * @urlParam product integer required ID del producto. Example: 1
-     *
-     * @response 200 {
-     *   "success": true,
-     *   "message": "Detalle del producto.",
-     *   "data": {
-     *     "id": 1,
-     *     "name": "Hamburguesa Clásica",
-     *     "description": "Hamburguesa con carne de res, lechuga, tomate y queso",
-     *     "base_price": "5.50",
-     *     "base_price_fmt": "$5.50",
-     *     "image": "http://pedidosapp.test/storage/products/hamburguesa.jpg",
-     *     "is_available": true,
-     *     "is_recommended": true,
-     *     "is_popular": false,
-     *     "category": { "id": 1, "name": "Hamburguesas" },
-     *     "variants": [
-     *       {
-     *         "id": 1,
-     *         "name": "Tamaño Grande",
-     *         "price_modifier": "2.00",
-     *         "price_modifier_fmt": "+$2.00",
-     *         "is_default": false,
-     *         "is_available": true
-     *       }
-     *     ],
-     *     "extras": [
-     *       {
-     *         "id": 1,
-     *         "name": "Queso Extra",
-     *         "price": "0.75",
-     *         "price_fmt": "$0.75",
-     *         "is_available": true
-     *       }
-     *     ]
-     *   }
-     * }
-     * @response 404 {
-     *   "success": false,
-     *   "message": "Este producto no está disponible actualmente."
-     * }
      */
     public function show(Product $product): JsonResponse
     {
-        $version = \Illuminate\Support\Facades\Cache::get('products_cache_version', 1);
+        $version = Cache::get('products_cache_version', 1);
         $cacheKey = "api.product.v{$version}.{$product->id}";
 
-        $productData = \Illuminate\Support\Facades\Cache::remember($cacheKey, 3600, function () use ($product) {
+        $productData = Cache::remember($cacheKey, 3600, function () use ($product) {
             if (!$product->is_available) {
                 return null;
             }

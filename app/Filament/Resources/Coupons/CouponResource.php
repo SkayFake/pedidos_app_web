@@ -35,7 +35,8 @@ class CouponResource extends Resource
 
     public static function canAccess(): bool
     {
-        return !auth()->user()->isOperator();
+        $user = auth('admin')->user();
+        return $user && !$user->isOperator() && !$user->isKitchen();
     }
 
     public static function form(Schema $schema): Schema

@@ -33,14 +33,14 @@ class OrdersTable
      * Labels en español para cada estado.
      */
     private static array $statusLabels = [
-        'pending'     => '⏳ Pendiente',
-        'confirmed'   => '✅ Confirmado',
-        'preparing'   => '🔥 En Preparación',
-        'ready_to_go' => '📦 Listo para enviar',
-        'assigned'    => '👤 Asignado a Repartidor',
-        'on_way'      => '🚚 En Camino',
-        'delivered'   => '✅ Entregado',
-        'cancelled'   => '❌ Cancelado',
+        'pending'     => 'Pendiente',
+        'confirmed'   => 'Confirmado',
+        'preparing'   => 'En Preparación',
+        'ready_to_go' => 'Listo para Enviar',
+        'assigned'    => 'Asignado',
+        'on_way'      => 'En Camino',
+        'delivered'   => 'Entregado',
+        'cancelled'   => 'Cancelado',
     ];
 
     public static function configure(Table $table): Table
@@ -169,6 +169,7 @@ class OrdersTable
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->poll('5s')
             ->defaultSort('created_at', 'desc')
             ->filters([
                 //

@@ -15,7 +15,8 @@ class DeliverymanForm
             ->components([
                 TextInput::make('name')
                     ->label('Nombre')
-                    ->required(),
+                    ->required()
+                    ->maxLength(100),
                 Select::make('branch_id')
                     ->label('Sucursal (Opcional, Nulo = Global)')
                     ->relationship('branch', 'name')
@@ -23,15 +24,25 @@ class DeliverymanForm
                 TextInput::make('email')
                     ->label('Correo Electrónico')
                     ->email()
-                    ->required(),
+                    ->rules(['email:rfc,dns'])
+                    ->required()
+                    ->maxLength(150),
                 TextInput::make('phone')
                     ->label('Teléfono')
                     ->tel()
-                    ->required(),
+                    ->rules(['regex:/^\+503\s?[267]\d{7}$/'])
+                    ->helperText('Formato: +503 7890 1234')
+                    ->required()
+                    ->maxLength(20),
                 TextInput::make('password')
                     ->label('Contraseña')
                     ->password()
-                    ->required(),
+                    ->revealable()
+                    ->dehydrated(fn ($state) => filled($state))
+                    ->required(fn (string $context): bool => $context === 'create')
+                    ->hiddenOn('edit')
+                    ->minLength(8)
+                    ->maxLength(255),
                 Select::make('vehicle_type')
                     ->label('Tipo Vehículo')
                     ->options(['motorcycle' => 'Motocicleta', 'bicycle' => 'Bicicleta', 'car' => 'Carro'])

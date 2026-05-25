@@ -10,6 +10,10 @@ use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\DB;
+use App\Mail\PasswordResetMail;
+use App\Mail\EmailVerificationMail;
 
 /**
  * @group Autenticación
@@ -63,12 +67,22 @@ class AuthController extends Controller
      */
     public function register(RegisterRequest $request): JsonResponse
     {
+        $otp = sprintf("%06d", mt_rand(1, 999999));
+        
         $user = User::create([
-            'name'     => $request->name,
-            'email'    => $request->email,
-            'phone'    => $request->phone,
-            'password' => Hash::make($request->password),
+            'name'             => $request->name,
+            'email'            => $request->email,
+            'phone'            => $request->phone,
+            'password'         => Hash::make($request->password),
+            'verification_otp' => $otp,
         ]);
+
+        try {
+            Mail::to($user->email)->send(new EmailVerificationMail($otp));
+        } catch (\Exception $e) {
+            // Log but don't fail registration
+            \Log::error("Failed to send verification email to {$user->email}: " . $e->getMessage());
+        }
 
         $token = $user->createToken('mobile-app')->plainTextToken;
 
@@ -76,7 +90,7 @@ class AuthController extends Controller
             'user'       => $this->formatUser($user),
             'token'      => $token,
             'token_type' => 'Bearer',
-        ], 'Registro exitoso.', 201);
+        ], 'Registro exitoso. Revisa tu correo para verificar tu cuenta.', 201);
     }
 
     /**
@@ -237,6 +251,91 @@ class AuthController extends Controller
         ]);
 
         return $this->success(null, 'Contraseña actualizada exitosamente.');
+    }
+
+    /**
+     * Verificar Correo Electrónico
+     */
+    public function verifyEmail(\Illuminate\Http\Request $request): JsonResponse
+    {
+        $request->validate([
+            'otp' => 'required|string|size:6',
+        ]);
+
+        $user = auth()->user();
+
+        if ($user->email_verified_at !== null) {
+            return $this->success(null, 'Tu correo ya está verificado.');
+        }
+
+        if ($user->verification_otp !== $request->otp) {
+            return $this->error('El código de verificación es incorrecto.', 422);
+        }
+
+        $user->update([
+            'email_verified_at' => now(),
+            'verification_otp'  => null,
+        ]);
+
+        return $this->success(null, 'Correo verificado exitosamente.');
+    }
+
+    /**
+     * Solicitar recuperación de contraseña (Forgot Password)
+     */
+    public function forgotPassword(\Illuminate\Http\Request $request): JsonResponse
+    {
+        $request->validate(['email' => 'required|email|exists:users,email']);
+
+        $otp = sprintf("%06d", mt_rand(1, 999999));
+        
+        DB::table('password_reset_tokens')->updateOrInsert(
+            ['email' => $request->email],
+            ['token' => $otp, 'created_at' => now()]
+        );
+
+        try {
+            Mail::to($request->email)->send(new PasswordResetMail($otp));
+        } catch (\Exception $e) {
+            return $this->error('Error al enviar el correo. Inténtalo más tarde.', 500);
+        }
+
+        return $this->success(null, 'Se ha enviado un código de recuperación a tu correo.');
+    }
+
+    /**
+     * Restablecer contraseña con OTP
+     */
+    public function resetPassword(\Illuminate\Http\Request $request): JsonResponse
+    {
+        $request->validate([
+            'email'    => 'required|email|exists:users,email',
+            'otp'      => 'required|string|size:6',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $reset = DB::table('password_reset_tokens')
+            ->where('email', $request->email)
+            ->where('token', $request->otp)
+            ->first();
+
+        if (!$reset) {
+            return $this->error('El código es inválido o ha expirado.', 422);
+        }
+
+        // Validate expiration (15 mins)
+        if (\Carbon\Carbon::parse($reset->created_at)->addMinutes(15)->isPast()) {
+            DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+            return $this->error('El código de recuperación ha expirado.', 422);
+        }
+
+        User::where('email', $request->email)->update([
+            'password' => Hash::make($request->password)
+        ]);
+
+        DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+
+        return $this->success(null, 'Contraseña restablecida exitosamente. Ahora puedes iniciar sesión.');
     }
 
     /**

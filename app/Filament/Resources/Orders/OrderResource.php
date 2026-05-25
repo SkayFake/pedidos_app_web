@@ -33,6 +33,13 @@ class OrderResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'id';
 
+    public static function canAccess(): bool
+    {
+        $user = auth('admin')->user();
+        // Kitchen users use KitchenDisplay instead
+        return $user && !$user->isKitchen();
+    }
+
     public static function form(Schema $schema): Schema
     {
         return OrderForm::configure($schema);

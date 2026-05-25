@@ -2,9 +2,11 @@
 
 namespace App\Observers;
 
+use App\Jobs\ArchiveOrderJob;
 use App\Jobs\ProcessOrderNotification;
 use App\Models\Order;
 use App\Services\LoyaltyService;
+use Illuminate\Support\Facades\Log;
 
 class OrderObserver
 {
@@ -40,6 +42,18 @@ class OrderObserver
 
             // 2. Notificaciones asíncronas (en cola, no bloquean la respuesta)
             ProcessOrderNotification::dispatch($order, $newStatus, $oldStatus);
+
+            // 3. Archivar pedidos completados (async, con delay para no interferir con la respuesta)
+            if (in_array($newStatus, ['delivered', 'cancelled'])) {
+                try {
+                    ArchiveOrderJob::dispatch($order->id)->delay(now()->addSeconds(15));
+                } catch (\Throwable $e) {
+                    Log::error('Error al programar archivado', [
+                        'order_id' => $order->id,
+                        'error' => $e->getMessage(),
+                    ]);
+                }
+            }
         }
     }
 

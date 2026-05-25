@@ -3,35 +3,45 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Models\Zone;
 use App\Services\DistanceMatrixService;
+use App\Services\ReverseGeocodingService;
 use App\Models\Branch;
+use App\Traits\ApiResponse;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ShippingController extends Controller
 {
-    protected $distanceService;
+    use ApiResponse;
 
-    public function __construct(DistanceMatrixService $distanceService)
+    protected DistanceMatrixService $distanceService;
+    protected ReverseGeocodingService $reverseGeoService;
+
+    public function __construct(DistanceMatrixService $distanceService, ReverseGeocodingService $reverseGeoService)
     {
         $this->distanceService = $distanceService;
+        $this->reverseGeoService = $reverseGeoService;
     }
 
-    public function getFee(Request $request)
+    /**
+     * Calcular tarifa de envío
+     *
+     * Calcula la tarifa de envío basada en la distancia entre la sucursal y las coordenadas del cliente.
+     */
+    public function getFee(Request $request): JsonResponse
     {
         $request->validate([
-            'lat' => 'required|numeric',
-            'lng' => 'required|numeric',
+            'lat' => 'required|numeric|between:-90,90',
+            'lng' => 'required|numeric|between:-180,180',
             'branch_id' => 'required|exists:branches,id'
         ]);
 
         $branch = Branch::findOrFail($request->branch_id);
 
         if (!$branch->latitude || !$branch->longitude) {
-            return response()->json([
-                'success' => false,
-                'message' => 'La sucursal seleccionada no tiene coordenadas configuradas.'
-            ], 400);
+            return $this->error('La sucursal seleccionada no tiene coordenadas configuradas.', 400);
         }
 
         // Obtener la zona de entrega activa para esta sucursal
@@ -41,10 +51,7 @@ class ShippingController extends Controller
                     ->first();
 
         if (!$zone) {
-            return response()->json([
-                'success' => false,
-                'message' => 'No hay zonas de entrega activas para esta sucursal.'
-            ], 400);
+            return $this->error('No hay zonas de entrega activas para esta sucursal.', 400);
         }
 
         $distanceKm = $this->distanceService->getDistanceInKm(
@@ -53,10 +60,7 @@ class ShippingController extends Controller
         );
 
         if ($distanceKm === null) {
-             return response()->json([
-                 'success' => false,
-                 'message' => 'No se pudo calcular la distancia con la dirección proporcionada.'
-             ], 500);
+            return $this->error('No se pudo calcular la distancia con la dirección proporcionada.', 500);
         }
 
         $fee = $zone->base_price;
@@ -67,10 +71,59 @@ class ShippingController extends Controller
             $fee += ($extraDistance * $zone->extra_per_km);
         }
 
-        return response()->json([
-            'success' => true,
+        return $this->success([
             'fee' => round($fee, 2),
-            'distance_km' => round($distanceKm, 2)
+            'distance_km' => round($distanceKm, 2),
+        ], 'Tarifa de envío calculada.');
+    }
+
+    /**
+     * Verificar cobertura
+     *
+     * Verifica si una ubicación tiene cobertura de entrega usando geocodificación inversa.
+     * Traduce las coordenadas a un nombre de municipio y lo compara con las zonas registradas.
+     *
+     * @queryParam lat numeric required Latitud. Example: 13.6929
+     * @queryParam lng numeric required Longitud. Example: -89.2182
+     */
+    public function checkCoverage(Request $request): JsonResponse
+    {
+        $request->validate([
+            'lat' => 'required|numeric|between:-90,90',
+            'lng' => 'required|numeric|between:-180,180',
         ]);
+
+        $municipality = $this->reverseGeoService->getMunicipalityFromCoords(
+            $request->lat,
+            $request->lng
+        );
+
+        if (!$municipality) {
+            return $this->error('No se pudo determinar tu ubicación. Intenta de nuevo.', 422, [
+                'has_coverage' => false,
+            ]);
+        }
+
+        $zone = Zone::where('is_active', true)
+            ->where('is_deliverable', true)
+            ->where('name', 'LIKE', "%{$municipality}%")
+            ->first();
+
+        if (!$zone) {
+            return $this->success([
+                'has_coverage' => false,
+                'municipality' => $municipality,
+            ], "No tenemos cobertura en {$municipality} actualmente.");
+        }
+
+        return $this->success([
+            'has_coverage' => true,
+            'municipality' => $municipality,
+            'zone' => [
+                'id' => $zone->id,
+                'name' => $zone->name,
+                'delivery_fee' => $zone->delivery_fee,
+            ],
+        ], "¡Tenemos cobertura en {$municipality}!");
     }
 }

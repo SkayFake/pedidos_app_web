@@ -35,7 +35,8 @@ class AdminUserResource extends Resource
 
     public static function canAccess(): bool
     {
-        return auth()->user()->isSuperAdmin();
+        $user = auth('admin')->user();
+        return $user && $user->isSuperAdmin();
     }
 
     public static function form(Schema $schema): Schema

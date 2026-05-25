@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Filament\Models\Contracts\FilamentUser;
@@ -9,7 +10,7 @@ use Filament\Panel;
 
 class AdminUser extends Authenticatable implements FilamentUser
 {
-    use Notifiable;
+    use Notifiable, SoftDeletes;
 
     protected $guarded = ['id'];
     protected $hidden = ['password', 'remember_token'];
@@ -35,6 +36,11 @@ class AdminUser extends Authenticatable implements FilamentUser
     public function isOperator(): bool
     {
         return $this->role === 'operator';
+    }
+
+    public function isKitchen(): bool
+    {
+        return $this->role === 'kitchen';
     }
 
     public function branch()
