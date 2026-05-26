@@ -72,9 +72,16 @@ class RevenueChart extends ChartWidget
             $query->where('branch_id', $user->branch_id);
         }
 
+        $driver = \Illuminate\Support\Facades\DB::getDriverName();
+        $dateSelect = match ($driver) {
+            'pgsql' => "TO_CHAR(delivered_at, 'YYYY-MM')",
+            'sqlite' => "strftime('%Y-%m', delivered_at)",
+            default => "DATE_FORMAT(delivered_at, '%Y-%m')"
+        };
+
         // Group by month
         $revenues = $query
-            ->selectRaw("DATE_FORMAT(delivered_at, '%Y-%m') as month, SUM(total) as revenue")
+            ->selectRaw("{$dateSelect} as month, SUM(total) as revenue")
             ->groupBy('month')
             ->orderBy('month')
             ->pluck('revenue', 'month')
