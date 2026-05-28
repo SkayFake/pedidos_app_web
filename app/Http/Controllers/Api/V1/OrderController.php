@@ -61,7 +61,7 @@ class OrderController extends Controller
         if ($statusFilter && !$shouldQueryActive) {
             // Solo archivados
             $query = ArchivedOrder::where('user_id', $user->id)
-                ->with(['items.product', 'branch', 'deliveryman'])
+                ->with(['items.product', 'items.variant', 'items.extras.extra', 'branch', 'deliveryman', 'address.zone'])
                 ->where('status', $statusFilter)
                 ->latest();
 
@@ -71,7 +71,7 @@ class OrderController extends Controller
         if ($statusFilter && !$shouldQueryArchived) {
             // Solo activos
             $query = $user->orders()
-                ->with(['items.product', 'branch', 'deliveryman'])
+                ->with(['items.product', 'items.variant', 'items.extras.extra', 'branch', 'deliveryman', 'address.zone'])
                 ->where('status', $statusFilter)
                 ->latest();
 
@@ -80,11 +80,11 @@ class OrderController extends Controller
 
         // Sin filtro o filtro ambiguo: unificar ambas tablas
         $activeOrders = $user->orders()
-            ->with(['items.product', 'branch', 'deliveryman'])
+            ->with(['items.product', 'items.variant', 'items.extras.extra', 'branch', 'deliveryman', 'address.zone'])
             ->get();
 
         $archivedOrders = ArchivedOrder::where('user_id', $user->id)
-            ->with(['items.product', 'branch', 'deliveryman'])
+            ->with(['items.product', 'items.variant', 'items.extras.extra', 'branch', 'deliveryman', 'address.zone'])
             ->get();
 
         $allOrders = $activeOrders->merge($archivedOrders)
@@ -121,14 +121,14 @@ class OrderController extends Controller
 
         // Buscar en pedidos activos
         $order = Order::with([
-            'branch', 'address', 'coupon', 'deliveryman',
+            'branch', 'address.zone', 'coupon', 'deliveryman',
             'items.product', 'items.variant', 'items.extras.extra',
         ])->find($id);
 
         // Si no está en activos, buscar en archivados
         if (!$order) {
             $order = ArchivedOrder::with([
-                'branch', 'address', 'coupon', 'deliveryman',
+                'branch', 'address.zone', 'coupon', 'deliveryman',
                 'items.product', 'items.variant', 'items.extras.extra',
             ])->find($id);
         }

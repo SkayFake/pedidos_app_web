@@ -23,6 +23,8 @@ class OrderResource extends JsonResource
                 $this->otp
             ),
 
+            'zone_name' => $this->whenLoaded('address', fn () => $this->address->zone?->name),
+
             // ── Montos formateados ────────────────────
             'subtotal'            => number_format((float) $this->subtotal, 2, '.', ''),
             'subtotal_fmt'        => '$' . number_format((float) $this->subtotal, 2),
