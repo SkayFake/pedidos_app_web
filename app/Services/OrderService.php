@@ -190,10 +190,14 @@ class OrderService
                         $extraDistance = $distanceKm - (float) $zone->base_distance_km;
                         $deliveryFee += ($extraDistance * (float) $zone->extra_per_km);
                     }
+                } else {
+                    $deliveryFee = (float) $zone->base_price;
                 }
+            } elseif ($address->zone) {
+                $deliveryFee = (float) $address->zone->delivery_fee ?? 0.0;
             }
         } elseif ($address->zone) {
-            $deliveryFee = (float) $address->zone->delivery_fee;
+            $deliveryFee = (float) $address->zone->delivery_fee ?? 0.0;
         }
 
         // ── 3. Calcular precios server-side ────────────────────

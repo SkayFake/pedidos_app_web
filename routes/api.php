@@ -29,6 +29,8 @@ Route::prefix('auth')->middleware('throttle:auth')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
     Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+    Route::post('/verify-email', [AuthController::class, 'verifyEmail']);
+    Route::post('/resend-verification-email', [AuthController::class, 'resendVerificationEmail']);
 });
 
 // ── Rutas Públicas de Repartidor ─────────────────────────────────────────
@@ -49,7 +51,6 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
         Route::get('/me', [AuthController::class, 'me']);
         Route::put('/update-profile', [AuthController::class, 'updateProfile']);
         Route::put('/change-password', [AuthController::class, 'changePassword']);
-        Route::post('/verify-email', [AuthController::class, 'verifyEmail']);
     });
 
     // Productos (solo lectura)
@@ -75,7 +76,7 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     Route::post('/coupons/validate', [CouponController::class, 'validateCoupon']);
 
     // Shipping Fee Calculator & Coverage Check
-    Route::get('/shipping/fee', [ShippingController::class, 'getFee']);
+    Route::post('/shipping/fee', [ShippingController::class, 'getFee']);
     Route::get('/shipping/check-coverage', [ShippingController::class, 'checkCoverage']);
 
     // ── Rutas Protegidas de Repartidor ─────────────────────────────────────

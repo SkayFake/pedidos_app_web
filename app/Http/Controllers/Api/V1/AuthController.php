@@ -69,28 +69,26 @@ class AuthController extends Controller
     {
         $otp = sprintf("%06d", mt_rand(1, 999999));
         
-        $user = User::create([
+        $registrationData = [
             'name'             => $request->name,
             'email'            => $request->email,
             'phone'            => $request->phone,
             'password'         => Hash::make($request->password),
             'verification_otp' => $otp,
-        ]);
+        ];
+
+        // Almacenar en caché temporal por 15 minutos en lugar de crear la cuenta
+        \Illuminate\Support\Facades\Cache::put('registration:' . $request->email, $registrationData, now()->addMinutes(15));
 
         try {
-            Mail::to($user->email)->send(new EmailVerificationMail($otp));
+            Mail::to($request->email)->send(new EmailVerificationMail($otp));
         } catch (\Exception $e) {
-            // Log but don't fail registration
-            \Log::error("Failed to send verification email to {$user->email}: " . $e->getMessage());
+            \Log::error("Failed to send verification email to {$request->email}: " . $e->getMessage());
         }
 
-        $token = $user->createToken('mobile-app')->plainTextToken;
-
         return $this->success([
-            'user'       => $this->formatUser($user),
-            'token'      => $token,
-            'token_type' => 'Bearer',
-        ], 'Registro exitoso. Revisa tu correo para verificar tu cuenta.', 201);
+            'email' => $request->email
+        ], 'Registro iniciado. Revisa tu correo para el código de validación.', 200);
     }
 
     /**
@@ -259,25 +257,74 @@ class AuthController extends Controller
     public function verifyEmail(\Illuminate\Http\Request $request): JsonResponse
     {
         $request->validate([
-            'otp' => 'required|string|size:6',
+            'email' => 'required|email',
+            'otp'   => 'required|string|size:6',
         ]);
 
-        $user = auth()->user();
+        $cacheKey = 'registration:' . $request->email;
+        $registrationData = \Illuminate\Support\Facades\Cache::get($cacheKey);
 
-        if ($user->email_verified_at !== null) {
-            return $this->success(null, 'Tu correo ya está verificado.');
+        if (!$registrationData) {
+            return $this->error('El código ha expirado o el correo no es válido. Regístrate de nuevo.', 422);
         }
 
-        if ($user->verification_otp !== $request->otp) {
+        if ($registrationData['verification_otp'] !== $request->otp) {
             return $this->error('El código de verificación es incorrecto.', 422);
         }
 
-        $user->update([
+        // Crear el usuario finalmente en la base de datos
+        $user = User::create([
+            'name'              => $registrationData['name'],
+            'email'             => $registrationData['email'],
+            'phone'             => $registrationData['phone'],
+            'password'          => $registrationData['password'],
             'email_verified_at' => now(),
-            'verification_otp'  => null,
         ]);
 
-        return $this->success(null, 'Correo verificado exitosamente.');
+        // Limpiar el caché
+        \Illuminate\Support\Facades\Cache::forget($cacheKey);
+
+        $token = $user->createToken('mobile-app')->plainTextToken;
+
+        return $this->success([
+            'user'       => $this->formatUser($user),
+            'token'      => $token,
+            'token_type' => 'Bearer',
+        ], 'Correo verificado y cuenta creada exitosamente.', 201);
+    }
+
+    /**
+     * Reenviar código de verificación de correo
+     */
+    public function resendVerificationEmail(\Illuminate\Http\Request $request): JsonResponse
+    {
+        $request->validate([
+            'email' => 'required|email'
+        ]);
+
+        $cacheKey = 'registration:' . $request->email;
+        $registrationData = \Illuminate\Support\Facades\Cache::get($cacheKey);
+
+        if (!$registrationData) {
+            return $this->error('El registro ha expirado o el correo no es válido. Por favor, regístrate de nuevo.', 422);
+        }
+
+        // Generar nuevo OTP
+        $otp = sprintf("%06d", mt_rand(1, 999999));
+        $registrationData['verification_otp'] = $otp;
+
+        // Actualizar caché por otros 15 minutos
+        \Illuminate\Support\Facades\Cache::put($cacheKey, $registrationData, now()->addMinutes(15));
+
+        try {
+            Mail::to($request->email)->send(new \App\Mail\EmailVerificationMail($otp));
+        } catch (\Exception $e) {
+            \Log::error("Failed to resend verification email to {$request->email}: " . $e->getMessage());
+        }
+
+        return $this->success([
+            'email' => $request->email
+        ], 'Nuevo código de verificación enviado. Revisa tu correo.', 200);
     }
 
     /**
