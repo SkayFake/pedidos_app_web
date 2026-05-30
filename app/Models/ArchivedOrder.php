@@ -19,6 +19,7 @@ class ArchivedOrder extends Model
             'confirmed_at' => 'datetime',
             'assigned_at' => 'datetime',
             'delivered_at' => 'datetime',
+            'reviewed_at' => 'datetime',
         ];
     }
 

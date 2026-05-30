@@ -35,7 +35,7 @@ class KitchenDisplay extends Page
     }
 
     // Auto-refresco cada 10 segundos vía Livewire polling
-    protected string $pollingInterval = '10s';
+    protected string $pollingInterval = '5s';
 
     public function getLayout(): string
     {

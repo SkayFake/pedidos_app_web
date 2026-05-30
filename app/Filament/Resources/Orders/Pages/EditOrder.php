@@ -13,7 +13,8 @@ class EditOrder extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            DeleteAction::make(),
+            // No permitir eliminación física para evitar que no se archiven
+            // Se debe cancelar o entregar desde la lista
         ];
     }
 }

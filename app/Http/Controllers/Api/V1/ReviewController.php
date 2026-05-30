@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Models\FoodReview;
 use App\Models\DeliverymanReview;
 use App\Models\Order;
+use App\Models\ArchivedOrder;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -13,8 +14,13 @@ class ReviewController extends Controller
 {
     use ApiResponse;
 
-    public function store(Request $request, Order $order): JsonResponse
+    public function store(Request $request, int $orderId): JsonResponse
     {
+        $order = Order::find($orderId) ?? ArchivedOrder::find($orderId);
+
+        if (!$order) {
+            return $this->error('Pedido no encontrado.', 404);
+        }
         $user = auth()->user();
 
         // 1. Verificar que el pedido le pertenece al usuario

@@ -65,7 +65,7 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     Route::get('/orders/{id}', [OrderController::class, 'show'])->where('id', '[0-9]+');
     Route::post('/orders', [OrderController::class, 'store']);
     Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel']);
-    Route::post('/orders/{order}/review', [ReviewController::class, 'store']);
+    Route::post('/orders/{orderId}/review', [ReviewController::class, 'store']);
 
     // Direcciones del cliente
     Route::apiResource('addresses', CustomerAddressController::class)

@@ -132,7 +132,7 @@ return [
     'auth' => [
         'enabled' => true,
         'default' => true,
-        'in' => AuthIn::BEARER->value,
+        'in' => 'bearer',
         'name' => 'Authorization',
         'use_value' => env('SCRIBE_AUTH_KEY'),
         'placeholder' => '{TOKEN_SANCTUM}',

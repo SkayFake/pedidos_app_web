@@ -66,6 +66,20 @@ class OrderResource extends Resource
             $query->where('branch_id', $user->branch_id);
         }
 
+        // 1. Filtrar solo pedidos activos (excluir cancelados y entregados)
+        $query->whereNotIn('status', ['cancelled', 'delivered']);
+
+        // 2. Ordenar por estado (flujo lógico)
+        $query->orderByRaw("CASE 
+            WHEN status = 'pending' THEN 1 
+            WHEN status = 'confirmed' THEN 2 
+            WHEN status = 'preparing' THEN 3 
+            WHEN status = 'ready_to_go' THEN 4 
+            WHEN status = 'assigned' THEN 5 
+            WHEN status = 'on_way' THEN 6 
+            ELSE 7 END ASC")
+            ->orderBy('created_at', 'desc');
+
         return $query;
     }
 

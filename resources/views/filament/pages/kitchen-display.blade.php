@@ -1,6 +1,6 @@
 {{-- Kitchen Display System (KDS) - Vista de Cocina --}}
 <div
-    wire:poll.10000ms="loadOrders"
+    wire:poll.5000ms="loadOrders"
     class="kitchen-container"
     x-data="{
         now: Math.floor(Date.now() / 1000),
@@ -525,16 +525,21 @@
                                         </div>
                                     @endif
 
-                                    @if($item->special_instructions)
-                                        <div class="item-variant" style="color:#b45309; background-color:#fffbeb; padding: 4px 8px; border-radius: 6px; margin-top: 4px; border: 1px solid #fde68a;">
-                                            <svg style="width:14px; height:14px; display:inline-block; vertical-align:middle; margin-right:4px; color:#b45309;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                            </svg><strong>Instrucciones:</strong> {{ $item->special_instructions }}
-                                        </div>
-                                    @endif
                                 </div>
                             </div>
                         @endforeach
+
+                        @if($order->notes)
+                            <div class="divider"></div>
+                            <div class="items-title" style="color: #b45309; margin-bottom: 0.5rem;">
+                                <svg style="width:14px; height:14px; display:inline-block; vertical-align:middle; margin-right:4px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>Notas del Cliente
+                            </div>
+                            <div style="background-color:#fffbeb; padding: 10px; border-radius: 8px; border: 1px solid #fde68a; font-size: 0.9rem; color: #92400e; font-weight: 500;">
+                                {{ $order->notes }}
+                            </div>
+                        @endif
 
                         {{-- Hint de interacción --}}
                         <div class="dblclick-hint">

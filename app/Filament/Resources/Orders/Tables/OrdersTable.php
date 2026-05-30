@@ -205,7 +205,34 @@ class OrdersTable
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    \Filament\Actions\BulkAction::make('cancel_bulk')
+                        ->label('Cancelar y Archivar Seleccionados')
+                        ->icon('heroicon-o-archive-box-x-mark')
+                        ->color('danger')
+                        ->requiresConfirmation()
+                        ->form([
+                            \Filament\Forms\Components\TextInput::make('cancellation_reason')
+                                ->label('Motivo de cancelación')
+                                ->required(),
+                        ])
+                        ->action(function (\Illuminate\Database\Eloquent\Collection $records, array $data, $livewire): void {
+                            foreach ($records as $record) {
+                                if (!in_array($record->status, ['delivered', 'cancelled'])) {
+                                    $record->update([
+                                        'status' => 'cancelled',
+                                        'cancellation_reason' => $data['cancellation_reason'],
+                                        'cancelled_at' => now(),
+                                    ]);
+                                }
+                            }
+                            Notification::make()
+                                ->title('Pedidos cancelados y archivados')
+                                ->success()
+                                ->send();
+                                
+                            $livewire->dispatch('order-status-changed');
+                        })
+                        ->deselectRecordsAfterCompletion(),
                 ]),
             ]);
     }

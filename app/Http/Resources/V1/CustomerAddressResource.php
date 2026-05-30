@@ -20,6 +20,7 @@ class CustomerAddressResource extends JsonResource
             'latitude'   => $this->latitude ? (float) $this->latitude : null,
             'longitude'  => $this->longitude ? (float) $this->longitude : null,
             'is_default' => (bool) $this->is_default,
+            'zone_id'    => $this->zone_id,
             'zone'       => $this->whenLoaded('zone', fn () => [
                 'id'   => $this->zone->id,
                 'name' => $this->zone->name,

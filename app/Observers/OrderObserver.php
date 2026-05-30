@@ -46,7 +46,7 @@ class OrderObserver
             // 3. Archivar pedidos completados (async, con delay para no interferir con la respuesta)
             if (in_array($newStatus, ['delivered', 'cancelled'])) {
                 try {
-                    ArchiveOrderJob::dispatch($order->id)->delay(now()->addSeconds(15));
+                    ArchiveOrderJob::dispatch($order->id);
                 } catch (\Throwable $e) {
                     Log::error('Error al programar archivado', [
                         'order_id' => $order->id,
