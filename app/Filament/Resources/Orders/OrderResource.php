@@ -36,7 +36,7 @@ class OrderResource extends Resource
     public static function canAccess(): bool
     {
         $user = auth('admin')->user();
-        // Kitchen users use KitchenDisplay instead
+        // Kitchen staff use KitchenDisplay instead; everyone else can access the table
         return $user && !$user->isKitchen();
     }
 

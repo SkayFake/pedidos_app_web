@@ -237,13 +237,13 @@ body {
     display: none;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1280px) {
     .fi-login-branding-panel {
         display: flex !important;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        width: 45%;
+        width: 42%;
         min-height: 100vh;
         background: linear-gradient(135deg, #023E8A 0%, #0077B6 40%, #00B4D8 100%);
         position: fixed;
@@ -287,8 +287,8 @@ body {
     }
 
     .fi-simple-layout .fi-simple-main-ctn {
-        margin-left: 45% !important;
-        width: 55% !important;
+        margin-left: 42% !important;
+        width: 58% !important;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -434,3 +434,120 @@ body {
     border-radius: 9999px !important;
     font-weight: 600 !important;
 }
+
+/* ══════════════════════════════════════════════════════════════
+   📱 RESPONSIVE — Mobile & Tablet
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Tabla: scroll horizontal en pantallas pequeñas ── */
+.fi-ta-content {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* ── Widgets: apilado en tablet ── */
+@media (max-width: 1023px) {
+    /* Asegurar que el panel lateral no tape el contenido en tablet */
+    .fi-sidebar {
+        z-index: 50;
+    }
+
+    /* Widgets en columna en tablet pequeño */
+    .fi-wi-stats-overview {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+/* ── Móvil (< 640px) ── */
+@media (max-width: 639px) {
+    /* Login card: padding reducido */
+    .fi-simple-page {
+        padding: 1.5rem !important;
+        border-radius: 1rem !important;
+        margin: 0.75rem !important;
+        max-width: calc(100vw - 1.5rem) !important;
+    }
+
+    /* Simple layout ocupa todo el ancho */
+    .fi-simple-layout .fi-simple-main-ctn {
+        margin-left: 0 !important;
+        width: 100% !important;
+        padding: 1rem !important;
+    }
+
+    /* Widgets stats: 1 columna en móvil muy pequeño */
+    .fi-wi-stats-overview {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Formularios: full width en móvil */
+    .fi-fo-field-wrp,
+    .fi-fo-component-ctn {
+        max-width: 100% !important;
+    }
+
+    /* Header del panel: más compacto */
+    .fi-topbar {
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+    }
+
+    /* Page header: título más pequeño */
+    .fi-page-header-heading {
+        font-size: 1.25rem !important;
+    }
+
+    /* Tabla: reducir padding de celdas */
+    .fi-ta-cell {
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+    }
+
+    /* Botones de acción de tabla: más compactos */
+    .fi-ta-actions {
+        flex-wrap: wrap;
+        gap: 0.25rem;
+    }
+
+    /* Modal / Slide-over: full width */
+    .fi-modal-window {
+        max-width: 100vw !important;
+        margin: 0 !important;
+        border-radius: 1rem 1rem 0 0 !important;
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+    }
+
+    /* Ocultar texto de breadcrumbs en móvil */
+    .fi-breadcrumbs-item:not(:last-child) {
+        display: none !important;
+    }
+}
+
+/* ── Tablet (640px – 1023px) ── */
+@media (min-width: 640px) and (max-width: 1023px) {
+    .fi-simple-page {
+        padding: 2rem !important;
+        max-width: 420px !important;
+    }
+
+    .fi-simple-layout .fi-simple-main-ctn {
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
+}
+
+/* ── Preferencia de movimiento reducido ── */
+@media (prefers-reduced-motion: reduce) {
+    .fi-page,
+    .fi-sidebar-item,
+    .fi-btn,
+    .fi-section,
+    .fi-wi-stats-overview-stat {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+

@@ -11,6 +11,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
+use Illuminate\Database\Eloquent\Builder;
 
 class ArchivedOrderResource extends Resource
 {
@@ -97,6 +98,19 @@ class ArchivedOrderResource extends Resource
                         'cancelled' => 'Cancelado',
                     ]),
             ]);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        $user  = auth('admin')->user();
+
+        // Los admins de sucursal solo ven pedidos archivados de su sucursal
+        if ($user && !$user->isSuperAdmin() && $user->branch_id) {
+            $query->where('branch_id', $user->branch_id);
+        }
+
+        return $query;
     }
 
     public static function getPages(): array

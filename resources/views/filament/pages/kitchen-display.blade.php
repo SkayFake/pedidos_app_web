@@ -48,9 +48,17 @@
 
         .kitchen-container {
             min-height: 100vh;
-            padding: 2rem;
+            padding: 1rem;
             box-sizing: border-box;
             background-color: #f3f4f6;
+        }
+
+        @media (min-width: 640px) {
+            .kitchen-container { padding: 1.5rem; }
+        }
+
+        @media (min-width: 1024px) {
+            .kitchen-container { padding: 2rem; }
         }
 
         /* Header de la cocina */
@@ -58,22 +66,33 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
             background: #ffffff;
-            padding: 1.25rem 2rem;
+            padding: 1rem 1.25rem;
             border-radius: 16px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
             border: 1px solid #e5e7eb;
+        }
+
+        @media (min-width: 768px) {
+            .kitchen-header {
+                padding: 1.25rem 2rem;
+                margin-bottom: 2rem;
+                flex-wrap: nowrap;
+            }
         }
 
         .kitchen-title-area {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 0.75rem;
+            flex: 1;
         }
 
         .kitchen-title {
-            font-size: 2rem;
+            font-size: 1.4rem;
             font-weight: 800;
             letter-spacing: -0.025em;
             color: #111827;
@@ -81,6 +100,10 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .kitchen-title { font-size: 2rem; }
         }
 
         .kitchen-subtitle {
@@ -121,7 +144,8 @@
         .header-controls {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 0.75rem;
+            flex-wrap: wrap;
         }
 
         .live-badge {
@@ -163,8 +187,16 @@
         /* Grid */
         .kitchen-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-            gap: 2rem;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        @media (min-width: 480px) {
+            .kitchen-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; }
+        }
+
+        @media (min-width: 1024px) {
+            .kitchen-grid { grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 2rem; }
         }
 
         /* Tarjetas */
@@ -210,7 +242,11 @@
         }
 
         .card-body {
-            padding: 1.5rem;
+            padding: 1rem;
+        }
+
+        @media (min-width: 640px) {
+            .card-body { padding: 1.5rem; }
         }
 
         /* Card Header */
@@ -222,11 +258,15 @@
         }
 
         .order-number {
-            font-size: 2.25rem;
+            font-size: 1.75rem;
             font-weight: 900;
             color: #111827;
             line-height: 1;
             letter-spacing: -0.03em;
+        }
+
+        @media (min-width: 640px) {
+            .order-number { font-size: 2.25rem; }
         }
 
         .order-number span {
@@ -245,11 +285,15 @@
         }
 
         .timer-text {
-            font-size: 1.85rem;
+            font-size: 1.4rem;
             font-weight: 900;
             font-variant-numeric: tabular-nums;
             line-height: 1;
             letter-spacing: -0.02em;
+        }
+
+        @media (min-width: 640px) {
+            .timer-text { font-size: 1.85rem; }
         }
 
         .status-green  .timer-text { color: #16a34a; }

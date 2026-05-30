@@ -20,9 +20,14 @@ class CouponForm
                 TextInput::make('description')
                     ->label('Descripción'),
                 Select::make('branch_id')
-                    ->label('Sucursal (Opcional, Nulo = Global)')
+                    ->label('Sucursal')
                     ->relationship('branch', 'name')
-                    ->nullable(),
+                    ->nullable()
+                    ->hidden(fn () => !auth('admin')->user()?->isSuperAdmin())
+                    ->default(fn () => auth('admin')->user()?->isSuperAdmin()
+                        ? null
+                        : auth('admin')->user()?->branch_id
+                    ),
                 Select::make('type')
                     ->label('Tipo')
                     ->options(['percent' => 'Porcentaje', 'fixed' => 'Fijo', 'free_delivery' => 'Envío gratis'])

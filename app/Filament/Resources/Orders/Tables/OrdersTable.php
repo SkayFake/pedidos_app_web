@@ -132,32 +132,40 @@ class OrdersTable
                     ->sortable(),
                 IconColumn::make('is_first_order_promo')
                     ->label('Promo 1er Pedido')
-                    ->boolean(),
+                    ->boolean()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 IconColumn::make('is_free_delivery_promo')
                     ->label('Envío Gratis')
-                    ->boolean(),
+                    ->boolean()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 IconColumn::make('is_loyalty_discount')
                     ->label('Desc. Fidelidad')
-                    ->boolean(),
+                    ->boolean()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('cancellation_reason')
                     ->label('Motivo Cancelación')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('cancelled_at')
                     ->label('Fecha Cancelación')
                     ->dateTime()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('confirmed_at')
                     ->label('Fecha Confirmación')
                     ->dateTime()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('assigned_at')
                     ->label('Fecha Asignación')
                     ->dateTime()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('delivered_at')
                     ->label('Fecha Entrega')
                     ->dateTime()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
                     ->label('Fecha de Creación')
                     ->dateTime()

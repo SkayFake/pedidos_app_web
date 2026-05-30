@@ -37,6 +37,9 @@ class OrderObserver
             $oldStatus = $order->getOriginal('status');
             $newStatus = $order->status;
 
+            // 0. Asignar timestamps de estado automáticamente (sin disparar el observer de nuevo)
+            $this->assignStatusTimestamp($order, $newStatus);
+
             // 1. Lógica síncrona (crítica, debe ser inmediata)
             $this->handleStatusChange($order);
 
@@ -54,6 +57,26 @@ class OrderObserver
                     ]);
                 }
             }
+        }
+    }
+
+    /**
+     * Asigna el timestamp correspondiente al nuevo estado si aún no tiene valor.
+     * Se usa updateQuietly para no re-disparar el observer.
+     */
+    protected function assignStatusTimestamp(Order $order, string $newStatus): void
+    {
+        $field = match ($newStatus) {
+            'confirmed'   => 'confirmed_at',
+            'ready_to_go' => 'assigned_at',
+            'assigned'    => 'assigned_at',
+            'delivered'   => 'delivered_at',
+            'cancelled'   => 'cancelled_at',
+            default       => null,
+        };
+
+        if ($field && $order->{$field} === null) {
+            $order->updateQuietly([$field => now()]);
         }
     }
 

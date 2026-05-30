@@ -30,9 +30,14 @@ class ProductForm
                                     ->relationship('category', 'name')
                                     ->required(),
                                 Select::make('branch_id')
-                                    ->label('Sucursal (Opcional, Nulo = Global)')
+                                    ->label('Sucursal')
                                     ->relationship('branch', 'name')
-                                    ->nullable(),
+                                    ->nullable()
+                                    ->hidden(fn () => !auth('admin')->user()?->isSuperAdmin())
+                                    ->default(fn () => auth('admin')->user()?->isSuperAdmin()
+                                        ? null
+                                        : auth('admin')->user()?->branch_id
+                                    ),
                                 TextInput::make('name')
                                     ->label('Nombre')
                                     ->required(),

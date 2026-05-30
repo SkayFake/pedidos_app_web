@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Operador — Preview</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+            color: #f0f4ff;
+        }
+
+        .op-root { padding: 1.5rem; }
+
+        /* ── Header ── */
+        .op-header {
+            display: flex; align-items: center; justify-content: space-between;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 1.25rem 2rem;
+            margin-bottom: 1.75rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        .op-header-left { display: flex; align-items: center; gap: 1rem; }
+        .op-logo {
+            width: 48px; height: 48px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 15px rgba(99,102,241,0.4);
+        }
+        .op-title { font-size: 1.6rem; font-weight: 900; letter-spacing: -0.03em; }
+        .op-sub   { font-size: 0.8rem; color: rgba(255,255,255,0.5); font-weight: 500; margin-top: 2px; }
+        .op-header-right { display: flex; align-items: center; gap: 0.75rem; }
+        .op-live {
+            display: flex; align-items: center; gap: 0.5rem;
+            background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.4);
+            padding: 0.4rem 1rem; border-radius: 999px;
+            font-size: 0.8rem; font-weight: 800; color: #34d399;
+            text-transform: uppercase; letter-spacing: 0.05em;
+        }
+        .op-live-dot {
+            width: 8px; height: 8px; border-radius: 50%; background: #10b981;
+            animation: blink 1.2s ease-in-out infinite;
+        }
+        .op-count {
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);
+            padding: 0.4rem 1rem; border-radius: 999px;
+            font-size: 0.85rem; font-weight: 700; color: #e0e7ff;
+        }
+
+        /* ── Stats ── */
+        .op-stats {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;
+            margin-bottom: 1.75rem;
+        }
+        .op-stat {
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px; padding: 1.1rem 1.25rem; text-align: center;
+        }
+        .op-stat-num  { font-size: 2.2rem; font-weight: 900; line-height: 1; }
+        .op-stat-lbl  { font-size: 0.72rem; color: rgba(255,255,255,0.45); font-weight: 600;
+                        text-transform: uppercase; letter-spacing: 0.06em; margin-top: 5px; }
+        .stat-pending  .op-stat-num { color: #f59e0b; }
+        .stat-active   .op-stat-num { color: #60a5fa; }
+        .stat-ready    .op-stat-num { color: #34d399; }
+        .stat-way      .op-stat-num { color: #a78bfa; }
+
+        /* ── Columns ── */
+        .op-columns { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; }
+
+        .op-col-header {
+            display: flex; align-items: center; gap: 0.6rem;
+            padding: 0.75rem 1rem; border-radius: 12px;
+            margin-bottom: 1rem;
+            font-size: 0.78rem; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 0.08em;
+        }
+        .op-col-dot  { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+        .op-col-badge {
+            margin-left: auto; background: rgba(255,255,255,0.15);
+            padding: 2px 8px; border-radius: 999px; font-size: 0.75rem;
+        }
+        .col-pending   { background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.25); color: #fbbf24; }
+        .col-pending   .op-col-dot { background: #f59e0b; }
+        .col-confirmed { background: rgba(96,165,250,0.12); border: 1px solid rgba(96,165,250,0.25); color: #93c5fd; }
+        .col-confirmed .op-col-dot { background: #3b82f6; }
+        .col-preparing { background: rgba(251,146,60,0.12); border: 1px solid rgba(251,146,60,0.25); color: #fdba74; }
+        .col-preparing .op-col-dot { background: #f97316; }
+        .col-sending   { background: rgba(167,139,250,0.12); border: 1px solid rgba(167,139,250,0.25); color: #c4b5fd; }
+        .col-sending   .op-col-dot { background: #8b5cf6; }
+
+        /* ── Card ── */
+        .op-card {
+            background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 18px; overflow: hidden; margin-bottom: 1rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+        .op-card:hover {
+            transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+            border-color: rgba(255,255,255,0.2);
+        }
+        .op-card-stripe { height: 4px; width: 100%; }
+        .stripe-new     { background: linear-gradient(90deg, #10b981, #34d399); }
+        .stripe-normal  { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+        .stripe-warning { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+        .stripe-urgent  { background: linear-gradient(90deg, #ef4444, #f87171); animation: pulse-red 1s ease-in-out infinite; }
+
+        .op-card-body { padding: 1.1rem 1.25rem; }
+        .op-card-top  { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 0.85rem; }
+        .op-card-id   { font-size: 1.5rem; font-weight: 900; color: #e0e7ff; line-height: 1; }
+        .op-card-id small { font-size: 0.7rem; color: rgba(255,255,255,0.4); font-weight: 600; display: block; margin-bottom: 2px; }
+
+        .op-card-timer {
+            font-size: 0.82rem; font-weight: 800;
+            padding: 3px 10px; border-radius: 999px;
+        }
+        .timer-new     { background: rgba(16,185,129,0.2);  color: #34d399; }
+        .timer-normal  { background: rgba(59,130,246,0.2);  color: #93c5fd; }
+        .timer-warning { background: rgba(245,158,11,0.2);  color: #fbbf24; }
+        .timer-urgent  { background: rgba(239,68,68,0.2);   color: #f87171; }
+
+        .op-card-client {
+            font-size: 0.88rem; color: rgba(255,255,255,0.55); font-weight: 600;
+            margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.4rem;
+        }
+
+        .op-items { margin-bottom: 0.85rem; }
+        .op-item  { display: flex; align-items: center; gap: 0.6rem; padding: 3px 0; font-size: 0.82rem; }
+        .op-item-qty {
+            background: rgba(255,255,255,0.12); width: 22px; height: 22px;
+            border-radius: 6px; display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 0.78rem; flex-shrink: 0;
+        }
+        .op-item-name { color: rgba(255,255,255,0.75); font-weight: 600; }
+        .op-total {
+            font-size: 1rem; font-weight: 800; color: #a5f3fc;
+            margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.4rem;
+        }
+        .op-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .op-btn {
+            flex: 1; min-width: 80px;
+            display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
+            padding: 0.55rem 0.75rem; border-radius: 10px;
+            font-size: 0.78rem; font-weight: 800; border: none; cursor: pointer;
+            transition: all 0.15s ease; text-transform: uppercase; letter-spacing: 0.04em;
+            font-family: inherit;
+        }
+        .op-btn:hover  { transform: translateY(-1px); filter: brightness(1.1); }
+        .op-btn:active { transform: scale(0.97); }
+        .btn-confirm { background: linear-gradient(135deg,#10b981,#059669); color: white; box-shadow: 0 4px 15px rgba(16,185,129,0.3); }
+        .btn-advance { background: linear-gradient(135deg,#3b82f6,#2563eb); color: white; box-shadow: 0 4px 15px rgba(59,130,246,0.3); }
+        .btn-cancel  { background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3) !important; color: #f87171; }
+        .btn-cancel:hover { background: rgba(239,68,68,0.25); }
+
+        /* ── Alert Banner ── */
+        .op-alert {
+            position: fixed; top: 1.5rem; left: 50%; transform: translateX(-50%);
+            z-index: 9999;
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+            color: white; padding: 1rem 2rem; border-radius: 16px;
+            font-size: 1.1rem; font-weight: 800;
+            display: flex; align-items: center; gap: 0.75rem;
+            box-shadow: 0 20px 60px rgba(245,158,11,0.5);
+            cursor: pointer; white-space: nowrap;
+            animation: slideDown 0.4s cubic-bezier(.34,1.56,.64,1);
+        }
+        .op-alert-bell { font-size: 1.5rem; animation: shake 0.5s ease-in-out infinite alternate; }
+
+        /* ── Modal ── */
+        .op-modal-bg {
+            position: fixed; inset: 0; z-index: 1000;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
+            display: none; align-items: center; justify-content: center; padding: 1rem;
+        }
+        .op-modal-bg.open { display: flex; }
+        .op-modal {
+            background: linear-gradient(135deg, #1e1b4b, #312e81);
+            border: 1px solid rgba(255,255,255,0.12); border-radius: 24px;
+            padding: 2rem; width: 100%; max-width: 480px;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.6);
+            animation: popIn 0.3s cubic-bezier(.34,1.56,.64,1);
+        }
+        .op-modal-title { font-size: 1.3rem; font-weight: 900; margin-bottom: 0.5rem; color: #e0e7ff; }
+        .op-modal-sub   { font-size: 0.85rem; color: rgba(255,255,255,0.5); margin-bottom: 1.5rem; }
+        .op-modal-label { font-size: 0.78rem; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.4rem; }
+        .op-modal-value { font-size: 1rem; font-weight: 700; color: #e0e7ff; margin-bottom: 1rem; }
+        .op-modal-items { background: rgba(0,0,0,0.2); border-radius: 14px; padding: 1rem; margin-bottom: 1.25rem; }
+        .op-modal-item  { display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
+        .op-modal-item:last-child { border-bottom: none; }
+        .op-modal-qty   { background: rgba(99,102,241,0.3); width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 900; flex-shrink: 0; color: #a5b4fc; }
+        .op-modal-total { font-size: 1.1rem; font-weight: 800; color: #34d399; margin-bottom: 1.5rem; }
+        .op-input {
+            width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 12px; padding: 0.75rem 1rem; color: #e0e7ff;
+            font-size: 0.9rem; font-family: inherit; resize: vertical; margin-bottom: 1.25rem;
+            outline: none;
+        }
+        .op-input:focus { border-color: #6366f1; }
+        .op-modal-actions { display: flex; gap: 0.75rem; }
+        .op-modal-actions .op-btn { flex: 1; padding: 0.75rem; font-size: 0.85rem; }
+        .btn-ghost { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1) !important; color: rgba(255,255,255,0.5); }
+
+        /* ── Animations ── */
+        @keyframes blink    { 0%,100%{opacity:1;} 50%{opacity:0.2;} }
+        @keyframes shake    { from{transform:rotate(-15deg);} to{transform:rotate(15deg);} }
+        @keyframes slideDown{ from{transform:translateX(-50%) translateY(-100px);opacity:0;} to{transform:translateX(-50%) translateY(0);opacity:1;} }
+        @keyframes popIn    { from{transform:scale(0.8);opacity:0;} to{transform:scale(1);opacity:1;} }
+        @keyframes pulse-red{ 0%,100%{opacity:1;} 50%{opacity:0.5;} }
+
+        /* ── Responsive ── */
+        @media (max-width: 1200px) { .op-columns { grid-template-columns: repeat(2, 1fr); } .op-stats { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 680px)  { .op-columns { grid-template-columns: 1fr; } .op-stats { grid-template-columns: repeat(2, 1fr); } .op-header { flex-direction: column; gap: 1rem; } }
+
+        /* ── Preview badge ── */
+        .preview-badge {
+            position: fixed; bottom: 1rem; right: 1rem;
+            background: rgba(99,102,241,0.9); color: white;
+            padding: 0.5rem 1rem; border-radius: 999px;
+            font-size: 0.75rem; font-weight: 700;
+            box-shadow: 0 4px 20px rgba(99,102,241,0.4);
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+<div class="op-root">
+
+    <!-- ═══ ALERT BANNER (demo) ═══ -->
+    <div class="op-alert" id="alertBanner" onclick="this.style.display='none'" style="display:none;">
+        <span class="op-alert-bell">🔔</span>
+        ¡Nuevo pedido entrante! — Haz clic para cerrar
+    </div>
+
+    <!-- ═══ HEADER ═══ -->
+    <div class="op-header">
+        <div class="op-header-left">
+            <div class="op-logo">🚀</div>
+            <div>
+                <h1 class="op-title">Panel de Operador</h1>
+                <div class="op-sub">Gestión de pedidos en tiempo real</div>
+            </div>
+        </div>
+        <div class="op-header-right">
+            <span class="op-count">5 pedidos activos</span>
+            <span class="op-live">
+                <span class="op-live-dot"></span>
+                En vivo
+            </span>
+            <button class="op-btn btn-confirm" style="flex:none;padding:.4rem 1rem;" onclick="showAlert()">🔔 Simular alerta</button>
+        </div>
+    </div>
+
+    <!-- ═══ STATS ═══ -->
+    <div class="op-stats">
+        <div class="op-stat stat-pending">
+            <div class="op-stat-num">2</div>
+            <div class="op-stat-lbl">⏳ Pendientes</div>
+        </div>
+        <div class="op-stat stat-active">
+            <div class="op-stat-num">2</div>
+            <div class="op-stat-lbl">🍳 En proceso</div>
+        </div>
+        <div class="op-stat stat-ready">
+            <div class="op-stat-num">1</div>
+            <div class="op-stat-lbl">✅ Listos</div>
+        </div>
+        <div class="op-stat stat-way">
+            <div class="op-stat-num">0</div>
+            <div class="op-stat-lbl">🛵 En camino</div>
+        </div>
+    </div>
+
+    <!-- ═══ KANBAN COLUMNS ═══ -->
+    <div class="op-columns">
+
+        <!-- COL 1: PENDIENTES -->
+        <div>
+            <div class="op-col-header col-pending">
+                <span class="op-col-dot"></span>
+                ⏳ Nuevos Pedidos
+                <span class="op-col-badge">2</span>
+            </div>
+
+            <!-- Card urgente (>10min) -->
+            <div class="op-card">
+                <div class="op-card-stripe stripe-urgent"></div>
+                <div class="op-card-body">
+                    <div class="op-card-top">
+                        <div class="op-card-id"><small>Pedido</small>#42</div>
+                        <div class="op-card-timer timer-urgent" id="timer42">12:34</div>
+                    </div>
+                    <div class="op-card-client">👤 Carlos Mendoza · Sucursal Centro</div>
+                    <div class="op-items">
+                        <div class="op-item"><div class="op-item-qty">2</div><div class="op-item-name">Hamburguesa Clásica</div></div>
+                        <div class="op-item"><div class="op-item-qty">1</div><div class="op-item-name">Papas Fritas Grande</div></div>
+                        <div class="op-item"><div class="op-item-qty">2</div><div class="op-item-name">Coca-Cola 600ml</div></div>
+                    </div>
+                    <div class="op-total">💵 $28.50</div>
+                    <div class="op-actions">
+                        <button class="op-btn btn-confirm" onclick="openConfirmModal(42, 'Carlos Mendoza', '$28.50')">✓ Confirmar</button>
+                        <button class="op-btn btn-cancel"  onclick="openCancelModal(42)">✕ Cancelar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card nueva (<2min) -->
+            <div class="op-card">
+                <div class="op-card-stripe stripe-new"></div>
+                <div class="op-card-body">
+                    <div class="op-card-top">
+                        <div class="op-card-id"><small>Pedido</small>#43</div>
+                        <div class="op-card-timer timer-new" id="timer43">00:47</div>
+                    </div>
+                    <div class="op-card-client">👤 María López · Sucursal Norte</div>
+                    <div class="op-items">
+                        <div class="op-item"><div class="op-item-qty">1</div><div class="op-item-name">Pizza Pepperoni</div></div>
+                        <div class="op-item"><div class="op-item-qty">1</div><div class="op-item-name">Agua Natural</div></div>
+                    </div>
+                    <div class="op-total">💵 $14.99</div>
+                    <div class="op-actions">
+                        <button class="op-btn btn-confirm" onclick="openConfirmModal(43, 'María López', '$14.99')">✓ Confirmar</button>
+                        <button class="op-btn btn-cancel"  onclick="openCancelModal(43)">✕ Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- COL 2: EN COCINA -->
+        <div>
+            <div class="op-col-header col-confirmed">
+                <span class="op-col-dot"></span>
+                🍳 En Cocina
+                <span class="op-col-badge">2</span>
+            </div>
+
+            <div class="op-card">
+                <div class="op-card-stripe stripe-warning"></div>
+                <div class="op-card-body">
+                    <div class="op-card-top">
+                        <div class="op-card-id"><small>Pedido</small>#40</div>
+                        <div class="op-card-timer timer-warning">07:15</div>
+                    </div>
+                    <div class="op-card-client">👤 Luis Ramírez · Sucursal Centro</div>
+                    <div class="op-items">
+                        <div class="op-item"><div class="op-item-qty">3</div><div class="op-item-name">Tacos de Carne</div></div>
+                        <div class="op-item"><div class="op-item-qty">1</div><div class="op-item-name">Horchata 1L</div></div>
+                    </div>
+                    <div class="op-total">💵 $19.75</div>
+                    <div class="op-actions">
+                        <button class="op-btn btn-advance">→ Listo</button>
+                        <button class="op-btn btn-cancel" onclick="openCancelModal(40)">✕</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="op-card">
+                <div class="op-card-stripe stripe-normal"></div>
+                <div class="op-card-body">
+                    <div class="op-card-top">
+                        <div class="op-card-id"><small>Pedido</small>#41</div>
+                        <div class="op-card-timer timer-normal">03:22</div>
+                    </div>
+                    <div class="op-card-client">👤 Ana Torres · Sucursal Norte</div>
+                    <div class="op-items">
+                        <div class="op-item"><div class="op-item-qty">1</div><div class="op-item-name">Ensalada César</div></div>
+                        <div class="op-item"><div class="op-item-qty">1</div><div class="op-item-name">Jugo de Naranja</div></div>
+                    </div>
+                    <div class="op-total">💵 $12.50</div>
+                    <div class="op-actions">
+                        <button class="op-btn btn-advance">→ Listo</button>
+                        <button class="op-btn btn-cancel" onclick="openCancelModal(41)">✕</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- COL 3: LISTOS -->
+        <div>
+            <div class="op-col-header col-preparing">
+                <span class="op-col-dot"></span>
+                ✅ Listos para Enviar
+                <span class="op-col-badge">1</span>
+            </div>
+
+            <div class="op-card">
+                <div class="op-card-stripe stripe-new"></div>
+                <div class="op-card-body">
+                    <div class="op-card-top">
+                        <div class="op-card-id"><small>Pedido</small>#38</div>
+                        <div class="op-card-timer timer-normal">05:10</div>
+                    </div>
+                    <div class="op-card-client">👤 Pedro Sánchez · Sucursal Centro</div>
+                    <div class="op-items">
+                        <div class="op-item"><div class="op-item-qty">2</div><div class="op-item-name">Burrito de Pollo</div></div>
+                    </div>
+                    <div class="op-total">💵 $16.00</div>
+                    <div class="op-actions">
+                        <button class="op-btn btn-advance">→ Asignar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empty hint -->
+            <div style="text-align:center;padding:2rem 1rem;color:rgba(255,255,255,0.2);font-size:0.85rem;">
+                Los demás pedidos aparecerán aquí
+            </div>
+        </div>
+
+        <!-- COL 4: EN CAMINO -->
+        <div>
+            <div class="op-col-header col-sending">
+                <span class="op-col-dot"></span>
+                🛵 En Camino
+                <span class="op-col-badge">0</span>
+            </div>
+            <div style="text-align:center;padding:3rem 1rem;color:rgba(255,255,255,0.15);font-size:0.85rem;">
+                Sin pedidos en camino
+            </div>
+        </div>
+
+    </div><!-- /op-columns -->
+</div><!-- /op-root -->
+
+<!-- ═══ MODAL: CONFIRMAR ═══ -->
+<div class="op-modal-bg" id="confirmModal">
+    <div class="op-modal">
+        <div class="op-modal-title">✅ Confirmar Pedido</div>
+        <div class="op-modal-sub">Revisa el pedido antes de confirmar</div>
+        <div class="op-modal-label">Cliente</div>
+        <div class="op-modal-value" id="confirmName">—</div>
+        <div class="op-modal-label">Productos</div>
+        <div class="op-modal-items">
+            <div class="op-modal-item"><div class="op-modal-qty">2</div><div>Hamburguesa Clásica</div></div>
+            <div class="op-modal-item"><div class="op-modal-qty">1</div><div>Papas Fritas Grande</div></div>
+            <div class="op-modal-item"><div class="op-modal-qty">2</div><div>Coca-Cola 600ml</div></div>
+        </div>
+        <div class="op-modal-total">Total: <span id="confirmTotal">—</span></div>
+        <div class="op-modal-actions">
+            <button class="op-btn btn-ghost"   onclick="closeModal('confirmModal')">Cancelar</button>
+            <button class="op-btn btn-confirm" onclick="closeModal('confirmModal'); alert('✅ Pedido confirmado (demo)')">
+                ✓ Confirmar Pedido
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ MODAL: CANCELAR ═══ -->
+<div class="op-modal-bg" id="cancelModal">
+    <div class="op-modal">
+        <div class="op-modal-title">❌ Cancelar Pedido</div>
+        <div class="op-modal-sub">Indica el motivo de cancelación (requerido)</div>
+        <textarea class="op-input" id="cancelReason" placeholder="Ej: Producto agotado, cliente no responde..." rows="3"></textarea>
+        <div class="op-modal-actions">
+            <button class="op-btn btn-ghost"  onclick="closeModal('cancelModal')">Volver</button>
+            <button class="op-btn btn-cancel" onclick="submitCancel()">Cancelar Pedido</button>
+        </div>
+    </div>
+</div>
+
+<!-- Preview badge -->
+<div class="preview-badge">📐 Vista previa estática</div>
+
+<script>
+    // ── Timers en tiempo real ──────────────────────────────────
+    const startTimes = { 42: Date.now() - 754000, 43: Date.now() - 47000 };
+
+    function updateTimers() {
+        Object.entries(startTimes).forEach(([id, start]) => {
+            const el = document.getElementById('timer' + id);
+            if (!el) return;
+            const secs = Math.floor((Date.now() - start) / 1000);
+            const m = String(Math.floor(secs / 60)).padStart(2,'0');
+            const s = String(secs % 60).padStart(2,'0');
+            el.textContent = m + ':' + s;
+        });
+    }
+    setInterval(updateTimers, 1000);
+    updateTimers();
+
+    // ── Alert banner ───────────────────────────────────────────
+    function showAlert() {
+        const el = document.getElementById('alertBanner');
+        el.style.display = 'flex';
+        playChime();
+        setTimeout(() => { el.style.display = 'none'; }, 5000);
+    }
+
+    // ── Sound chime ────────────────────────────────────────────
+    let audioCtx = null;
+    function playChime() {
+        try {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const ctx = audioCtx;
+            [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+                const osc  = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain); gain.connect(ctx.destination);
+                osc.frequency.value = freq; osc.type = 'sine';
+                gain.gain.setValueAtTime(0, ctx.currentTime + i * 0.13);
+                gain.gain.linearRampToValueAtTime(0.35, ctx.currentTime + i * 0.13 + 0.05);
+                gain.gain.linearRampToValueAtTime(0, ctx.currentTime + i * 0.13 + 0.22);
+                osc.start(ctx.currentTime + i * 0.13);
+                osc.stop(ctx.currentTime + i * 0.13 + 0.25);
+            });
+        } catch(e) {}
+    }
+
+    // ── Modals ─────────────────────────────────────────────────
+    function openConfirmModal(id, name, total) {
+        document.getElementById('confirmName').textContent  = name;
+        document.getElementById('confirmTotal').textContent = total;
+        document.getElementById('confirmModal').classList.add('open');
+    }
+    function openCancelModal(id) {
+        document.getElementById('cancelReason').value = '';
+        document.getElementById('cancelModal').classList.add('open');
+    }
+    function closeModal(id) {
+        document.getElementById(id).classList.remove('open');
+    }
+    function submitCancel() {
+        const reason = document.getElementById('cancelReason').value.trim();
+        if (!reason) { document.getElementById('cancelReason').focus(); return; }
+        closeModal('cancelModal');
+        alert('❌ Pedido cancelado (demo)\nMotivo: ' + reason);
+    }
+
+    // Cerrar modal al hacer clic fuera
+    document.querySelectorAll('.op-modal-bg').forEach(bg => {
+        bg.addEventListener('click', e => { if (e.target === bg) bg.classList.remove('open'); });
+    });
+
+    // Auto-mostrar alerta de demo al cargar
+    setTimeout(showAlert, 1500);
+</script>
+</body>
+</html>
