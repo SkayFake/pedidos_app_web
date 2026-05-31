@@ -426,9 +426,8 @@
     .op-modal-bg {
         position: fixed; inset: 0; z-index: 1000;
         background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
-        display: none; align-items: flex-end; justify-content: center; padding: 0;
+        display: flex; align-items: flex-end; justify-content: center; padding: 0;
     }
-    .op-modal-bg.open { display: flex; }
     .op-modal {
         background: linear-gradient(135deg, #1e1b4b, #312e81);
         border: 1px solid rgba(255,255,255,0.12);
