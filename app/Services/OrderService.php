@@ -177,7 +177,7 @@ class OrderService
 
         $deliveryFee = 0.00;
         if ($lat && $lng && $branch->latitude && $branch->longitude) {
-            $zone = DB::table('delivery_zones')->where('branch_id', $branch->id)->where('is_active', true)->first();
+            $zone = \App\Models\Zone::where('branch_id', $branch->id)->where('is_active', true)->first();
             if ($zone) {
                 $distanceKm = $this->distanceService->getDistanceInKm(
                     (float) $branch->latitude, (float) $branch->longitude,
@@ -185,13 +185,18 @@ class OrderService
                 );
                 
                 if ($distanceKm !== null) {
-                    $deliveryFee = (float) $zone->base_price;
+                    $deliveryFee = (float) $zone->delivery_fee;
                     if ($distanceKm > (float) $zone->base_distance_km) {
+                        if (!$zone->allow_out_of_zone_delivery) {
+                            throw new \App\Exceptions\OrderValidationException(
+                                'El restaurante no tiene cobertura para tu ubicación actual.'
+                            );
+                        }
                         $extraDistance = $distanceKm - (float) $zone->base_distance_km;
                         $deliveryFee += ($extraDistance * (float) $zone->extra_per_km);
                     }
                 } else {
-                    $deliveryFee = (float) $zone->base_price;
+                    $deliveryFee = (float) $zone->delivery_fee;
                 }
             } elseif ($address->zone) {
                 $deliveryFee = (float) $address->zone->delivery_fee ?? 0.0;

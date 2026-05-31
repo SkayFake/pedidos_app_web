@@ -44,9 +44,8 @@ class ShippingController extends Controller
             return $this->error('La sucursal seleccionada no tiene coordenadas configuradas.', 400);
         }
 
-        // Obtener la zona de entrega activa para esta sucursal
-        $zone = DB::table('delivery_zones')
-                    ->where('branch_id', $branch->id)
+        // Obtener la zona de entrega activa para esta sucursal (usando el modelo Zone modificado)
+        $zone = Zone::where('branch_id', $branch->id)
                     ->where('is_active', true)
                     ->first();
 
@@ -63,18 +62,34 @@ class ShippingController extends Controller
             return $this->error('No se pudo calcular la distancia con la dirección proporcionada.', 500);
         }
 
-        $fee = $zone->base_price;
+        $fee = $zone->delivery_fee; // Usamos delivery_fee como tarifa base
+        $isOutOfZone = false;
         
-        // Solo cobra extra si la distancia excede el radio base
+        // Verifica si la distancia excede el radio base
         if ($distanceKm > $zone->base_distance_km) {
+            $isOutOfZone = true;
+            
+            // Si no se permiten entregas fuera de zona, rechazar
+            if (!$zone->allow_out_of_zone_delivery) {
+                return $this->error('El restaurante no tiene cobertura para esta zona.', 400, [
+                    'is_out_of_zone' => true
+                ]);
+            }
+            
+            // Calcular el cobro extra por los km adicionales
             $extraDistance = $distanceKm - $zone->base_distance_km;
             $fee += ($extraDistance * $zone->extra_per_km);
         }
 
+        $message = $isOutOfZone 
+            ? 'Estás fuera de nuestra zona de cobertura principal. El costo de envío se ha calculado por distancia.' 
+            : 'Tarifa de envío calculada.';
+
         return $this->success([
             'fee' => round($fee, 2),
             'distance_km' => round($distanceKm, 2),
-        ], 'Tarifa de envío calculada.');
+            'is_out_of_zone' => $isOutOfZone
+        ], $message);
     }
 
     /**

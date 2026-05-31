@@ -13,11 +13,17 @@ class Zone extends Model
         return [
             'is_deliverable' => 'boolean',
             'is_active' => 'boolean',
+            'allow_out_of_zone_delivery' => 'boolean',
         ];
     }
 
     public function addresses()
     {
         return $this->hasMany(CustomerAddress::class);
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
     }
 }
