@@ -2,8 +2,6 @@
 
 namespace App\Filament\Resources\AdminUsers;
 
-use App\Filament\Resources\AdminUsers\Pages\CreateAdminUser;
-use App\Filament\Resources\AdminUsers\Pages\EditAdminUser;
 use App\Filament\Resources\AdminUsers\Pages\ListAdminUsers;
 use App\Filament\Resources\AdminUsers\Schemas\AdminUserForm;
 use App\Filament\Resources\AdminUsers\Tables\AdminUsersTable;
@@ -60,8 +58,6 @@ class AdminUserResource extends Resource
     {
         return [
             'index' => ListAdminUsers::route('/'),
-            'create' => CreateAdminUser::route('/create'),
-            'edit' => EditAdminUser::route('/{record}/edit'),
         ];
     }
 }

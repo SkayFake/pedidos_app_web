@@ -9,9 +9,12 @@ use App\Models\OrderItem;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Livewire\Attributes\On;
+use Filament\Widgets\Concerns\InteractsWithPageFilters;
 
 class DashboardStats extends BaseWidget
 {
+    use InteractsWithPageFilters;
+
     protected static ?int $sort = 1;
 
     /**
@@ -37,29 +40,35 @@ class DashboardStats extends BaseWidget
     protected function getStats(): array
     {
         $user = auth()->user();
+        $branchId = $user->isSuperAdmin() ? ($this->filters['branch_id'] ?? null) : $user->branch_id;
 
         // Base query respecting branch access
         $ordersQuery = Order::where('status', 'delivered');
-        if ($user && !$user->isSuperAdmin() && $user->branch_id) {
-            $ordersQuery->where('branch_id', $user->branch_id);
+        if ($branchId) {
+            $ordersQuery->where('branch_id', $branchId);
         }
 
         // ── Contadores de Pedidos por Estado ──────────────────────
         $totalOrders = Order::when(
-            $user && !$user->isSuperAdmin() && $user->branch_id,
-            fn($q) => $q->where('branch_id', $user->branch_id)
+            $branchId,
+            fn($q) => $q->where('branch_id', $branchId)
         )->count();
 
         $deliveredCount = (clone $ordersQuery)->count();
         $pendingCount = Order::where('status', 'pending')
-            ->when($user && !$user->isSuperAdmin() && $user->branch_id, fn($q) => $q->where('branch_id', $user->branch_id))
+            ->when($branchId, fn($q) => $q->where('branch_id', $branchId))
             ->count();
         $cancelledCount = Order::where('status', 'cancelled')
-            ->when($user && !$user->isSuperAdmin() && $user->branch_id, fn($q) => $q->where('branch_id', $user->branch_id))
+            ->when($branchId, fn($q) => $q->where('branch_id', $branchId))
             ->count();
 
         // ── Producto Más Vendido ─────────────────────────────────
         $topProduct = OrderItem::select('product_id', DB::raw('SUM(quantity) as total_sold'))
+            ->when($branchId, function($q) use ($branchId) {
+                $q->whereHas('order', function($query) use ($branchId) {
+                    $query->where('branch_id', $branchId);
+                });
+            })
             ->groupBy('product_id')
             ->orderByDesc('total_sold')
             ->with('product:id,name')
@@ -70,6 +79,11 @@ class DashboardStats extends BaseWidget
 
         // ── Producto Menos Vendido ───────────────────────────────
         $leastProduct = OrderItem::select('product_id', DB::raw('SUM(quantity) as total_sold'))
+            ->when($branchId, function($q) use ($branchId) {
+                $q->whereHas('order', function($query) use ($branchId) {
+                    $query->where('branch_id', $branchId);
+                });
+            })
             ->groupBy('product_id')
             ->orderBy('total_sold', 'asc')
             ->with('product:id,name')
@@ -104,7 +118,7 @@ class DashboardStats extends BaseWidget
             $date = $today->copy()->subDays($i);
             $dailySparkline[] = (float) Order::where('status', 'delivered')
                 ->whereDate('delivered_at', $date)
-                ->when($user && !$user->isSuperAdmin() && $user->branch_id, fn($q) => $q->where('branch_id', $user->branch_id))
+                ->when($branchId, fn($q) => $q->where('branch_id', $branchId))
                 ->sum('total');
         }
 
@@ -115,7 +129,7 @@ class DashboardStats extends BaseWidget
             $weekEnd = $today->copy()->subWeeks($i)->endOfWeek();
             $weeklySparkline[] = (float) Order::where('status', 'delivered')
                 ->whereBetween('delivered_at', [$weekStart, $weekEnd])
-                ->when($user && !$user->isSuperAdmin() && $user->branch_id, fn($q) => $q->where('branch_id', $user->branch_id))
+                ->when($branchId, fn($q) => $q->where('branch_id', $branchId))
                 ->sum('total');
         }
 
@@ -126,7 +140,7 @@ class DashboardStats extends BaseWidget
             $monthlySparkline[] = (float) Order::where('status', 'delivered')
                 ->whereMonth('delivered_at', $month->month)
                 ->whereYear('delivered_at', $month->year)
-                ->when($user && !$user->isSuperAdmin() && $user->branch_id, fn($q) => $q->where('branch_id', $user->branch_id))
+                ->when($branchId, fn($q) => $q->where('branch_id', $branchId))
                 ->sum('total');
         }
 

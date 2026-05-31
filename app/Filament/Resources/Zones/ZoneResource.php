@@ -60,8 +60,6 @@ class ZoneResource extends Resource
     {
         return [
             'index' => ListZones::route('/'),
-            'create' => CreateZone::route('/create'),
-            'edit' => EditZone::route('/{record}/edit'),
         ];
     }
 }

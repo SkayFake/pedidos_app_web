@@ -70,19 +70,7 @@ body {
     transform: translateX(2px);
 }
 
-.fi-sidebar-item.fi-active {
-    background: linear-gradient(135deg, var(--ocean-primary) 0%, var(--ocean-sky) 100%) !important;
-    box-shadow: 0 4px 12px rgba(0, 119, 182, 0.25) !important;
-}
 
-.fi-sidebar-item.fi-active .fi-sidebar-item-label,
-.fi-sidebar-item.fi-active .fi-sidebar-item-icon {
-    color: #ffffff !important;
-}
-
-:is(.dark) .fi-sidebar-item.fi-active {
-    background: linear-gradient(135deg, var(--ocean-deep) 0%, var(--ocean-primary) 100%) !important;
-}
 
 /* ══════════════════════════════════════════════════════════════
    TOPBAR — Clean and Modern
@@ -230,6 +218,17 @@ body {
 
 :is(.dark) .fi-simple-layout {
     background: #0a0e1a !important;
+}
+
+/* Centrado global por defecto (para móvil y tablet) */
+.fi-simple-layout .fi-simple-main-ctn {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    margin-left: 0 !important;
+    padding: 1.5rem !important;
+    min-height: 100vh !important;
 }
 
 /* Branding Panel (left side) */

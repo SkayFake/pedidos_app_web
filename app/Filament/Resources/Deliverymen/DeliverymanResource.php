@@ -60,8 +60,6 @@ class DeliverymanResource extends Resource
     {
         return [
             'index' => ListDeliverymen::route('/'),
-            'create' => CreateDeliveryman::route('/create'),
-            'edit' => EditDeliveryman::route('/{record}/edit'),
         ];
     }
 }

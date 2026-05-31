@@ -5,9 +5,12 @@ namespace App\Filament\Widgets;
 use Filament\Widgets\ChartWidget;
 use App\Models\OrderItem;
 use Illuminate\Support\Facades\DB;
+use Filament\Widgets\Concerns\InteractsWithPageFilters;
 
 class TopProductsChart extends ChartWidget
 {
+    use InteractsWithPageFilters;
+
     protected ?string $heading = 'Productos Más Populares';
 
     protected ?string $description = 'Top 5 productos por unidades vendidas';
@@ -25,7 +28,15 @@ class TopProductsChart extends ChartWidget
 
     protected function getData(): array
     {
+        $user = auth('admin')->user();
+        $branchId = ($user && $user->isSuperAdmin()) ? ($this->filters['branch_id'] ?? null) : ($user?->branch_id ?? null);
+
         $products = OrderItem::select('product_id', DB::raw('SUM(quantity) as total_sold'))
+            ->when($branchId, function($q) use ($branchId) {
+                $q->whereHas('order', function($query) use ($branchId) {
+                    $query->where('branch_id', $branchId);
+                });
+            })
             ->groupBy('product_id')
             ->orderByDesc('total_sold')
             ->limit(5)
@@ -78,17 +89,6 @@ class TopProductsChart extends ChartWidget
                         'padding' => 16,
                         'usePointStyle' => true,
                         'pointStyle' => 'circle',
-                    ],
-                ],
-                'tooltip' => [
-                    'callbacks' => [
-                        'label' => \Filament\Support\RawJs::make(<<<'JS'
-                            function(context) {
-                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                const percentage = ((context.parsed / total) * 100).toFixed(1);
-                                return context.label + ': ' + context.parsed + ' uds (' + percentage + '%)';
-                            }
-                        JS),
                     ],
                 ],
             ],

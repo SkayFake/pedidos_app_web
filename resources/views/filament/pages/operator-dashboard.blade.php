@@ -94,33 +94,34 @@
 
 {{-- ═══════════════════════ ESTILOS ══════════════════════════ --}}
 <style>
-    /* ── Reset + Dark base ───────────────────────────────────── */
+    /* ── Reset + System Theme Match ───────────────────────────────────── */
     .op-root *, .op-root *::before, .op-root *::after { box-sizing: border-box; }
 
     .op-root {
-        min-height: 100vh;
-        background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
-        padding: 1.5rem;
+        min-height: 100%;
+        padding: 0;
         font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
-        color: #f0f4ff;
         position: relative;
     }
     @media (min-width: 640px) {
-        .op-root { padding: 1.5rem; }
+        .op-root { padding: 0.5rem; }
     }
 
     /* ── Header ─────────────────────────────────────────────── */
     .op-header {
         display: flex; align-items: center; justify-content: space-between;
         flex-wrap: wrap; gap: 1rem;
-        background: rgba(255,255,255,0.05);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 1px solid rgba(255,255,255,0.1);
+        background: #ffffff;
+        border: 1px solid rgba(0, 119, 182, 0.08);
         border-radius: 16px;
         padding: 1rem 1.25rem;
         margin-bottom: 1.25rem;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        box-shadow: var(--shadow-soft, 0 4px 6px -1px rgba(0,0,0,0.05));
+    }
+
+    :is(.dark) .op-header {
+        background: rgba(15, 23, 42, 0.6);
+        border-color: rgba(0, 180, 216, 0.08);
     }
 
     @media (min-width: 768px) {
@@ -134,18 +135,20 @@
     .op-header-left { display: flex; align-items: center; gap: 0.75rem; flex: 1; min-width: 0; }
     .op-logo {
         width: 40px; height: 40px; flex-shrink: 0;
-        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        background: linear-gradient(135deg, var(--ocean-primary, #0077B6), var(--ocean-sky, #00B4D8));
         border-radius: 12px;
         display: flex; align-items: center; justify-content: center;
-        font-size: 1.25rem;
-        box-shadow: 0 4px 15px rgba(99,102,241,0.4);
+        color: white;
+        box-shadow: 0 4px 15px rgba(0, 119, 182, 0.3);
     }
 
     @media (min-width: 640px) {
-        .op-logo { width: 48px; height: 48px; border-radius: 14px; font-size: 1.5rem; }
+        .op-logo { width: 48px; height: 48px; border-radius: 14px; }
     }
-    .op-title { font-size: 1.2rem; font-weight: 900; letter-spacing: -0.03em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .op-sub   { font-size: 0.75rem; color: rgba(255,255,255,0.5); font-weight: 500; display: none; }
+    .op-title { font-size: 1.2rem; font-weight: 900; letter-spacing: -0.03em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: inherit; }
+    .op-sub   { font-size: 0.75rem; color: #64748b; font-weight: 500; display: none; }
+    
+    :is(.dark) .op-sub { color: #94a3b8; }
 
     @media (min-width: 640px) {
         .op-title { font-size: 1.6rem; }
@@ -156,24 +159,31 @@
 
     .op-live {
         display: flex; align-items: center; gap: 0.5rem;
-        background: rgba(16,185,129,0.15);
-        border: 1px solid rgba(16,185,129,0.4);
+        background: rgba(16,185,129,0.1);
+        border: 1px solid rgba(16,185,129,0.2);
         padding: 0.4rem 1rem;
         border-radius: 999px;
-        font-size: 0.8rem; font-weight: 800; color: #34d399;
+        font-size: 0.8rem; font-weight: 800; color: #059669;
         text-transform: uppercase; letter-spacing: 0.05em;
     }
+    :is(.dark) .op-live { color: #34d399; }
+    
     .op-live-dot {
         width: 8px; height: 8px; border-radius: 50%; background: #10b981;
         animation: blink 1.2s ease-in-out infinite;
     }
 
     .op-count {
-        background: rgba(255,255,255,0.1);
-        border: 1px solid rgba(255,255,255,0.15);
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
         padding: 0.4rem 1rem;
         border-radius: 999px;
-        font-size: 0.85rem; font-weight: 700; color: #e0e7ff;
+        font-size: 0.85rem; font-weight: 700; color: #334155;
+    }
+    :is(.dark) .op-count {
+        background: rgba(255,255,255,0.05);
+        border-color: rgba(255,255,255,0.1);
+        color: #e2e8f0;
     }
 
     /* ── Stats bar ───────────────────────────────────────────── */
@@ -188,21 +198,34 @@
         .op-stats { grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.75rem; }
     }
     .op-stat {
-        background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+        background: #ffffff;
+        border: 1px solid rgba(0, 119, 182, 0.08);
         border-radius: 12px; padding: 0.85rem 1rem; text-align: center;
+        box-shadow: var(--shadow-soft, 0 2px 4px rgba(0,0,0,0.02));
     }
-    .op-stat-num  { font-size: 1.6rem; font-weight: 900; line-height: 1; }
+    :is(.dark) .op-stat {
+        background: rgba(15, 23, 42, 0.6);
+        border-color: rgba(0, 180, 216, 0.08);
+    }
+    .op-stat-num  { font-size: 1.6rem; font-weight: 900; line-height: 1; color: #0f172a; }
+    :is(.dark) .op-stat-num { color: #f8fafc; }
 
     @media (min-width: 640px) {
         .op-stat { border-radius: 16px; padding: 1.1rem 1.25rem; }
         .op-stat-num { font-size: 2.2rem; }
     }
-    .op-stat-lbl  { font-size: 0.75rem; color: rgba(255,255,255,0.45); font-weight: 600;
+    .op-stat-lbl  { font-size: 0.75rem; color: #64748b; font-weight: 600;
                     text-transform: uppercase; letter-spacing: 0.06em; margin-top: 4px; }
-    .stat-pending  .op-stat-num { color: #f59e0b; }
-    .stat-active   .op-stat-num { color: #60a5fa; }
-    .stat-way      .op-stat-num { color: #a78bfa; }
-    .stat-ready    .op-stat-num { color: #34d399; }
+    :is(.dark) .op-stat-lbl { color: #94a3b8; }
+    
+    .stat-pending  .op-stat-num { color: #d97706; }
+    :is(.dark) .stat-pending .op-stat-num { color: #fbbf24; }
+    .stat-active   .op-stat-num { color: #2563eb; }
+    :is(.dark) .stat-active .op-stat-num { color: #60a5fa; }
+    .stat-way      .op-stat-num { color: #7c3aed; }
+    :is(.dark) .stat-way .op-stat-num { color: #a78bfa; }
+    .stat-ready    .op-stat-num { color: #059669; }
+    :is(.dark) .stat-ready .op-stat-num { color: #34d399; }
 
     /* ── New‐order alert banner ──────────────────────────────── */
     .op-alert {
@@ -219,7 +242,7 @@
         cursor: pointer;
         white-space: nowrap;
     }
-    .op-alert-bell { font-size: 1.5rem; animation: shake 0.5s ease-in-out infinite alternate; }
+    .op-alert-icon { font-size: 1.5rem; animation: shake 0.5s ease-in-out infinite alternate; }
 
     @keyframes slideDown {
         from { transform: translateX(-50%) translateY(-100px); opacity: 0; }
@@ -258,10 +281,11 @@
     .op-col-dot  { width: 10px; height: 10px; border-radius: 50%; }
     .op-col-badge {
         margin-left: auto;
-        background: rgba(255,255,255,0.15);
+        background: rgba(0,0,0,0.05);
         padding: 2px 8px; border-radius: 999px;
         font-size: 0.75rem;
     }
+    :is(.dark) .op-col-badge { background: rgba(255,255,255,0.15); }
 
     .col-pending   { background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.25); color: #fbbf24; }
     .col-pending   .op-col-dot { background: #f59e0b; }
@@ -274,10 +298,19 @@
 
     /* ── Order card ──────────────────────────────────────────── */
     .op-card {
-        background: rgba(255,255,255,0.06);
-        border: 1px solid rgba(255,255,255,0.1);
+        background: #ffffff;
+        border: 1px solid rgba(0, 119, 182, 0.08);
         border-radius: 18px;
         overflow: hidden;
+        margin-bottom: 1rem;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        position: relative;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    }
+    :is(.dark) .op-card {
+        background: rgba(15, 23, 42, 0.6);
+        border-color: rgba(0, 180, 216, 0.08);
+    }
         margin-bottom: 1rem;
         transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
         position: relative;
@@ -313,8 +346,10 @@
         display: flex; align-items: flex-start; justify-content: space-between;
         margin-bottom: 0.85rem;
     }
-    .op-card-id   { font-size: 1.5rem; font-weight: 900; color: #e0e7ff; line-height: 1; }
-    .op-card-id small { font-size: 0.7rem; color: rgba(255,255,255,0.4); font-weight: 600; display: block; }
+    .op-card-id   { font-size: 1.5rem; font-weight: 900; color: #0f172a; line-height: 1; }
+    :is(.dark) .op-card-id { color: #e0e7ff; }
+    .op-card-id small { font-size: 0.7rem; color: #64748b; font-weight: 600; display: block; }
+    :is(.dark) .op-card-id small { color: rgba(255,255,255,0.4); }
     .op-card-timer {
         font-size: 0.85rem; font-weight: 800;
         padding: 3px 10px; border-radius: 999px;
@@ -326,28 +361,34 @@
     .timer-urgent  { background: rgba(239,68,68,0.2);  color: #f87171; }
 
     .op-card-client {
-        font-size: 0.9rem; color: rgba(255,255,255,0.6); font-weight: 600;
+        font-size: 0.9rem; color: #475569; font-weight: 600;
         margin-bottom: 0.75rem;
         display: flex; align-items: center; gap: 0.4rem;
     }
+    :is(.dark) .op-card-client { color: rgba(255,255,255,0.6); }
 
     /* items mini list */
     .op-items { margin-bottom: 0.85rem; }
     .op-item  { display: flex; align-items: center; gap: 0.6rem; padding: 3px 0; font-size: 0.82rem; }
     .op-item-qty {
-        background: rgba(255,255,255,0.12);
+        background: #f1f5f9;
+        color: #334155;
         width: 22px; height: 22px; border-radius: 6px;
         display: flex; align-items: center; justify-content: center;
         font-weight: 800; font-size: 0.78rem; flex-shrink: 0;
     }
-    .op-item-name { color: rgba(255,255,255,0.75); font-weight: 600; }
+    :is(.dark) .op-item-qty { background: rgba(255,255,255,0.12); color: #e2e8f0; }
+    
+    .op-item-name { color: #334155; font-weight: 600; }
+    :is(.dark) .op-item-name { color: rgba(255,255,255,0.75); }
 
     /* total */
     .op-total {
-        font-size: 1.05rem; font-weight: 800; color: #a5f3fc;
+        font-size: 1.05rem; font-weight: 800; color: #0284c7;
         margin-bottom: 0.85rem;
         display: flex; align-items: center; gap: 0.4rem;
     }
+    :is(.dark) .op-total { color: #38bdf8; }
 
     /* action buttons */
     .op-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
@@ -475,13 +516,19 @@
     /* ── Empty state ─────────────────────────────────────────── */
     .op-empty {
         text-align: center; padding: 4rem 2rem;
-        background: rgba(255,255,255,0.03);
-        border: 1px solid rgba(255,255,255,0.06);
+        background: #ffffff;
+        border: 1px dashed rgba(0, 119, 182, 0.2);
         border-radius: 20px;
     }
-    .op-empty-icon { font-size: 4rem; display: block; margin-bottom: 1rem; }
-    .op-empty-title { font-size: 1.4rem; font-weight: 800; color: #e0e7ff; }
-    .op-empty-sub   { font-size: 0.9rem; color: rgba(255,255,255,0.4); margin-top: 0.5rem; }
+    :is(.dark) .op-empty {
+        background: rgba(255,255,255,0.03);
+        border-color: rgba(255,255,255,0.06);
+    }
+    .op-empty-icon { font-size: 3rem; display: block; margin-bottom: 1rem; color: #94a3b8; }
+    .op-empty-title { font-size: 1.4rem; font-weight: 800; color: #1e293b; }
+    :is(.dark) .op-empty-title { color: #e0e7ff; }
+    .op-empty-sub   { font-size: 0.9rem; color: #64748b; margin-top: 0.5rem; }
+    :is(.dark) .op-empty-sub { color: rgba(255,255,255,0.4); }
 </style>
 
 {{-- ═══════════════════ NEW-ORDER ALERT BANNER ═══════════════════ --}}
@@ -494,14 +541,22 @@
     class="op-alert"
     style="display:none;"
 >
-    <span class="op-alert-bell">🔔</span>
+    <span class="op-alert-icon">
+        <svg style="width:24px;height:24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+        </svg>
+    </span>
     ¡Nuevo pedido entrante! — Haz clic para cerrar
 </div>
 
 {{-- ═══════════════════════ HEADER ════════════════════════════════ --}}
 <div class="op-header">
     <div class="op-header-left">
-        <div class="op-logo">🚀</div>
+        <div class="op-logo">
+            <svg style="width:22px;height:22px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+        </div>
         <div>
             <h1 class="op-title">Panel de Operador</h1>
             <div class="op-sub">Gestión de pedidos en tiempo real</div>
@@ -548,7 +603,11 @@
 {{-- ═══════════════════════ KANBAN COLUMNS ════════════════════════ --}}
 @if(collect($orders)->isEmpty())
     <div class="op-empty">
-        <span class="op-empty-icon">🎉</span>
+        <span class="op-empty-icon">
+            <svg style="width:48px;height:48px;margin:0 auto;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+        </span>
         <div class="op-empty-title">¡Sin pedidos activos!</div>
         <div class="op-empty-sub">El sistema revisará automáticamente cada 5 segundos.</div>
     </div>
@@ -557,10 +616,10 @@
 {{-- Group orders by stage --}}
 @php
     $groups = [
-        'pending'   => ['label' => '⏳ Nuevos Pedidos',     'css' => 'col-pending',   'statuses' => ['pending']],
-        'kitchen'   => ['label' => '🍳 En Cocina',          'css' => 'col-confirmed', 'statuses' => ['confirmed', 'preparing']],
-        'ready'     => ['label' => '✅ Listos para Enviar',  'css' => 'col-preparing', 'statuses' => ['ready_to_go']],
-        'delivery'  => ['label' => '🛵 En Camino',           'css' => 'col-sending',   'statuses' => ['assigned', 'on_way']],
+        'pending'   => ['label' => 'Nuevos Pedidos',     'css' => 'col-pending',   'statuses' => ['pending']],
+        'kitchen'   => ['label' => 'En Cocina',          'css' => 'col-confirmed', 'statuses' => ['confirmed', 'preparing']],
+        'ready'     => ['label' => 'Listos para Enviar',  'css' => 'col-preparing', 'statuses' => ['ready_to_go']],
+        'delivery'  => ['label' => 'En Camino',           'css' => 'col-sending',   'statuses' => ['assigned', 'on_way']],
     ];
 @endphp
 
@@ -672,23 +731,6 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
                                     </svg>
                                     Confirmar
-                                </button>
-                            @elseif(in_array($order->status, ['confirmed', 'preparing', 'ready_to_go', 'assigned']))
-                                @php
-                                    $nextLabels = [
-                                        'confirmed'   => '→ Preparar',
-                                        'preparing'   => '→ Listo',
-                                        'ready_to_go' => '→ Asignar',
-                                        'assigned'    => '→ En camino',
-                                    ];
-                                @endphp
-                                <button class="op-btn btn-advance"
-                                        wire:click="advanceOrder({{ $order->id }})"
-                                        wire:loading.attr="disabled">
-                                    <svg style="width:14px;height:14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
-                                    </svg>
-                                    {{ $nextLabels[$order->status] ?? 'Avanzar' }}
                                 </button>
                             @endif
 

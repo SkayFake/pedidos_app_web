@@ -5,10 +5,14 @@ namespace App\Filament\Widgets;
 use Filament\Widgets\ChartWidget;
 use App\Models\Order;
 use Carbon\Carbon;
-use Filament\Support\RawJs;
+use Illuminate\Support\Facades\DB;
+use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Livewire\Attributes\On;
+
 class RevenueChart extends ChartWidget
 {
+    use InteractsWithPageFilters;
+
     protected ?string $heading = 'Ingresos Mensuales';
 
     protected ?string $description = 'Tendencia de ingresos por pedidos entregados';
@@ -26,7 +30,7 @@ class RevenueChart extends ChartWidget
     #[On('order-status-changed')]
     public function refreshChart(): void
     {
-        // Al llamar este método, Livewire detectará la actualización y refrescará el chart
+        // Livewire detectará la actualización y refrescará el chart
     }
 
     protected function getType(): string
@@ -45,95 +49,91 @@ class RevenueChart extends ChartWidget
 
     protected function getData(): array
     {
-        $user = auth()->user();
+        $user = auth('admin')->user();
         $now = Carbon::now();
 
-        // Determine date range based on filter
         switch ($this->filter) {
             case 'this_year':
                 $startDate = $now->copy()->startOfYear();
-                $endDate = $now->copy()->endOfYear();
+                $endDate   = $now->copy()->endOfYear();
                 break;
             case 'last_year':
                 $startDate = $now->copy()->subYear()->startOfYear();
-                $endDate = $now->copy()->subYear()->endOfYear();
+                $endDate   = $now->copy()->subYear()->endOfYear();
                 break;
             default: // 6_months
                 $startDate = $now->copy()->subMonths(5)->startOfMonth();
-                $endDate = $now->copy()->endOfMonth();
+                $endDate   = $now->copy()->endOfMonth();
                 break;
         }
 
-        // Build query
         $query = Order::where('status', 'delivered')
-            ->whereBetween('delivered_at', [$startDate, $endDate]);
+            ->whereBetween('created_at', [$startDate, $endDate]);
 
-        if ($user && !$user->isSuperAdmin() && $user->branch_id) {
-            $query->where('branch_id', $user->branch_id);
+        // Filtrar por sucursal: si es super admin usa el filtro de la página; si no, usa su sucursal
+        $branchId = ($user && $user->isSuperAdmin())
+            ? ($this->filters['branch_id'] ?? null)
+            : ($user?->branch_id ?? null);
+
+        if ($branchId) {
+            $query->where('branch_id', $branchId);
         }
 
-        $driver = \Illuminate\Support\Facades\DB::getDriverName();
+        $driver = DB::getDriverName();
         $dateSelect = match ($driver) {
-            'pgsql' => "TO_CHAR(delivered_at, 'YYYY-MM')",
-            'sqlite' => "strftime('%Y-%m', delivered_at)",
-            default => "DATE_FORMAT(delivered_at, '%Y-%m')"
+            'pgsql'  => "TO_CHAR(created_at, 'YYYY-MM')",
+            'sqlite' => "strftime('%Y-%m', created_at)",
+            default  => "DATE_FORMAT(created_at, '%Y-%m')",
         };
 
-        // Group by month
         $revenues = $query
             ->selectRaw("{$dateSelect} as month, SUM(total) as revenue")
-            ->groupBy('month')
-            ->orderBy('month')
+            ->groupByRaw($dateSelect)
+            ->orderByRaw($dateSelect)
             ->pluck('revenue', 'month')
             ->toArray();
 
-        // Fill labels and data for every month in range
-        $labels = [];
-        $data = [];
+        $labels  = [];
+        $data    = [];
         $current = $startDate->copy();
 
         while ($current->lte($endDate)) {
-            $key = $current->format('Y-m');
+            $key      = $current->format('Y-m');
             $labels[] = $current->translatedFormat('M Y');
-            $data[] = round((float) ($revenues[$key] ?? 0), 2);
+            $data[]   = round((float) ($revenues[$key] ?? 0), 2);
             $current->addMonth();
         }
 
         return [
             'datasets' => [
                 [
-                    'label' => 'Ingresos ($)',
-                    'data' => $data,
-                    'borderColor' => '#0077B6',
-                    'backgroundColor' => 'rgba(0, 119, 182, 0.1)',
-                    'tension' => 0.4,
-                    'fill' => true,
+                    'label'            => 'Ingresos ($)',
+                    'data'             => $data,
+                    'borderColor'      => '#0077B6',
+                    'backgroundColor'  => 'rgba(0, 119, 182, 0.1)',
+                    'tension'          => 0.4,
+                    'fill'             => true,
                     'pointBackgroundColor' => '#0077B6',
-                    'pointBorderColor' => '#fff',
-                    'pointBorderWidth' => 2,
-                    'pointRadius' => 5,
-                    'pointHoverRadius' => 7,
+                    'pointBorderColor'     => '#fff',
+                    'pointBorderWidth'     => 2,
+                    'pointRadius'          => 5,
+                    'pointHoverRadius'     => 7,
                 ],
             ],
             'labels' => $labels,
         ];
     }
 
-    protected function getOptions(): array|RawJs|null
+    protected function getOptions(): array
     {
         return [
+            'responsive'          => true,
+            'maintainAspectRatio' => false,
             'scales' => [
                 'y' => [
                     'beginAtZero' => true,
-                    'ticks' => [
-                        'callback' => RawJs::make(<<<'JS'
-                            function(value) {
-                                return '$' + value.toLocaleString();
-                            }
-                        JS),
-                    ],
                     'grid' => [
-                        'color' => 'rgba(0, 0, 0, 0.05)',
+                        'color' => 'rgba(0,0,0,0.05)',
                     ],
                 ],
                 'x' => [
@@ -143,15 +143,6 @@ class RevenueChart extends ChartWidget
                 ],
             ],
             'plugins' => [
-                'tooltip' => [
-                    'callbacks' => [
-                        'label' => RawJs::make(<<<'JS'
-                            function(context) {
-                                return 'Ingresos: $' + context.parsed.y.toLocaleString();
-                            }
-                        JS),
-                    ],
-                ],
                 'legend' => [
                     'display' => false,
                 ],

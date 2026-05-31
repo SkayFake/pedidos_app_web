@@ -13,11 +13,11 @@ class OperatorDashboard extends Page
 {
     protected string $view = 'filament.pages.operator-dashboard';
 
-    protected static ?string $navigationLabel = '🚀 Panel en Tiempo Real';
+    protected static ?string $navigationLabel = 'Panel de Operador';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBolt;
 
-    protected static ?string $title = 'Panel de Pedidos en Tiempo Real';
+    protected static ?string $title = 'Panel de Operador';
 
     protected static string|\UnitEnum|null $navigationGroup = 'Operaciones';
 
@@ -92,7 +92,8 @@ class OperatorDashboard extends Page
     public function confirmOrder(int $orderId): void
     {
         $order = Order::find($orderId);
-        if (!$order || $order->status !== 'pending') return;
+        if (!$order || $order->status !== 'pending')
+            return;
 
         $order->update(['status' => 'confirmed']);
 
@@ -106,48 +107,16 @@ class OperatorDashboard extends Page
         $this->loadOrders();
     }
 
-    /** Advance order to next status */
-    public function advanceOrder(int $orderId): void
-    {
-        $order = Order::find($orderId);
-        if (!$order) return;
-
-        $flow = [
-            'confirmed'   => 'preparing',
-            'preparing'   => 'ready_to_go',
-            'ready_to_go' => 'assigned',
-            'assigned'    => 'on_way',
-        ];
-
-        $next = $flow[$order->status] ?? null;
-        if (!$next) return;
-
-        $order->update(['status' => $next]);
-
-        $labels = [
-            'preparing'   => 'En Preparación',
-            'ready_to_go' => 'Listo para Enviar',
-            'assigned'    => 'Asignado',
-            'on_way'      => 'En Camino',
-        ];
-
-        Notification::make()
-            ->title("📦 Pedido #{$order->id} → {$labels[$next]}")
-            ->success()
-            ->send();
-
-        $this->dispatch('order-status-changed');
-        $this->loadOrders();
-    }
 
     /** Cancel an order with reason */
     public function cancelOrder(int $orderId, string $reason): void
     {
         $order = Order::find($orderId);
-        if (!$order) return;
+        if (!$order)
+            return;
 
         $order->update([
-            'status'              => 'cancelled',
+            'status' => 'cancelled',
             'cancellation_reason' => $reason,
         ]);
 
