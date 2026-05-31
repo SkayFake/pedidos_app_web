@@ -725,7 +725,7 @@
                                             {{ $order->id }},
                                             '{{ addslashes($order->user?->name ?? 'Cliente') }}',
                                             '${{ number_format($order->total, 2) }}',
-                                            {!! $itemsJson !!}
+                                            {{ htmlspecialchars($itemsJson, ENT_QUOTES, 'UTF-8') }}
                                         )">
                                     <svg style="width:14px;height:14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
