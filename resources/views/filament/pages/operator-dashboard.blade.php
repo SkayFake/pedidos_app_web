@@ -644,10 +644,6 @@
                     else                         { $urgency = 'urgent';  $timerCss = 'timer-urgent';  $stripeCss = 'stripe-urgent'; }
 
                     $createdAtIso = $order->created_at->toIso8601String();
-                    $itemsJson = json_encode($order->items->map(fn($i) => [
-                        'qty'  => $i->quantity,
-                        'name' => $i->product?->name ?? 'Producto',
-                    ])->values()->toArray());
                 @endphp
 
                 <div class="op-card"
@@ -723,9 +719,9 @@
                                 <button class="op-btn btn-confirm"
                                         @click="openConfirmModal(
                                             {{ $order->id }},
-                                            '{{ addslashes($order->user?->name ?? 'Cliente') }}',
-                                            '${{ number_format($order->total, 2) }}',
-                                            {!! htmlspecialchars($itemsJson, ENT_QUOTES, 'UTF-8') !!}
+                                            @js($order->user?->name ?? 'Cliente'),
+                                            @js('$' . number_format($order->total, 2)),
+                                            @js($order->items->map(fn($i) => ['qty' => $i->quantity, 'name' => $i->product?->name ?? 'Producto'])->values()->toArray())
                                         )">
                                     <svg style="width:14px;height:14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
