@@ -13,5 +13,14 @@ use Exception;
  */
 class OrderValidationException extends Exception
 {
-    //
+    public function render($request)
+    {
+        return response()->json([
+            'success' => false,
+            'message' => $this->getMessage(),
+            'errors' => [
+                'is_out_of_zone' => str_contains($this->getMessage(), 'cobertura')
+            ]
+        ], 400);
+    }
 }

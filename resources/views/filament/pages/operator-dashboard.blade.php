@@ -426,9 +426,8 @@
     .op-modal-bg {
         position: fixed; inset: 0; z-index: 1000;
         background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
-        display: none; align-items: flex-end; justify-content: center; padding: 0;
+        display: flex; align-items: flex-end; justify-content: center; padding: 0;
     }
-    .op-modal-bg.open { display: flex; }
     .op-modal {
         background: linear-gradient(135deg, #1e1b4b, #312e81);
         border: 1px solid rgba(255,255,255,0.12);
@@ -644,10 +643,6 @@
                     else                         { $urgency = 'urgent';  $timerCss = 'timer-urgent';  $stripeCss = 'stripe-urgent'; }
 
                     $createdAtIso = $order->created_at->toIso8601String();
-                    $itemsJson = json_encode($order->items->map(fn($i) => [
-                        'qty'  => $i->quantity,
-                        'name' => $i->product?->name ?? 'Producto',
-                    ])->values()->toArray());
                 @endphp
 
                 <div class="op-card"
@@ -723,9 +718,9 @@
                                 <button class="op-btn btn-confirm"
                                         @click="openConfirmModal(
                                             {{ $order->id }},
-                                            '{{ addslashes($order->user?->name ?? 'Cliente') }}',
-                                            '${{ number_format($order->total, 2) }}',
-                                            {!! $itemsJson !!}
+                                            @js($order->user?->name ?? 'Cliente'),
+                                            @js('$' . number_format($order->total, 2)),
+                                            @js($order->items->map(fn($i) => ['qty' => $i->quantity, 'name' => $i->product?->name ?? 'Producto'])->values()->toArray())
                                         )">
                                     <svg style="width:14px;height:14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
