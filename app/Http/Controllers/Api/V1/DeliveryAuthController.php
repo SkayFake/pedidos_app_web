@@ -80,12 +80,21 @@ class DeliveryAuthController extends Controller
             'name'         => 'sometimes|required|string|max:100',
             'phone'        => 'sometimes|required|string|max:20|unique:deliverymen,phone,' . auth()->id(),
             'is_available' => 'sometimes|required|boolean',
+            'image'        => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
         ]);
 
         $deliveryman = auth()->user();
+        
+        $data = $request->only(['name', 'phone', 'is_available']);
 
-        // Actualizamos solo los campos que vengan en el request
-        $deliveryman->update($request->only(['name', 'phone', 'is_available']));
+        if ($request->hasFile('image')) {
+            if ($deliveryman->profile_photo) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($deliveryman->profile_photo);
+            }
+            $data['profile_photo'] = $request->file('image')->store('profile', 'public');
+        }
+
+        $deliveryman->update($data);
 
         return $this->success([
             'deliveryman' => $this->formatDeliveryman($deliveryman),
@@ -99,6 +108,7 @@ class DeliveryAuthController extends Controller
             'name'           => $deliveryman->name,
             'email'          => $deliveryman->email,
             'phone'          => $deliveryman->phone,
+            'image'          => $deliveryman->image_url,
             'vehicle_type'   => $deliveryman->vehicle_type,
             'license_plate'  => $deliveryman->license_plate ?? $deliveryman->vehicle_plate,
             'is_active'      => $deliveryman->is_active,

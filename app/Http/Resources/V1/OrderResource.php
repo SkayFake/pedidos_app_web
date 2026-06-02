@@ -30,6 +30,8 @@ class OrderResource extends JsonResource
             'subtotal_fmt'        => '$' . number_format((float) $this->subtotal, 2),
             'delivery_fee'        => number_format((float) $this->delivery_fee, 2, '.', ''),
             'delivery_fee_fmt'    => '$' . number_format((float) $this->delivery_fee, 2),
+            'deliveryman_payout'     => number_format((float) $this->deliveryman_payout, 2, '.', ''),
+            'deliveryman_payout_fmt' => '$' . number_format((float) $this->deliveryman_payout, 2),
             'discount_amount'     => number_format((float) $this->discount_amount, 2, '.', ''),
             'discount_amount_fmt' => '$' . number_format((float) $this->discount_amount, 2),
             'total'               => number_format((float) $this->total, 2, '.', ''),

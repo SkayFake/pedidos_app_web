@@ -97,20 +97,20 @@ class DashboardStats extends BaseWidget
 
         $dailyRevenue = (clone $ordersQuery)
             ->whereDate('delivered_at', $today)
-            ->sum('total');
+            ->sum(DB::raw('total - (deliveryman_payout - delivery_fee)'));
 
         $weeklyRevenue = (clone $ordersQuery)
             ->whereBetween('delivered_at', [$today->copy()->startOfWeek(), $today->copy()->endOfWeek()])
-            ->sum('total');
+            ->sum(DB::raw('total - (deliveryman_payout - delivery_fee)'));
 
         $monthlyRevenue = (clone $ordersQuery)
             ->whereMonth('delivered_at', $today->month)
             ->whereYear('delivered_at', $today->year)
-            ->sum('total');
+            ->sum(DB::raw('total - (deliveryman_payout - delivery_fee)'));
 
         $yearlyRevenue = (clone $ordersQuery)
             ->whereYear('delivered_at', $today->year)
-            ->sum('total');
+            ->sum(DB::raw('total - (deliveryman_payout - delivery_fee)'));
 
         // ── Sparkline: últimos 7 días de ganancias ───────────────
         $dailySparkline = [];
@@ -119,7 +119,7 @@ class DashboardStats extends BaseWidget
             $dailySparkline[] = (float) Order::where('status', 'delivered')
                 ->whereDate('delivered_at', $date)
                 ->when($branchId, fn($q) => $q->where('branch_id', $branchId))
-                ->sum('total');
+                ->sum(DB::raw('total - (deliveryman_payout - delivery_fee)'));
         }
 
         // ── Sparkline: últimas 4 semanas ─────────────────────────
@@ -130,7 +130,7 @@ class DashboardStats extends BaseWidget
             $weeklySparkline[] = (float) Order::where('status', 'delivered')
                 ->whereBetween('delivered_at', [$weekStart, $weekEnd])
                 ->when($branchId, fn($q) => $q->where('branch_id', $branchId))
-                ->sum('total');
+                ->sum(DB::raw('total - (deliveryman_payout - delivery_fee)'));
         }
 
         // ── Sparkline: últimos 6 meses ───────────────────────────
@@ -141,7 +141,7 @@ class DashboardStats extends BaseWidget
                 ->whereMonth('delivered_at', $month->month)
                 ->whereYear('delivered_at', $month->year)
                 ->when($branchId, fn($q) => $q->where('branch_id', $branchId))
-                ->sum('total');
+                ->sum(DB::raw('total - (deliveryman_payout - delivery_fee)'));
         }
 
         return [

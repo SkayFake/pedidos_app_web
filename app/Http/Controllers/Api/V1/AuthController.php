@@ -212,13 +212,23 @@ class AuthController extends Controller
         $request->validate([
             'name'  => 'required|string|max:100',
             'phone' => 'required|string|max:20|unique:users,phone,' . auth()->id(),
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
         ]);
 
         $user = auth()->user();
-        $user->update([
+        $data = [
             'name'  => $request->name,
             'phone' => $request->phone,
-        ]);
+        ];
+
+        if ($request->hasFile('image')) {
+            if ($user->image) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($user->image);
+            }
+            $data['image'] = $request->file('image')->store('profile', 'public');
+        }
+
+        $user->update($data);
 
         return $this->success([
             'user' => $this->formatUser($user),
@@ -395,7 +405,9 @@ class AuthController extends Controller
             'name'                   => $user->name,
             'email'                  => $user->email,
             'phone'                  => $user->phone,
-            'profile_photo'          => $user->profile_photo,
+            'image'                  => $user->image,
+            'image_url'              => $user->image_url,
+            'profile_photo'          => $user->image_url, // Por compatibilidad con clientes existentes
             'is_active'              => $user->is_active,
             'loyalty_points'         => $user->loyalty_points,
             'total_completed_orders' => $user->total_completed_orders,

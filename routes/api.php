@@ -49,7 +49,7 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     Route::prefix('auth')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/me', [AuthController::class, 'me']);
-        Route::put('/update-profile', [AuthController::class, 'updateProfile']);
+        Route::post('/update-profile', [AuthController::class, 'updateProfile']);
         Route::put('/change-password', [AuthController::class, 'changePassword']);
     });
 
@@ -85,7 +85,7 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
         Route::prefix('auth')->group(function () {
             Route::post('/logout', [DeliveryAuthController::class, 'logout']);
             Route::get('/me', [DeliveryAuthController::class, 'me']);
-            Route::put('/update-profile', [DeliveryAuthController::class, 'updateProfile']);
+            Route::post('/update-profile', [DeliveryAuthController::class, 'updateProfile']);
         });
 
         // Pedidos del Repartidor

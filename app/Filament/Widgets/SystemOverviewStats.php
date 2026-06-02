@@ -19,8 +19,8 @@ class SystemOverviewStats extends BaseWidget
 
         $activeBranches = Branch::count();
         
-        $totalRevenue = Order::where('status', 'delivered')->sum('total');
-        $todayRevenue = Order::where('status', 'delivered')->whereDate('delivered_at', $today)->sum('total');
+        $totalRevenue = Order::where('status', 'delivered')->sum(\Illuminate\Support\Facades\DB::raw('total - (deliveryman_payout - delivery_fee)'));
+        $todayRevenue = Order::where('status', 'delivered')->whereDate('delivered_at', $today)->sum(\Illuminate\Support\Facades\DB::raw('total - (deliveryman_payout - delivery_fee)'));
         
         $totalOrders = Order::count();
         $totalUsers = AdminUser::count();

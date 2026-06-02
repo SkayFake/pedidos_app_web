@@ -120,12 +120,12 @@ class DeliveryOrderController extends Controller
             ->orderBy('updated_at', 'desc')
             ->get();
 
-        $totalEarnings = $orders->where('status', 'delivered')->sum('delivery_fee');
+        $totalEarnings = $orders->where('status', 'delivered')->sum('deliveryman_payout');
         
         // Calcular ganancias solo de hoy
         $todayEarnings = $orders->where('status', 'delivered')
                                 ->where('delivered_at', '>=', now()->startOfDay())
-                                ->sum('delivery_fee');
+                                ->sum('deliveryman_payout');
 
         return $this->success([
             'total_earnings' => round($totalEarnings, 2),

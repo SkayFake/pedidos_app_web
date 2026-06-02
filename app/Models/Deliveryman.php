@@ -25,6 +25,13 @@ class Deliveryman extends Authenticatable
         ];
     }
 
+    protected $appends = ['image_url'];
+
+    public function getImageUrlAttribute()
+    {
+        return $this->profile_photo ? url('storage/' . $this->profile_photo) : null;
+    }
+
     public function orders()
     {
         return $this->hasMany(Order::class);

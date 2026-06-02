@@ -27,7 +27,7 @@ class BranchPerformanceTable extends BaseWidget
                     }])
                     ->withSum(['orders as total_revenue' => function ($query) {
                         $query->where('status', 'delivered');
-                    }], 'total')
+                    }], \Illuminate\Support\Facades\DB::raw('total - (deliveryman_payout - delivery_fee)'))
             )
             ->defaultSort('total_revenue', 'desc')
             ->columns([

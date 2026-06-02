@@ -87,7 +87,7 @@ class RevenueChart extends ChartWidget
         };
 
         $revenues = $query
-            ->selectRaw("{$dateSelect} as month, SUM(total) as revenue")
+            ->selectRaw("{$dateSelect} as month, SUM(total - (deliveryman_payout - delivery_fee)) as revenue")
             ->groupByRaw($dateSelect)
             ->orderByRaw($dateSelect)
             ->pluck('revenue', 'month')

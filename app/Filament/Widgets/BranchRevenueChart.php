@@ -25,7 +25,7 @@ class BranchRevenueChart extends ChartWidget
         $branches = Branch::all();
 
         $revenues = Order::where('status', 'delivered')
-            ->select('branch_id', DB::raw('SUM(total) as revenue'))
+            ->select('branch_id', DB::raw('SUM(total - (deliveryman_payout - delivery_fee)) as revenue'))
             ->groupBy('branch_id')
             ->pluck('revenue', 'branch_id')
             ->toArray();

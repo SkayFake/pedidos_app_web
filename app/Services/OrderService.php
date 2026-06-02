@@ -220,7 +220,7 @@ class OrderService
         );
 
         // ── 6. Crear en transacción atómica ────────────────────
-        return DB::transaction(function () use ($user, $dto, $promoResult, $pricing, $coupon, $lat, $lng) {
+        return DB::transaction(function () use ($user, $dto, $promoResult, $pricing, $coupon, $lat, $lng, $deliveryFee) {
             $order = Order::create([
                 'user_id'                => $user->id,
                 'branch_id'              => $dto->branchId,
@@ -232,6 +232,7 @@ class OrderService
                 'status'                 => 'pending',
                 'subtotal'               => $promoResult['subtotal'],
                 'delivery_fee'           => $promoResult['delivery_fee_final'],
+                'deliveryman_payout'     => $deliveryFee,
                 'discount_amount'        => $promoResult['discount_amount'],
                 'total'                  => $promoResult['total'],
                 'is_first_order_promo'   => $promoResult['is_first_order_promo'],

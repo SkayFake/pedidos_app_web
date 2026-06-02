@@ -25,6 +25,13 @@ class User extends Authenticatable
         ];
     }
 
+    protected $appends = ['image_url'];
+
+    public function getImageUrlAttribute()
+    {
+        return $this->image ? url('storage/' . $this->image) : null;
+    }
+
     public function addresses()
     {
         return $this->hasMany(CustomerAddress::class);
