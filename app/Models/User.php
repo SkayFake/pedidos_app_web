@@ -29,7 +29,16 @@ class User extends Authenticatable
 
     public function getImageUrlAttribute()
     {
-        return $this->image ? url('storage/' . $this->image) : null;
+        if ($this->image) {
+            return url('storage/' . $this->image);
+        }
+        if ($this->profile_photo) {
+            if (filter_var($this->profile_photo, FILTER_VALIDATE_URL)) {
+                return $this->profile_photo;
+            }
+            return url('storage/' . $this->profile_photo);
+        }
+        return null;
     }
 
     public function addresses()
