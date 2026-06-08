@@ -36,10 +36,10 @@ class PaymentCardController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'card_number' => 'required|string|size:16|regex:/^\d+$/',
-            'card_holder' => 'required|string|max:100',
-            'expiry_date' => 'required|string|regex:/^(0[1-9]|1[0-2])\/\d{2}$/',
-            'card_type' => 'required|string|max:50',
+            'card_number' => ['required', 'string', 'size:16', 'regex:/^\d+$/'],
+            'card_holder' => ['required', 'string', 'max:100'],
+            'expiry_date' => ['required', 'string', 'regex:/^(0[1-9]|1[0-2])\/\d{2}$/'],
+            'card_type' => ['required', 'string', 'max:50'],
         ]);
 
         $lastFour = substr($validated['card_number'], -4);
