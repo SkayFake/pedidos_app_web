@@ -105,7 +105,7 @@ class KitchenDisplay extends Page
         ]);
 
         Notification::make()
-            ->title("✅ Pedido #{$order->id} listo para enviar")
+            ->title("Pedido #{$order->id} listo para enviar")
             ->success()
             ->send();
 

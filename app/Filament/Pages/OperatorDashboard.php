@@ -98,7 +98,7 @@ class OperatorDashboard extends Page
         $order->update(['status' => 'confirmed']);
 
         Notification::make()
-            ->title("✅ Pedido #{$order->id} confirmado")
+            ->title("Pedido #{$order->id} confirmado")
             ->body("El pedido de {$order->user?->name} fue confirmado.")
             ->success()
             ->send();
@@ -121,7 +121,7 @@ class OperatorDashboard extends Page
         ]);
 
         Notification::make()
-            ->title("❌ Pedido #{$order->id} cancelado")
+            ->title("Pedido #{$order->id} cancelado")
             ->body("Motivo: {$reason}")
             ->danger()
             ->send();

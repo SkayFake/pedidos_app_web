@@ -583,19 +583,40 @@
 <div class="op-stats">
     <div class="op-stat stat-pending">
         <div class="op-stat-num">{{ $pending }}</div>
-        <div class="op-stat-lbl">⏳ Pendientes</div>
+        <div class="op-stat-lbl" style="display: flex; align-items: center; justify-content: center; gap: 0.25rem;">
+            <svg style="width:16px; height:16px; flex-shrink:0;" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"></path>
+            </svg>
+            Pendientes
+        </div>
     </div>
     <div class="op-stat stat-active">
         <div class="op-stat-num">{{ $confirmed + $preparing }}</div>
-        <div class="op-stat-lbl">🍳 En proceso</div>
+        <div class="op-stat-lbl" style="display: flex; align-items: center; justify-content: center; gap: 0.25rem;">
+            <svg style="width:16px; height:16px; flex-shrink:0;" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.362 5.214A8.252 8.252 0 0 1 12 21 8.25 8.25 0 0 1 6.038 7.047 8.287 8.287 0 0 0 9 9.601a8.983 8.983 0 0 1 3.361-6.867 8.21 8.21 0 0 0 3 2.48Z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 18a3.75 3.75 0 0 0 .495-7.467 5.99 5.99 0 0 0-1.925 3.546 5.974 5.974 0 0 1-2.133-1A3.75 3.75 0 0 0 12 18Z"></path>
+            </svg>
+            En proceso
+        </div>
     </div>
     <div class="op-stat stat-ready">
         <div class="op-stat-num">{{ $ready }}</div>
-        <div class="op-stat-lbl">✅ Listos</div>
+        <div class="op-stat-lbl" style="display: flex; align-items: center; justify-content: center; gap: 0.25rem;">
+            <svg style="width:16px; height:16px; flex-shrink:0;" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"></path>
+            </svg>
+            Listos
+        </div>
     </div>
     <div class="op-stat stat-way">
         <div class="op-stat-num">{{ $inWay }}</div>
-        <div class="op-stat-lbl">🛵 En camino</div>
+        <div class="op-stat-lbl" style="display: flex; align-items: center; justify-content: center; gap: 0.25rem;">
+            <svg style="width:16px; height:16px; flex-shrink:0;" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124l-.317-5.074a2.25 2.25 0 0 0-2.246-2.112h-3v5.625M9 10.5V18m3-5.25v5.25M3.75 10.5H18"></path>
+            </svg>
+            En camino
+        </div>
     </div>
 </div>
 
@@ -754,7 +775,12 @@
 {{-- ═══════════════════ MODAL: CONFIRMAR PEDIDO ════════════════════ --}}
 <div class="op-modal-bg" x-show="confirmModalOpen" x-transition style="display:none;">
     <div class="op-modal" @click.stop>
-        <div class="op-modal-title">✅ Confirmar Pedido</div>
+        <div class="op-modal-title" style="display: flex; align-items: center; gap: 0.5rem;">
+            <svg style="width:24px; height:24px; color:#34d399;" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"></path>
+            </svg>
+            Confirmar Pedido
+        </div>
         <div class="op-modal-sub">Revisa el pedido antes de confirmar</div>
 
         <div style="font-size:0.8rem;color:rgba(255,255,255,0.4);margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:0.06em;">
@@ -793,7 +819,12 @@
 {{-- ═══════════════════ MODAL: CANCELAR PEDIDO ════════════════════ --}}
 <div class="op-modal-bg" x-show="cancelModalOpen" x-transition style="display:none;">
     <div class="op-modal" @click.stop>
-        <div class="op-modal-title">❌ Cancelar Pedido</div>
+        <div class="op-modal-title" style="display: flex; align-items: center; gap: 0.5rem;">
+            <svg style="width:24px; height:24px; color:#f43f5e;" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"></path>
+            </svg>
+            Cancelar Pedido
+        </div>
         <div class="op-modal-sub">Indica el motivo de cancelación (requerido)</div>
 
         <textarea

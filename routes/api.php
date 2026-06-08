@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\V1\GoogleAuthController;
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\CouponController;
 use App\Http\Controllers\Api\V1\CustomerAddressController;
+use App\Http\Controllers\Api\V1\PaymentCardController;
 use App\Http\Controllers\Api\V1\DeliveryAuthController;
 use App\Http\Controllers\Api\V1\DeliveryOrderController;
 use App\Http\Controllers\Api\V1\OrderController;
@@ -73,6 +74,11 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     // Direcciones del cliente
     Route::apiResource('addresses', CustomerAddressController::class)
         ->except(['show']);
+
+    // Tarjetas de pago del cliente
+    Route::get('/payment-cards', [PaymentCardController::class, 'index']);
+    Route::post('/payment-cards', [PaymentCardController::class, 'store']);
+    Route::delete('/payment-cards/{id}', [PaymentCardController::class, 'destroy']);
 
     // Cupones — Validación pre-checkout
     Route::post('/coupons/validate', [CouponController::class, 'validateCoupon']);
