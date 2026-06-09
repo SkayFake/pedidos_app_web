@@ -20,7 +20,7 @@ class ProductResource extends JsonResource
             'time_preparation' => $this->time_preparation,
             'base_price'     => number_format((float) $this->base_price, 2, '.', ''),
             'base_price_fmt' => '$' . number_format((float) $this->base_price, 2),
-            'image' => $this->image ? str_replace(config('app.url'), config('app.asset_url', config('app.url')), asset('storage/' . $this->image)) : null,
+            'image' => $this->image ? str_replace(config('app.url'), config('app.asset_url') ?: config('app.url'), asset('storage/' . $this->image)) : null,
             'is_available' => (bool) $this->is_available,
             'is_recommended' => (bool) $this->is_recommended,
             'is_popular' => (bool) $this->is_popular,
