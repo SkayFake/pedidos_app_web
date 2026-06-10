@@ -22,14 +22,15 @@ class PasswordResetMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Código de Recuperación de Contraseña',
+            subject: 'Código de Recuperación - ' . config('app.name'),
         );
     }
 
     public function content(): Content
     {
         return new Content(
-            htmlString: "<div style='font-family: sans-serif;'><h1>Recuperación de Contraseña</h1><p>Tu código de recuperación es: <strong>{$this->otp}</strong></p><p>Este código expira en 15 minutos.</p></div>"
+            view: 'emails.password-reset',
+            with: ['otp' => $this->otp],
         );
     }
 }

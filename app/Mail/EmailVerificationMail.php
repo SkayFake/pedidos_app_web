@@ -22,14 +22,15 @@ class EmailVerificationMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Verifica tu Correo Electrónico',
+            subject: 'Verifica tu Correo - ' . config('app.name'),
         );
     }
 
     public function content(): Content
     {
         return new Content(
-            htmlString: "<div style='font-family: sans-serif;'><h1>Bienvenido a la App</h1><p>Tu código de verificación es: <strong>{$this->otp}</strong></p><p>Ingrésalo en la aplicación para activar tu cuenta.</p></div>"
+            view: 'emails.verification',
+            with: ['otp' => $this->otp],
         );
     }
 }

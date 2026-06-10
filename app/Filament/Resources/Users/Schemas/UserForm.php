@@ -70,8 +70,7 @@ class UserForm
                     ]),
                 DateTimePicker::make('email_verified_at')
                     ->label('Email Verificado'),
-                TextInput::make('profile_photo')
-                    ->label('Foto de Perfil'),
+
                 Toggle::make('is_active')
                     ->label('Activo')
                     ->required(),
