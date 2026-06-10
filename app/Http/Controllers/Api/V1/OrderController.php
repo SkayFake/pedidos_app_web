@@ -230,10 +230,16 @@ class OrderController extends Controller
             'cancelled_at'        => now(),
         ]);
 
-        $order->load(['branch', 'items.product']);
+        $freshOrder = $order->fresh(['branch', 'items.product']);
+        if (!$freshOrder) {
+            $freshOrder = \App\Models\ArchivedOrder::with(['branch', 'items.product'])
+                ->where('user_id', $order->user_id)
+                ->where('created_at', $order->created_at)
+                ->first();
+        }
 
         return $this->success(
-            new OrderResource($order),
+            new OrderResource($freshOrder),
             'Pedido cancelado exitosamente.'
         );
     }

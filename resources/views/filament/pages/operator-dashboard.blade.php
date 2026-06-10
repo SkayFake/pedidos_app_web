@@ -100,7 +100,7 @@
     .op-root {
         min-height: 100%;
         padding: 0;
-        font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+        font-family: 'Roboto', ui-sans-serif, system-ui, sans-serif;
         position: relative;
     }
     @media (min-width: 640px) {
@@ -112,7 +112,7 @@
         display: flex; align-items: center; justify-content: space-between;
         flex-wrap: wrap; gap: 1rem;
         background: #ffffff;
-        border: 1px solid rgba(0, 119, 182, 0.08);
+        border: 1px solid rgba(137, 218, 208, 0.08);
         border-radius: 16px;
         padding: 1rem 1.25rem;
         margin-bottom: 1.25rem;
@@ -121,7 +121,7 @@
 
     :is(.dark) .op-header {
         background: rgba(15, 23, 42, 0.6);
-        border-color: rgba(0, 180, 216, 0.08);
+        border-color: rgba(105, 197, 223, 0.08);
     }
 
     @media (min-width: 768px) {
@@ -135,11 +135,11 @@
     .op-header-left { display: flex; align-items: center; gap: 0.75rem; flex: 1; min-width: 0; }
     .op-logo {
         width: 40px; height: 40px; flex-shrink: 0;
-        background: linear-gradient(135deg, var(--ocean-primary, #0077B6), var(--ocean-sky, #00B4D8));
+        background: linear-gradient(135deg, var(--ocean-primary, #89DAD0), var(--ocean-sky, #69C5DF));
         border-radius: 12px;
         display: flex; align-items: center; justify-content: center;
         color: white;
-        box-shadow: 0 4px 15px rgba(0, 119, 182, 0.3);
+        box-shadow: 0 4px 15px rgba(137, 218, 208, 0.3);
     }
 
     @media (min-width: 640px) {
@@ -199,13 +199,13 @@
     }
     .op-stat {
         background: #ffffff;
-        border: 1px solid rgba(0, 119, 182, 0.08);
+        border: 1px solid rgba(137, 218, 208, 0.08);
         border-radius: 12px; padding: 0.85rem 1rem; text-align: center;
         box-shadow: var(--shadow-soft, 0 2px 4px rgba(0,0,0,0.02));
     }
     :is(.dark) .op-stat {
         background: rgba(15, 23, 42, 0.6);
-        border-color: rgba(0, 180, 216, 0.08);
+        border-color: rgba(105, 197, 223, 0.08);
     }
     .op-stat-num  { font-size: 1.6rem; font-weight: 900; line-height: 1; color: #0f172a; }
     :is(.dark) .op-stat-num { color: #f8fafc; }
@@ -299,7 +299,7 @@
     /* ── Order card ──────────────────────────────────────────── */
     .op-card {
         background: #ffffff;
-        border: 1px solid rgba(0, 119, 182, 0.08);
+        border: 1px solid rgba(137, 218, 208, 0.08);
         border-radius: 18px;
         overflow: hidden;
         margin-bottom: 1rem;
@@ -309,7 +309,7 @@
     }
     :is(.dark) .op-card {
         background: rgba(15, 23, 42, 0.6);
-        border-color: rgba(0, 180, 216, 0.08);
+        border-color: rgba(105, 197, 223, 0.08);
     }
         margin-bottom: 1rem;
         transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
@@ -516,7 +516,7 @@
     .op-empty {
         text-align: center; padding: 4rem 2rem;
         background: #ffffff;
-        border: 1px dashed rgba(0, 119, 182, 0.2);
+        border: 1px dashed rgba(137, 218, 208, 0.2);
         border-radius: 20px;
     }
     :is(.dark) .op-empty {

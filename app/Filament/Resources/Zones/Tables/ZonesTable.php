@@ -41,13 +41,16 @@ class ZonesTable
                     ->sortable(),
                 IconColumn::make('allow_out_of_zone_delivery')
                     ->label('Fuera de Zona')
-                    ->boolean(),
+                    ->boolean()
+                    ->color(fn (bool $state): string => $state ? 'success' : 'danger'),
                 IconColumn::make('is_deliverable')
                     ->label('Tiene Cobertura')
-                    ->boolean(),
+                    ->boolean()
+                    ->color(fn (bool $state): string => $state ? 'success' : 'danger'),
                 IconColumn::make('is_active')
                     ->label('Activa')
-                    ->boolean(),
+                    ->boolean()
+                    ->color(fn (bool $state): string => $state ? 'success' : 'danger'),
                 TextColumn::make('created_at')
                     ->label('Fecha de Creación')
                     ->dateTime()

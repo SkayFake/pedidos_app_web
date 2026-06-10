@@ -37,7 +37,8 @@ class UsersTable
                     ->searchable(),
                 IconColumn::make('is_active')
                     ->label('Activo')
-                    ->boolean(),
+                    ->boolean()
+                    ->color(fn (bool $state): string => $state ? 'success' : 'danger'),
                 TextColumn::make('loyalty_points')
                     ->label('Puntos Fidelidad')
                     ->numeric()

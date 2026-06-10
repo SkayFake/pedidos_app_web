@@ -20,14 +20,16 @@ class CategoriesTable
                     ->label('Nombre')
                     ->searchable(),
                 ImageColumn::make('image')
-                    ->label('Imagen'),
+                    ->label('Imagen')
+                    ->disk('public'),
                 TextColumn::make('sort_order')
                     ->label('Orden')
                     ->numeric()
                     ->sortable(),
                 IconColumn::make('is_active')
                     ->label('Activa')
-                    ->boolean(),
+                    ->boolean()
+                    ->color(fn (bool $state): string => $state ? 'success' : 'danger'),
                 TextColumn::make('created_at')
                     ->label('Fecha de Creación')
                     ->dateTime()

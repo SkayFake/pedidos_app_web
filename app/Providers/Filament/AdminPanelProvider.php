@@ -38,14 +38,16 @@ class AdminPanelProvider extends PanelProvider
             ->passwordReset()
             ->authGuard('admin')
             ->brandName('Delivery App')
-            ->font('Inter')
+            ->brandLogo(asset('images/logo.png'))
+            ->brandLogoHeight('2.5rem')
+            ->font('Roboto')
             ->colors([
-                'primary' => Color::hex('#0077B6'),
-                'gray' => Color::Slate,
-                'danger' => Color::Rose,
-                'info' => Color::Sky,
-                'success' => Color::Emerald,
-                'warning' => Color::Amber,
+                'primary' => Color::hex('#89DAD0'),
+                'gray' => Color::hex('#8F837F'),
+                'danger' => Color::hex('#FF5252'),
+                'info' => Color::hex('#69C5DF'),
+                'success' => Color::hex('#4CAF50'),
+                'warning' => Color::hex('#FF9800'),
             ])
             ->defaultThemeMode(ThemeMode::System)
             ->sidebarCollapsibleOnDesktop()

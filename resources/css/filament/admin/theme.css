@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap');
 @import 'tailwindcss' source(none);
 @import '../../../../vendor/filament/filament/resources/css/index.css';
 
@@ -13,31 +13,31 @@
 
 /* ── Custom Properties ────────────────────────────────────────── */
 :root {
-    --ocean-50: #e0f7fa;
-    --ocean-100: #b2ebf2;
-    --ocean-200: #80deea;
-    --ocean-300: #4dd0e1;
-    --ocean-400: #26c6da;
-    --ocean-500: #0097a7;
-    --ocean-600: #00838f;
-    --ocean-700: #006064;
-    --ocean-800: #004d40;
-    --ocean-900: #00363a;
-    --ocean-primary: #0077B6;
-    --ocean-deep: #023E8A;
-    --ocean-sky: #00B4D8;
-    --ocean-light: #90E0EF;
-    --ocean-pale: #CAF0F8;
-    --shadow-soft: 0 2px 15px -3px rgba(0, 119, 182, 0.08), 0 4px 6px -4px rgba(0, 119, 182, 0.05);
-    --shadow-medium: 0 4px 25px -5px rgba(0, 119, 182, 0.12), 0 8px 10px -6px rgba(0, 119, 182, 0.06);
-    --shadow-glow: 0 0 20px rgba(0, 119, 182, 0.15);
+    --ocean-50: #E0F7F4;
+    --ocean-100: #B2EBE3;
+    --ocean-200: #89DAD0;
+    --ocean-300: #6FC9BE;
+    --ocean-400: #5CBFB4;
+    --ocean-500: #4AADA3;
+    --ocean-600: #3D9A91;
+    --ocean-700: #2F877E;
+    --ocean-800: #22746C;
+    --ocean-900: #155F59;
+    --ocean-primary: #89DAD0;
+    --ocean-deep: #2F877E;
+    --ocean-sky: #69C5DF;
+    --ocean-light: #B2EBE3;
+    --ocean-pale: #E0F7F4;
+    --shadow-soft: 0 2px 15px -3px rgba(137, 218, 208, 0.08), 0 4px 6px -4px rgba(137, 218, 208, 0.05);
+    --shadow-medium: 0 4px 25px -5px rgba(137, 218, 208, 0.12), 0 8px 10px -6px rgba(137, 218, 208, 0.06);
+    --shadow-glow: 0 0 20px rgba(137, 218, 208, 0.15);
     --radius-xl: 1rem;
     --radius-2xl: 1.25rem;
 }
 
 /* ── Base Styles ──────────────────────────────────────────────── */
 body {
-    font-family: 'Inter', ui-sans-serif, system-ui, sans-serif !important;
+    font-family: 'Roboto', ui-sans-serif, system-ui, sans-serif !important;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -46,13 +46,13 @@ body {
    SIDEBAR — Elegante y Premium
    ══════════════════════════════════════════════════════════════ */
 .fi-sidebar {
-    border-right: 1px solid rgba(0, 119, 182, 0.08) !important;
+    border-right: 1px solid rgba(137, 218, 208, 0.08) !important;
     background: linear-gradient(180deg, #ffffff 0%, #f8fdff 100%) !important;
 }
 
 :is(.dark) .fi-sidebar {
     background: linear-gradient(180deg, #0f172a 0%, #0c1829 100%) !important;
-    border-right-color: rgba(0, 180, 216, 0.1) !important;
+    border-right-color: rgba(105, 197, 223, 0.1) !important;
 }
 
 .fi-sidebar-nav-groups {
@@ -78,12 +78,12 @@ body {
 .fi-topbar {
     backdrop-filter: blur(12px) saturate(180%) !important;
     background: rgba(255, 255, 255, 0.85) !important;
-    border-bottom: 1px solid rgba(0, 119, 182, 0.06) !important;
+    border-bottom: 1px solid rgba(137, 218, 208, 0.06) !important;
 }
 
 :is(.dark) .fi-topbar {
     background: rgba(15, 23, 42, 0.85) !important;
-    border-bottom-color: rgba(0, 180, 216, 0.08) !important;
+    border-bottom-color: rgba(105, 197, 223, 0.08) !important;
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -92,7 +92,7 @@ body {
 .fi-section {
     border-radius: var(--radius-xl) !important;
     box-shadow: var(--shadow-soft) !important;
-    border: 1px solid rgba(0, 119, 182, 0.06) !important;
+    border: 1px solid rgba(137, 218, 208, 0.06) !important;
     transition: box-shadow 0.3s ease, transform 0.2s ease !important;
     overflow: hidden;
 }
@@ -102,7 +102,7 @@ body {
 }
 
 :is(.dark) .fi-section {
-    border-color: rgba(0, 180, 216, 0.08) !important;
+    border-color: rgba(105, 197, 223, 0.08) !important;
     background: rgba(15, 23, 42, 0.6) !important;
 }
 
@@ -112,7 +112,7 @@ body {
 .fi-wi-stats-overview-stat {
     border-radius: var(--radius-xl) !important;
     box-shadow: var(--shadow-soft) !important;
-    border: 1px solid rgba(0, 119, 182, 0.07) !important;
+    border: 1px solid rgba(137, 218, 208, 0.07) !important;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
     overflow: hidden;
 }
@@ -122,9 +122,10 @@ body {
     transform: translateY(-2px) !important;
 }
 
-:is(.dark) .fi-wi-stats-overview-stat {
-    background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(30, 41, 59, 0.6)) !important;
-    border-color: rgba(0, 180, 216, 0.1) !important;
+:is(.dark) .fi-wi-stats-overview-stat,
+.dark .fi-wi-stats-overview-stat {
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(19, 28, 46, 0.6)) !important;
+    border-color: rgba(105, 197, 223, 0.1) !important;
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -133,12 +134,12 @@ body {
 .fi-wi-chart {
     border-radius: var(--radius-xl) !important;
     box-shadow: var(--shadow-soft) !important;
-    border: 1px solid rgba(0, 119, 182, 0.06) !important;
+    border: 1px solid rgba(137, 218, 208, 0.06) !important;
     overflow: hidden;
 }
 
 :is(.dark) .fi-wi-chart {
-    border-color: rgba(0, 180, 216, 0.08) !important;
+    border-color: rgba(105, 197, 223, 0.08) !important;
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -155,11 +156,11 @@ body {
     text-transform: uppercase !important;
     font-size: 0.7rem !important;
     letter-spacing: 0.05em !important;
-    color: rgba(0, 119, 182, 0.7) !important;
+    color: rgba(137, 218, 208, 0.7) !important;
 }
 
 :is(.dark) .fi-ta-header-cell {
-    color: rgba(0, 180, 216, 0.7) !important;
+    color: rgba(105, 197, 223, 0.7) !important;
 }
 
 .fi-ta-row {
@@ -167,11 +168,11 @@ body {
 }
 
 .fi-ta-row:hover {
-    background-color: rgba(0, 119, 182, 0.03) !important;
+    background-color: rgba(137, 218, 208, 0.03) !important;
 }
 
 :is(.dark) .fi-ta-row:hover {
-    background-color: rgba(0, 180, 216, 0.05) !important;
+    background-color: rgba(105, 197, 223, 0.05) !important;
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -185,7 +186,7 @@ body {
 
 .fi-btn:hover {
     transform: translateY(-1px) !important;
-    box-shadow: 0 4px 12px rgba(0, 119, 182, 0.2) !important;
+    box-shadow: 0 4px 12px rgba(137, 218, 208, 0.2) !important;
 }
 
 .fi-btn:active {
@@ -201,7 +202,7 @@ body {
 }
 
 .fi-input:focus-within {
-    box-shadow: 0 0 0 3px rgba(0, 119, 182, 0.12) !important;
+    box-shadow: 0 0 0 3px rgba(137, 218, 208, 0.12) !important;
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -244,7 +245,7 @@ body {
         justify-content: center;
         width: 42%;
         min-height: 100vh;
-        background: linear-gradient(135deg, #023E8A 0%, #0077B6 40%, #00B4D8 100%);
+        background: linear-gradient(135deg, #2F877E 0%, #89DAD0 40%, #69C5DF 100%);
         position: fixed;
         left: 0;
         top: 0;
@@ -272,7 +273,7 @@ body {
         right: -20%;
         width: 60%;
         height: 60%;
-        background: radial-gradient(circle, rgba(0, 180, 216, 0.3) 0%, transparent 70%);
+        background: radial-gradient(circle, rgba(105, 197, 223, 0.3) 0%, transparent 70%);
         border-radius: 50%;
         animation: pulse-slow 8s ease-in-out infinite;
     }
@@ -282,7 +283,7 @@ body {
     }
 
     :is(.dark) .fi-login-branding-panel::before {
-        background: radial-gradient(ellipse at 30% 50%, rgba(0, 119, 182, 0.1) 0%, transparent 60%);
+        background: radial-gradient(ellipse at 30% 50%, rgba(137, 218, 208, 0.1) 0%, transparent 60%);
     }
 
     .fi-simple-layout .fi-simple-main-ctn {
@@ -309,7 +310,7 @@ body {
 }
 
 .fi-login-branding-logo span {
-    background: linear-gradient(135deg, #ffffff 0%, #CAF0F8 100%);
+    background: linear-gradient(135deg, #ffffff 0%, #E0F7F4 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -353,19 +354,35 @@ body {
 }
 
 /* Login form card styling */
-.fi-simple-page {
+.fi-simple-main {
     background: rgba(255, 255, 255, 0.95) !important;
     backdrop-filter: blur(20px) !important;
     border-radius: var(--radius-2xl) !important;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 119, 182, 0.05) !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(137, 218, 208, 0.05) !important;
     padding: 2.5rem !important;
-    width: 100%;
-    max-width: 440px !important;
+    border: 1px solid rgba(137, 218, 208, 0.05) !important;
 }
 
-:is(.dark) .fi-simple-page {
-    background: rgba(15, 23, 42, 0.9) !important;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(0, 180, 216, 0.1) !important;
+.fi-simple-page {
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+}
+
+:is(.dark) .fi-simple-main,
+.dark .fi-simple-main {
+    background: rgba(15, 23, 42, 0.95) !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(105, 197, 223, 0.1) !important;
+    border: 1px solid rgba(137, 218, 208, 0.12) !important;
+}
+
+:is(.dark) .fi-simple-page,
+.dark .fi-simple-page {
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
 }
 
 /* Hide the default Filament logo on login */
@@ -410,20 +427,20 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: rgba(0, 119, 182, 0.2);
+    background: rgba(137, 218, 208, 0.2);
     border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 119, 182, 0.4);
+    background: rgba(137, 218, 208, 0.4);
 }
 
 :is(.dark) ::-webkit-scrollbar-thumb {
-    background: rgba(0, 180, 216, 0.2);
+    background: rgba(105, 197, 223, 0.2);
 }
 
 :is(.dark) ::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 180, 216, 0.4);
+    background: rgba(105, 197, 223, 0.4);
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -548,5 +565,587 @@ body {
         animation: none !important;
         transition: none !important;
     }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   PERSONALIZACIONES SOLICITADAS POR EL USUARIO (ARMONÍA Y CLARIDAD)
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── 1. BARRA LATERAL EN MODO CLARO (Blanco y Celeste Pastel, excelente armonía y legibilidad) ── */
+html:not(.dark) .fi-sidebar {
+    background: linear-gradient(180deg, #ffffff 0%, #f0fbf9 100%) !important;
+    border-right: 1px solid #e5e7eb !important;
+}
+
+html:not(.dark) .fi-sidebar-header {
+    border-bottom: 1px solid #e5e7eb !important;
+}
+
+html:not(.dark) .fi-sidebar-header .fi-logo,
+html:not(.dark) .fi-sidebar-header * {
+    color: #000000 !important;
+}
+
+html:not(.dark) .fi-sidebar-group-label {
+    color: #5c524f !important; /* Títulos de secciones en color café oscuro/carbón */
+    font-weight: 700 !important;
+}
+
+html:not(.dark) .fi-sidebar-item-button {
+    color: #332d2b !important; /* Letras principales en carbón */
+}
+
+html:not(.dark) .fi-sidebar-item-button svg,
+html:not(.dark) .fi-sidebar-item-button .fi-sidebar-item-icon {
+    color: #5c524f !important;
+}
+
+html:not(.dark) .fi-sidebar-item-button:hover {
+    background-color: rgba(137, 218, 208, 0.15) !important; /* Celeste suave en hover */
+}
+
+/* Item activo en el sidebar (Celeste con Letras Negras para alto contraste) */
+html:not(.dark) .fi-sidebar-item.fi-active,
+html:not(.dark) .fi-sidebar-item-button.fi-active,
+html:not(.dark) .fi-sidebar-item.fi-active *,
+html:not(.dark) .fi-sidebar-item-button.fi-active * {
+    background-color: #89DAD0 !important; /* Celeste */
+    color: #000000 !important; /* Negro de alto contraste */
+}
+
+html:not(.dark) .fi-sidebar-item-button .fi-badge {
+    background-color: #2f877e !important;
+    color: #ffffff !important;
+}
+
+html:not(.dark) .fi-sidebar button,
+html:not(.dark) .fi-sidebar button svg {
+    color: #332d2b !important;
+}
+
+html:not(.dark) .fi-sidebar-sub-group-list {
+    border-left: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+
+/* ── 2. BARRA LATERAL EN MODO OSCURO (Armonía con tema oscuro) ── */
+:is(.dark) .fi-sidebar {
+    background: #0f172a !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+:is(.dark) .fi-sidebar-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+:is(.dark) .fi-sidebar-header .fi-logo {
+    color: #ffffff !important;
+}
+
+:is(.dark) .fi-sidebar-group-label {
+    color: #94a3b8 !important;
+    font-weight: 700 !important;
+}
+
+:is(.dark) .fi-sidebar-item-button {
+    color: #cbd5e1 !important;
+}
+
+:is(.dark) .fi-sidebar-item-button svg,
+:is(.dark) .fi-sidebar-item-button .fi-sidebar-item-icon {
+    color: #94a3b8 !important;
+}
+
+:is(.dark) .fi-sidebar-item-button:hover {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Item activo en el sidebar oscuro */
+:is(.dark) .fi-sidebar-item.fi-active,
+:is(.dark) .fi-sidebar-item-button.fi-active,
+:is(.dark) .fi-sidebar-item.fi-active *,
+:is(.dark) .fi-sidebar-item-button.fi-active * {
+    background-color: #89DAD0 !important; /* Celeste */
+    color: #000000 !important; /* Negro de alto contraste */
+}
+
+:is(.dark) .fi-sidebar-item-button .fi-badge {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+}
+
+:is(.dark) .fi-sidebar button,
+:is(.dark) .fi-sidebar button svg {
+    color: #cbd5e1 !important;
+}
+
+
+/* ── 3. CONTENIDO EN MODO CLARO (Blanco, Negro y Celeste) ── */
+html:not(.dark) body {
+    background-color: #f8fafc !important;
+    color: #000000 !important;
+}
+
+/* Cabeceras, títulos y textos de etiquetas principales en Negro Puro */
+html:not(.dark) .fi-header-title,
+html:not(.dark) .fi-header-heading,
+html:not(.dark) .fi-section-header-heading,
+html:not(.dark) .fi-section-header-heading *,
+html:not(.dark) .fi-ta-header-cell,
+html:not(.dark) .fi-ta-header-cell *,
+html:not(.dark) .fi-infolist-entry-label,
+html:not(.dark) .fi-infolist-entry-label *,
+html:not(.dark) .fi-fo-field-wrp-label,
+html:not(.dark) .fi-fo-field-wrp-label *,
+html:not(.dark) h1, html:not(.dark) h2, html:not(.dark) h3,
+html:not(.dark) .text-gray-950, html:not(.dark) .text-gray-900, html:not(.dark) .text-gray-800 {
+    color: #000000 !important;
+}
+
+/* Subtextos o explicaciones secundarias en color gris oscuro para mantener la legibilidad */
+html:not(.dark) .text-gray-500,
+html:not(.dark) .text-gray-600,
+html:not(.dark) .fi-breadcrumbs-item-label {
+    color: #4b5563 !important;
+}
+
+/* Secciones y tarjetas con fondo Blanco */
+html:not(.dark) .fi-section,
+html:not(.dark) .fi-card,
+html:not(.dark) .fi-resource-view-page .fi-section,
+html:not(.dark) .fi-resource-view-page .fi-card,
+html:not(.dark) .fi-infolist,
+html:not(.dark) .fi-infolist-section {
+    background-color: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+}
+
+/* Tablas con borde de 1px gris claro */
+html:not(.dark) .fi-ta {
+    border: 1px solid #e5e7eb !important;
+    background-color: #ffffff !important;
+}
+html:not(.dark) .fi-ta-header-cell {
+    background-color: #f9fafb !important;
+    border-bottom: 1px solid #e5e7eb !important;
+}
+html:not(.dark) .fi-ta-row {
+    background-color: #ffffff !important;
+    border-bottom: 1px solid #f3f4f6 !important;
+}
+html:not(.dark) .fi-ta-row:hover {
+    background-color: rgba(137, 218, 208, 0.08) !important; /* Hover celeste super suave */
+}
+html:not(.dark) .fi-ta-cell,
+html:not(.dark) .fi-ta-cell * {
+    color: #111827 !important; /* Celdas en color oscuro legible */
+}
+
+
+/* ── 4. CONTENIDO EN MODO OSCURO (Inspirado en el Panel de Operador: Navy/Slate & Celeste) ── */
+
+:is(.dark), .dark {
+    /* --- Override all grey/slate/zinc/neutral/stone color palettes with Dark Blue / Navy shades --- */
+    --color-gray-950: #090d16 !important;
+    --color-gray-900: #0f172a !important;
+    --color-gray-800: #131c2e !important;
+    --color-gray-700: #1c2844 !important;
+    --color-gray-600: #24355a !important;
+    --color-gray-500: #62759f !important;
+    --color-gray-400: #8fa4c7 !important;
+    --color-gray-300: #c3d1e6 !important;
+    --color-gray-200: #e0e7f5 !important;
+    --color-gray-100: #f0f4fc !important;
+    --color-gray-5: #f7f9fd !important;
+    --color-gray-50: #f7f9fd !important;
+
+    --color-slate-950: #090d16 !important;
+    --color-slate-900: #0f172a !important;
+    --color-slate-800: #131c2e !important;
+    --color-slate-700: #1c2844 !important;
+    --color-slate-600: #24355a !important;
+    --color-slate-500: #62759f !important;
+    --color-slate-400: #8fa4c7 !important;
+    --color-slate-300: #c3d1e6 !important;
+    --color-slate-200: #e0e7f5 !important;
+    --color-slate-100: #f0f4fc !important;
+    --color-slate-50: #f7f9fd !important;
+
+    --color-zinc-950: #090d16 !important;
+    --color-zinc-900: #0f172a !important;
+    --color-zinc-800: #131c2e !important;
+    --color-zinc-700: #1c2844 !important;
+    --color-zinc-600: #24355a !important;
+    --color-zinc-500: #62759f !important;
+    --color-zinc-400: #8fa4c7 !important;
+    --color-zinc-300: #c3d1e6 !important;
+    --color-zinc-200: #e0e7f5 !important;
+    --color-zinc-100: #f0f4fc !important;
+    --color-zinc-50: #f7f9fd !important;
+
+    --color-neutral-950: #090d16 !important;
+    --color-neutral-900: #0f172a !important;
+    --color-neutral-800: #131c2e !important;
+    --color-neutral-700: #1c2844 !important;
+    --color-neutral-600: #24355a !important;
+    --color-neutral-500: #62759f !important;
+    --color-neutral-400: #8fa4c7 !important;
+    --color-neutral-300: #c3d1e6 !important;
+    --color-neutral-200: #e0e7f5 !important;
+    --color-neutral-100: #f0f4fc !important;
+    --color-neutral-50: #f7f9fd !important;
+
+    --color-stone-950: #090d16 !important;
+    --color-stone-900: #0f172a !important;
+    --color-stone-800: #131c2e !important;
+    --color-stone-700: #1c2844 !important;
+    --color-stone-600: #24355a !important;
+    --color-stone-500: #62759f !important;
+    --color-stone-400: #8fa4c7 !important;
+    --color-stone-300: #c3d1e6 !important;
+    --color-stone-200: #e0e7f5 !important;
+    --color-stone-100: #f0f4fc !important;
+    --color-stone-50: #f7f9fd !important;
+
+    /* Filament specific variables */
+    --gray-950: #090d16 !important;
+    --gray-900: #0f172a !important;
+    --gray-800: #131c2e !important;
+    --gray-700: #1c2844 !important;
+    --gray-600: #24355a !important;
+    --gray-500: #62759f !important;
+    --gray-400: #8fa4c7 !important;
+    --gray-300: #c3d1e6 !important;
+    --gray-200: #e0e7f5 !important;
+    --gray-100: #f0f4fc !important;
+    --gray-50: #f7f9fd !important;
+}
+
+:is(.dark) body,
+:is(.dark) .fi-layout,
+:is(.dark) .fi-main,
+:is(.dark) .fi-topbar-ctn,
+:is(.dark) .fi-app,
+:is(.dark) .fi-body,
+:is(.dark) main,
+.dark body,
+.dark .fi-layout,
+.dark .fi-main,
+.dark .fi-topbar-ctn,
+.dark .fi-app,
+.dark .fi-body,
+.dark main {
+    background-color: #090d16 !important;
+    color: #ffffff !important;
+}
+
+/* Secciones, tarjetas, infolists y widgets con el fondo Navy/Slate del operador (#0f172a) y borde suave */
+:is(.dark) .fi-section,
+:is(.dark) .fi-card,
+:is(.dark) .fi-resource-view-page .fi-section,
+:is(.dark) .fi-resource-view-page .fi-card,
+:is(.dark) .fi-infolist,
+:is(.dark) .fi-infolist-section,
+:is(.dark) .fi-wi-stats-overview-stat,
+:is(.dark) .fi-wi-chart,
+.dark .fi-section,
+.dark .fi-card,
+.dark .fi-resource-view-page .fi-section,
+.dark .fi-resource-view-page .fi-card,
+.dark .fi-infolist,
+.dark .fi-infolist-section,
+.dark .fi-wi-stats-overview-stat,
+.dark .fi-wi-chart {
+    background-color: #0f172a !important;
+    border: 1px solid rgba(137, 218, 208, 0.12) !important;
+}
+
+/* Tablas con fondo Navy/Slate unificado y bordes suaves celestes */
+:is(.dark) .fi-ta,
+.dark .fi-ta {
+    border: 1px solid rgba(137, 218, 208, 0.18) !important;
+    background-color: #0f172a !important;
+}
+
+/* Contenedores de cabecera de la tabla (búsqueda y filtros) y el pie de página (paginación) */
+:is(.dark) .fi-ta-header,
+:is(.dark) .fi-ta-header-ctn,
+:is(.dark) .fi-ta-ctn > div,
+:is(.dark) .fi-ta-footer,
+:is(.dark) .fi-ta-pagination,
+:is(.dark) .fi-ta-actions-ctn,
+:is(.dark) .fi-ta-selection-indicator,
+:is(.dark) .fi-ta-empty-state,
+.dark .fi-ta-header,
+.dark .fi-ta-header-ctn,
+.dark .fi-ta-ctn > div,
+.dark .fi-ta-footer,
+.dark .fi-ta-pagination,
+.dark .fi-ta-actions-ctn,
+.dark .fi-ta-selection-indicator,
+.dark .fi-ta-empty-state {
+    background-color: #0f172a !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Celdas de encabezado de tabla */
+:is(.dark) .fi-ta-header-cell,
+.dark .fi-ta-header-cell {
+    background-color: #131c2e !important;
+    border-bottom: 1px solid rgba(137, 218, 208, 0.15) !important;
+}
+
+:is(.dark) .fi-ta-header-cell *,
+.dark .fi-ta-header-cell * {
+    color: #89DAD0 !important;
+    font-weight: 700 !important;
+}
+
+/* Filas de la tabla (unificadas en color #0f172a, sin negro crudo) */
+:is(.dark) .fi-ta-row,
+.dark .fi-ta-row {
+    background-color: #0f172a !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Hover de filas: celeste traslúcido como en el operador */
+:is(.dark) .fi-ta-row:hover,
+.dark .fi-ta-row:hover {
+    background-color: rgba(137, 218, 208, 0.08) !important;
+}
+
+/* Texto de las celdas en blanco o gris claro */
+:is(.dark) .fi-ta-cell,
+:is(.dark) .fi-ta-cell *,
+.dark .fi-ta-cell,
+.dark .fi-ta-cell * {
+    color: #f8fafc !important;
+}
+
+
+/* ── 5. FORMULARIOS, MODALES Y PANTALLAS EXTRAS (Estilizado y Armonía) ── */
+
+/* Modales en Modo Claro */
+html:not(.dark) .fi-modal-window,
+html:not(.dark) .fi-modal {
+    background-color: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+}
+html:not(.dark) .fi-modal-heading {
+    color: #000000 !important;
+}
+
+/* Modales en Modo Oscuro (Mismo fondo azul oscuro de operador y sin gris en pie/cabecera) */
+:is(.dark) .fi-modal-window,
+:is(.dark) .fi-modal,
+:is(.dark) .fi-modal-header,
+:is(.dark) .fi-modal-body,
+:is(.dark) .fi-modal-footer,
+:is(.dark) .fi-modal-actions,
+:is(.dark) .fi-dialog-panel,
+:is(.dark) .fi-modal-window > div,
+.dark .fi-modal-window,
+.dark .fi-modal,
+.dark .fi-modal-header,
+.dark .fi-modal-body,
+.dark .fi-modal-footer,
+.dark .fi-modal-actions,
+.dark .fi-dialog-panel,
+.dark .fi-modal-window > div {
+    background-color: #0f172a !important;
+    background: #0f172a !important;
+    border-color: rgba(137, 218, 208, 0.15) !important;
+}
+:is(.dark) .fi-modal-heading,
+.dark .fi-modal-heading {
+    color: #ffffff !important;
+}
+
+/* Dropdowns y paneles de selección en Modo Oscuro (Evita gris en la selección) */
+:is(.dark) .fi-dropdown-panel,
+:is(.dark) .fi-dropdown-list,
+:is(.dark) .fi-dropdown-item,
+:is(.dark) .fi-dropdown-list-item,
+:is(.dark) .fi-dropdown-header,
+:is(.dark) .fi-select-dropdown,
+:is(.dark) .select2-dropdown,
+:is(.dark) .choices__list--dropdown,
+.dark .fi-dropdown-panel,
+.dark .fi-dropdown-list,
+.dark .fi-dropdown-item,
+.dark .fi-dropdown-list-item,
+.dark .fi-dropdown-header,
+.dark .fi-select-dropdown,
+.dark .select2-dropdown,
+.dark .choices__list--dropdown {
+    background-color: #0f172a !important;
+    border-color: rgba(137, 218, 208, 0.15) !important;
+    color: #ffffff !important;
+}
+:is(.dark) .fi-dropdown-item:hover,
+:is(.dark) .fi-dropdown-list-item:hover,
+.dark .fi-dropdown-item:hover,
+.dark .fi-dropdown-list-item:hover {
+    background-color: #131c2e !important;
+}
+
+/* Paginación en Modo Oscuro */
+:is(.dark) .fi-pagination-item,
+.dark .fi-pagination-item {
+    background-color: #0f172a !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    color: #ffffff !important;
+}
+:is(.dark) .fi-pagination-item:hover,
+.dark .fi-pagination-item:hover {
+    background-color: #131c2e !important;
+}
+:is(.dark) .fi-pagination-item.fi-active,
+.dark .fi-pagination-item.fi-active {
+    background-color: #89DAD0 !important;
+    color: #000000 !important;
+}
+
+/* --- Eliminar bordes dobles y contorno interno en campos envueltos --- */
+.fi-input-wrp input,
+.fi-input-wrp select,
+.fi-input-wrp textarea,
+.fi-input-wrp button,
+.fi-ta-search-input-wrp input,
+.fi-ta-search-input-wrp select,
+.fi-ta-search-input-wrp textarea,
+.fi-input-wrp .fi-input,
+.fi-input-wrp input:focus,
+.fi-input-wrp select:focus,
+.fi-input-wrp textarea:focus {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    background-color: transparent !important;
+}
+
+/* --- Aplicar el borde y fondo de forma limpia solo al contenedor de entrada (.fi-input-wrp) --- */
+
+/* Envase de entrada en Modo Claro */
+html:not(.dark) .fi-input-wrp {
+    background-color: #ffffff !important;
+    border: 1px solid #d1d5db !important;
+}
+html:not(.dark) .fi-input-wrp input,
+html:not(.dark) .fi-input-wrp select,
+html:not(.dark) .fi-input-wrp textarea {
+    color: #000000 !important;
+}
+html:not(.dark) .fi-input-wrp input::placeholder,
+html:not(.dark) .fi-input-wrp textarea::placeholder {
+    color: #9ca3af !important;
+}
+
+/* Envase de entrada en Modo Oscuro (Estilo del Operador) */
+:is(.dark) .fi-input-wrp,
+.dark .fi-input-wrp {
+    background-color: #131c2e !important;
+    border: 1px solid rgba(137, 218, 208, 0.15) !important;
+}
+:is(.dark) .fi-input-wrp input,
+:is(.dark) .fi-input-wrp select,
+:is(.dark) .fi-input-wrp textarea,
+.dark .fi-input-wrp input,
+.dark .fi-input-wrp select,
+.dark .fi-input-wrp textarea {
+    color: #ffffff !important;
+}
+:is(.dark) .fi-input-wrp input::placeholder,
+:is(.dark) .fi-input-wrp textarea::placeholder,
+.dark .fi-input-wrp input::placeholder,
+.dark .fi-input-wrp textarea::placeholder {
+    color: #94a3b8 !important;
+}
+
+/* --- Estilo de fallback para inputs sueltos que no estén en .fi-input-wrp --- */
+html:not(.dark) input:not(.fi-input-wrp *),
+html:not(.dark) select:not(.fi-input-wrp *),
+html:not(.dark) textarea:not(.fi-input-wrp *) {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    border: 1px solid #d1d5db !important;
+}
+
+:is(.dark) input:not(.fi-input-wrp *),
+:is(.dark) select:not(.fi-input-wrp *),
+:is(.dark) textarea:not(.fi-input-wrp *),
+.dark input:not(.fi-input-wrp *),
+.dark select:not(.fi-input-wrp *),
+.dark textarea:not(.fi-input-wrp *) {
+    background-color: #131c2e !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(137, 218, 208, 0.15) !important;
+}
+
+
+/* ── 6. BOTONES GLOBALES (Estilos de Acción, Primarios y Peligro/Advertencias) ── */
+
+/* Botón Primario: Celeste con Texto Negro (Contraste Perfecto) */
+.fi-btn-color-primary,
+.fi-btn-color-primary *,
+.fi-btn[color="primary"],
+.fi-btn[color="primary"] *,
+button[type="submit"].bg-primary-600,
+button[type="submit"].bg-primary-600 *,
+.fi-ac-btn-action.bg-primary-600,
+.fi-ac-btn-action.bg-primary-600 * {
+    background-color: #89DAD0 !important;
+    color: #000000 !important;
+}
+.fi-btn-color-primary:hover,
+button[type="submit"].bg-primary-600:hover {
+    background-color: #6FC9BE !important;
+}
+
+/* Botón de Peligro / Eliminar / Advertencia: Rojo Puro con Letras Blancas */
+.fi-btn-color-danger,
+.fi-btn-color-danger *,
+.fi-btn[color="danger"],
+.fi-btn[color="danger"] *,
+button[wire\:click*="delete"],
+button[wire\:click*="delete"] *,
+.fi-modal-actions button.bg-danger-600,
+.fi-modal-actions button.bg-danger-600 *,
+.fi-ac-btn-action.bg-danger-600,
+.fi-ac-btn-action.bg-danger-600 * {
+    background-color: #FF5252 !important;
+    color: #ffffff !important;
+}
+.fi-btn-color-danger:hover,
+.fi-btn[color="danger"]:hover {
+    background-color: #e53e3e !important;
+}
+
+/* Enlaces de Acción (como Edit, View) en tablas */
+html:not(.dark) .fi-ta-action,
+html:not(.dark) .fi-ta-action * {
+    color: #2f877e !important; /* Verde turquesa oscuro para modo claro */
+}
+html:not(.dark) .fi-ta-action:hover {
+    text-decoration: underline !important;
+}
+
+:is(.dark) .fi-ta-action,
+:is(.dark) .fi-ta-action *,
+.dark .fi-ta-action,
+.dark .fi-ta-action * {
+    color: #89DAD0 !important; /* Celeste para modo oscuro */
+}
+
+/* ── 7. TOPBAR Y ENTRADAS AUXILIARES ── */
+html:not(.dark) .fi-topbar {
+    background-color: #ffffff !important;
+    border-bottom: 1px solid #e5e7eb !important;
+}
+
+:is(.dark) .fi-topbar,
+.dark .fi-topbar {
+    background-color: #0f172a !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
 }
 

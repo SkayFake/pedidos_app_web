@@ -36,10 +36,12 @@ class DeliverymenTable
                     ->searchable(),
                 IconColumn::make('is_available')
                     ->label('Disponible')
-                    ->boolean(),
+                    ->boolean()
+                    ->color(fn (bool $state): string => $state ? 'success' : 'danger'),
                 IconColumn::make('is_active')
                     ->label('Activo')
-                    ->boolean(),
+                    ->boolean()
+                    ->color(fn (bool $state): string => $state ? 'success' : 'danger'),
                 TextColumn::make('active_orders_count')
                     ->label('Pedidos Activos')
                     ->numeric()

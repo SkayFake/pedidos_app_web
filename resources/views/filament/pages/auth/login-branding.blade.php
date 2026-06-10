@@ -1,11 +1,8 @@
 <div class="fi-login-branding-panel">
     <div class="fi-login-branding-content">
         <div class="fi-login-branding-logo">
-            <svg class="w-12 h-12 text-white inline-block mr-1 align-bottom" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="vertical-align: -0.1em;">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15.59 14.37a6 6 0 01-5.84 0M12 18a6 6 0 01-6-6V9a6 6 0 016-6h1a6 6 0 016 6v3a6 6 0 01-6 6Zm0 0v3m0-3h3m-3 0H9" />
-            </svg>
-            <span>Delivery</span><br>
-            <span>App</span>
+            <img src="{{ asset('images/logo.png') }}" alt="PedidosApp Logo" class="h-24 w-auto mx-auto mb-4" style="filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));">
+            <span>PEDIDOS</span><span style="font-weight: 300; background: none; -webkit-text-fill-color: initial; color: rgba(255,255,255,0.9);">App</span>
         </div>
 
         <p class="fi-login-branding-tagline">

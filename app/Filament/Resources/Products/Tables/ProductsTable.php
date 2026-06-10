@@ -16,9 +16,9 @@ class ProductsTable
     {
         return $table
             ->columns([
-                TextColumn::make('category_id')
+                TextColumn::make('category.name')
                     ->label('Categoría')
-                    ->numeric()
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('name')
                     ->label('Nombre')
@@ -34,16 +34,20 @@ class ProductsTable
                     ->money()
                     ->sortable(),
                 ImageColumn::make('image')
-                    ->label('Imagen'),
+                    ->label('Imagen')
+                    ->disk('public'),
                 IconColumn::make('is_available')
                     ->label('Disponible')
-                    ->boolean(),
+                    ->boolean()
+                    ->color(fn (bool $state): string => $state ? 'success' : 'danger'),
                 IconColumn::make('is_recommended')
                     ->label('Recomendado')
-                    ->boolean(),
+                    ->boolean()
+                    ->color(fn (bool $state): string => $state ? 'success' : 'danger'),
                 IconColumn::make('is_popular')
                     ->label('Popular')
-                    ->boolean(),
+                    ->boolean()
+                    ->color(fn (bool $state): string => $state ? 'success' : 'danger'),
                 TextColumn::make('created_at')
                     ->label('Fecha de Creación')
                     ->dateTime()

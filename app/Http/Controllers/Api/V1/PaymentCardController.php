@@ -19,16 +19,20 @@ class PaymentCardController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        // Safe transformation to return only what the client needs, decrypting only holder/expiry
-        $formattedCards = $cards->map(function ($card) {
-            return [
-                'id' => $card->id,
-                'card_holder' => $card->card_holder,
-                'expiry_date' => $card->expiry_date,
-                'card_type' => $card->card_type,
-                'last_four' => $card->last_four,
-            ];
-        });
+        $formattedCards = [];
+        foreach ($cards as $card) {
+            try {
+                $formattedCards[] = [
+                    'id' => $card->id,
+                    'card_holder' => $card->card_holder,
+                    'expiry_date' => $card->expiry_date,
+                    'card_type' => $card->card_type,
+                    'last_four' => $card->last_four,
+                ];
+            } catch (\Exception $e) {
+                \Log::warning("Corrupted payment card ID {$card->id} for user " . auth()->id() . ": " . $e->getMessage());
+            }
+        }
 
         return $this->success($formattedCards, 'Listado de tarjetas.');
     }

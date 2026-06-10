@@ -133,14 +133,17 @@ class OrdersTable
                 IconColumn::make('is_first_order_promo')
                     ->label('Promo 1er Pedido')
                     ->boolean()
+                    ->color(fn (bool $state): string => $state ? 'success' : 'danger')
                     ->toggleable(isToggledHiddenByDefault: true),
                 IconColumn::make('is_free_delivery_promo')
                     ->label('Envío Gratis')
                     ->boolean()
+                    ->color(fn (bool $state): string => $state ? 'success' : 'danger')
                     ->toggleable(isToggledHiddenByDefault: true),
                 IconColumn::make('is_loyalty_discount')
                     ->label('Desc. Fidelidad')
                     ->boolean()
+                    ->color(fn (bool $state): string => $state ? 'success' : 'danger')
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('cancellation_reason')
                     ->label('Motivo Cancelación')

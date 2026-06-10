@@ -33,7 +33,7 @@ class BranchRevenueChart extends ChartWidget
         $labels = [];
         $data = [];
         $colors = [];
-        $palette = ['#0077B6', '#00B4D8', '#90E0EF', '#023E8A', '#48CAE4', '#ADE8F4', '#03045E', '#0096C7'];
+        $palette = ['#89DAD0', '#69C5DF', '#B2EBE3', '#2F877E', '#5CBFB4', '#E0F7F4', '#155F59', '#4AADA3'];
 
         foreach ($branches as $index => $branch) {
             $labels[] = $branch->name;

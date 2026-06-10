@@ -78,7 +78,19 @@ class DeliverymanForm
                     ->default('motorcycle')
                     ->required(),
                 TextInput::make('license_plate')
-                    ->label('Placa'),
+                    ->label('Placa')
+                    ->maxLength(8)
+                    ->minLength(5)
+                    ->rules(['regex:/^[A-Z]{1,3}[0-9]{3,6}$/'])
+                    ->validationMessages([
+                        'regex' => 'El formato de la placa debe iniciar con 1 a 3 letras mayúsculas (P, C, A, MB, N, M, D, RE) seguido de 3 a 6 números, sin espacios ni guiones (ej. P123456).',
+                        'min' => 'La placa debe tener entre 5 y 8 caracteres.',
+                        'max' => 'La placa debe tener entre 5 y 8 caracteres.',
+                    ])
+                    ->extraInputAttributes([
+                        'autocomplete' => 'off',
+                        'x-on:input' => "\$el.value = \$el.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); if (\$el.value.length > 8) { \$el.value = \$el.value.substring(0, 8); } \$el.dispatchEvent(new Event('input'))",
+                    ]),
                 Toggle::make('is_available')
                     ->label('Disponible')
                     ->required(),

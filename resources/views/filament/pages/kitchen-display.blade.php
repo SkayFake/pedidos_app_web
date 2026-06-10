@@ -41,7 +41,7 @@
             margin: 0 !important;
             padding: 0 !important;
             min-height: 100vh;
-            font-family: 'Inter', ui-sans-serif, system-ui, sans-serif !important;
+            font-family: 'Roboto', ui-sans-serif, system-ui, sans-serif !important;
         }
 
         .kitchen-container {
@@ -72,12 +72,12 @@
             border-radius: 16px;
             box-shadow: var(--shadow-soft, 0 4px 6px -1px rgba(0, 0, 0, 0.05));
             margin-bottom: 1.5rem;
-            border: 1px solid rgba(0, 119, 182, 0.08);
+            border: 1px solid rgba(137, 218, 208, 0.08);
         }
         
         :is(.dark) .kitchen-header {
             background: rgba(15, 23, 42, 0.6);
-            border-color: rgba(0, 180, 216, 0.08);
+            border-color: rgba(105, 197, 223, 0.08);
         }
 
         @media (min-width: 768px) {
@@ -140,9 +140,9 @@
         }
 
         .exit-button:hover {
-            background-color: var(--ocean-primary, #0077B6);
+            background-color: var(--ocean-primary, #89DAD0);
             color: #ffffff;
-            border-color: var(--ocean-primary, #0077B6);
+            border-color: var(--ocean-primary, #89DAD0);
             transform: translateY(-1px);
         }
 
@@ -225,12 +225,12 @@
             transition: transform 0.15s ease, box-shadow 0.15s ease;
             position: relative;
             user-select: none;
-            border: 1px solid rgba(0, 119, 182, 0.08);
+            border: 1px solid rgba(137, 218, 208, 0.08);
         }
         
         :is(.dark) .order-card {
             background: rgba(15, 23, 42, 0.6);
-            border-color: rgba(0, 180, 216, 0.08);
+            border-color: rgba(105, 197, 223, 0.08);
         }
 
         .order-card:hover {
@@ -463,12 +463,12 @@
             padding: 8rem 2rem;
             background: #ffffff;
             border-radius: 20px;
-            border: 1px dashed rgba(0, 119, 182, 0.2);
+            border: 1px dashed rgba(137, 218, 208, 0.2);
             box-shadow: var(--shadow-soft, 0 4px 6px -1px rgba(0, 0, 0, 0.05));
         }
         :is(.dark) .empty-state {
             background: rgba(15, 23, 42, 0.6);
-            border-color: rgba(0, 180, 216, 0.08);
+            border-color: rgba(105, 197, 223, 0.08);
         }
 
         .empty-icon {

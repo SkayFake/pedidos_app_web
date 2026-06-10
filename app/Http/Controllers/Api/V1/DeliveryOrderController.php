@@ -193,8 +193,16 @@ class DeliveryOrderController extends Controller
             'delivered_at' => now(),
         ]);
 
+        $freshOrder = $order->fresh(['user', 'address', 'branch']);
+        if (!$freshOrder) {
+            $freshOrder = \App\Models\ArchivedOrder::with(['user', 'address', 'branch'])
+                ->where('user_id', $order->user_id)
+                ->where('created_at', $order->created_at)
+                ->first();
+        }
+
         return $this->success([
-            'order' => new OrderResource($order->fresh(['user', 'address', 'branch']))
+            'order' => new OrderResource($freshOrder)
         ], '¡Pedido entregado exitosamente!');
     }
 }

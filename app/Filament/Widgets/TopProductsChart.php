@@ -48,19 +48,19 @@ class TopProductsChart extends ChartWidget
 
         // Ocean-inspired color palette
         $backgroundColors = [
-            '#0077B6', // Ocean Blue
-            '#00B4D8', // Sky Blue
-            '#90E0EF', // Light Blue
-            '#CAF0F8', // Pale Blue
-            '#023E8A', // Deep Blue
+            '#89DAD0', // Mint Primary
+            '#69C5DF', // Sky Info
+            '#B2EBE3', // Mint Light
+            '#E0F7F4', // Mint Pale
+            '#2F877E', // Deep Teal
         ];
 
         $hoverColors = [
-            '#005F8A', // Darker Ocean
-            '#009BB8', // Darker Sky
-            '#6BC8D7', // Darker Light
-            '#A8D8E8', // Darker Pale
-            '#012F6E', // Darker Deep
+            '#6FC9BE', // Darker Mint
+            '#4FB1CB', // Darker Sky
+            '#98DED5', // Darker Light
+            '#C5ECE7', // Darker Pale
+            '#226F67', // Darker Deep Teal
         ];
 
         return [
