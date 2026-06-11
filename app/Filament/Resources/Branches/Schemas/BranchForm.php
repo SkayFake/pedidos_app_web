@@ -95,12 +95,12 @@ class BranchForm
                                 TimePicker::make('open_time')
                                     ->label('Hora de apertura')
                                     ->seconds(false)
-                                    ->required()
+                                    ->required(fn ($get) => !$get('is_closed'))
                                     ->hidden(fn ($get) => $get('is_closed')),
                                 TimePicker::make('close_time')
                                     ->label('Hora de cierre')
                                     ->seconds(false)
-                                    ->required()
+                                    ->required(fn ($get) => !$get('is_closed'))
                                     ->hidden(fn ($get) => $get('is_closed')),
                             ])
                             ->columns(4)
@@ -139,10 +139,12 @@ class BranchForm
                                 TimePicker::make('open_time')
                                     ->label('Hora de apertura')
                                     ->seconds(false)
+                                    ->required(fn ($get) => !$get('is_closed'))
                                     ->hidden(fn ($get) => $get('is_closed')),
                                 TimePicker::make('close_time')
                                     ->label('Hora de cierre')
                                     ->seconds(false)
+                                    ->required(fn ($get) => !$get('is_closed'))
                                     ->hidden(fn ($get) => $get('is_closed')),
                             ])
                             ->columns(5)
