@@ -14,6 +14,9 @@ class BranchResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $scheduleService = app(\App\Services\BranchScheduleService::class);
+        $availability = $scheduleService->checkAvailability($this->resource);
+
         return [
             'id' => $this->id,
             'name' => $this->name,
@@ -22,6 +25,8 @@ class BranchResource extends JsonResource
             'latitude' => $this->latitude,
             'longitude' => $this->longitude,
             'is_active' => $this->is_active,
+            'is_open_now' => $availability['is_open'],
+            'schedule' => $scheduleService->getFullSchedule($this->resource),
         ];
     }
 }

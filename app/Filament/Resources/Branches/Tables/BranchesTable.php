@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Branches\Tables;
 
+use App\Services\BranchScheduleService;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -14,6 +15,13 @@ class BranchesTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(function ($query) {
+                $user = auth('admin')->user();
+                if ($user && $user->isBranchAdmin()) {
+                    $query->where('id', $user->branch_id);
+                }
+                $query->with(['schedules', 'specialSchedules']);
+            })
             ->columns([
                 TextColumn::make('name')
                     ->label('Nombre')
@@ -35,6 +43,15 @@ class BranchesTable
                     ->label('Activa')
                     ->boolean()
                     ->color(fn (bool $state): string => $state ? 'success' : 'danger'),
+                TextColumn::make('is_open_now')
+                    ->label('Estado Actual')
+                    ->badge()
+                    ->getStateUsing(function ($record): string {
+                        $service = app(BranchScheduleService::class);
+                        $availability = $service->checkAvailability($record);
+                        return $availability['is_open'] ? 'Abierto' : 'Cerrado';
+                    })
+                    ->color(fn (string $state): string => $state === 'Abierto' ? 'success' : 'danger'),
                 TextColumn::make('created_at')
                     ->label('Fecha de Creación')
                     ->dateTime()

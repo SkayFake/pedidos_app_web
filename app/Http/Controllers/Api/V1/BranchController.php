@@ -37,6 +37,7 @@ class BranchController extends Controller
     public function index(Request $request): AnonymousResourceCollection
     {
         $branches = Branch::where('is_active', true)
+            ->with(['schedules', 'specialSchedules'])
             ->orderBy('name')
             ->get();
 

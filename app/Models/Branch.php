@@ -35,4 +35,14 @@ class Branch extends Model
     {
         return $this->hasMany(Deliveryman::class);
     }
+
+    public function schedules()
+    {
+        return $this->hasMany(BranchSchedule::class);
+    }
+
+    public function specialSchedules()
+    {
+        return $this->hasMany(SpecialSchedule::class);
+    }
 }

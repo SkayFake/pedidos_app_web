@@ -36,7 +36,7 @@ class BranchResource extends Resource
     public static function canAccess(): bool
     {
         $user = auth('admin')->user();
-        return $user && $user->isSuperAdmin();
+        return $user && ($user->isSuperAdmin() || $user->isBranchAdmin());
     }
 
     public static function form(Schema $schema): Schema
@@ -60,6 +60,7 @@ class BranchResource extends Resource
     {
         return [
             'index' => ListBranches::route('/'),
+            'edit' => EditBranch::route('/{record}/edit'),
         ];
     }
 }

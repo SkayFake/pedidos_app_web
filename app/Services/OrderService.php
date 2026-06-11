@@ -165,10 +165,19 @@ class OrderService
         }
 
         // ── 2. Validar sucursal activa ─────────────────────────
-        $branch = Branch::find($dto->branchId);
+        $branch = Branch::with(['schedules', 'specialSchedules'])->find($dto->branchId);
         if (!$branch || !$branch->is_active) {
             throw new \App\Exceptions\OrderValidationException(
                 'La sucursal seleccionada no está disponible.'
+            );
+        }
+
+        // ── 2.5 Validar horario de atención ────────────────────
+        $scheduleService = app(BranchScheduleService::class);
+        $availability = $scheduleService->checkAvailability($branch);
+        if (!$availability['is_open']) {
+            throw new \App\Exceptions\OrderValidationException(
+                $availability['reason']
             );
         }
 
