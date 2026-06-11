@@ -1,0 +1,76 @@
+name: Categorías
+description: |-
+
+  Endpoints para consultar las categorías de productos.
+endpoints:
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/categories
+    metadata:
+      custom: []
+      groupName: Categorías
+      groupDescription: |-
+
+        Endpoints para consultar las categorías de productos.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Listar categorías'
+      description: 'Retorna todas las categorías activas con el conteo de productos disponibles en cada una.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {TOKEN_SANCTUM}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters:
+      branch_id:
+        custom: []
+        name: branch_id
+        description: 'Filtrar el conteo de productos por ID de sucursal.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      branch_id: 1
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "success": true,
+            "message": "Listado de categorías.",
+            "data": [
+              {
+                "id": 1,
+                "name": "Hamburguesas",
+                "products_count": 8
+              },
+              {
+                "id": 2,
+                "name": "Bebidas",
+                "products_count": 12
+              }
+            ]
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 3V5EgbkvZcDPa166h8fd4ae'
+    controller: null
+    method: null
+    route: null

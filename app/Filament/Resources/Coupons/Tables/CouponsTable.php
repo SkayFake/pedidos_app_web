@@ -48,6 +48,9 @@ class CouponsTable
                     ->label('Activo')
                     ->boolean()
                     ->color(fn (bool $state): string => $state ? 'success' : 'danger'),
+                IconColumn::make('is_template')
+                    ->label('Plantilla')
+                    ->boolean(),
                 TextColumn::make('created_at')
                     ->label('Fecha de Creación')
                     ->dateTime()

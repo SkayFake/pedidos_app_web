@@ -48,38 +48,43 @@ class PromotionService
         }
 
         // 4. Cupón (Aplica al subtotal o al envío dependiendo del tipo)
-        if ($coupon && $coupon->is_active) {
-            if (!$coupon->expires_at || $coupon->expires_at->isFuture()) {
-                if ($subtotal >= $coupon->min_order_amount) {
-                    $canUse = true;
-                    // Verificar que el cupón pertenece a la sucursal o es global
-                    if ($coupon->branch_id !== null && $coupon->branch_id !== $branch->id) {
-                        $canUse = false;
-                    }
-                    // Verificar usos globales
-                    if ($canUse && $coupon->max_uses_total !== null && $coupon->used_count >= $coupon->max_uses_total) {
-                        $canUse = false;
-                    }
-                    // Verificar si este usuario ya lo usó
-                    if ($canUse && $user->couponUses()->where('coupon_id', $coupon->id)->exists()) {
-                        $canUse = false;
-                    }
+        if ($coupon) {
+            // Validaciones que lanzan error explícito al usuario
+            if (!$coupon->is_active || $coupon->is_template) {
+                throw new \App\Exceptions\OrderValidationException('Este cupón no está disponible.');
+            }
+            if ($coupon->expires_at && $coupon->expires_at->isPast()) {
+                throw new \App\Exceptions\OrderValidationException('Este cupón ha expirado.');
+            }
+            if ($subtotal < $coupon->min_order_amount) {
+                throw new \App\Exceptions\OrderValidationException(
+                    "El pedido mínimo para este cupón es \${$coupon->min_order_amount}."
+                );
+            }
+            if ($coupon->user_id !== null && $coupon->user_id !== $user->id) {
+                throw new \App\Exceptions\OrderValidationException('Este cupón no te pertenece.');
+            }
+            if ($coupon->branch_id !== null && $coupon->branch_id !== $branch->id) {
+                throw new \App\Exceptions\OrderValidationException('Este cupón no es válido para esta sucursal.');
+            }
+            if ($coupon->max_uses_total !== null && $coupon->used_count >= $coupon->max_uses_total) {
+                throw new \App\Exceptions\OrderValidationException('Este cupón ha alcanzado su límite de usos.');
+            }
+            if ($user->couponUses()->where('coupon_id', $coupon->id)->exists()) {
+                throw new \App\Exceptions\OrderValidationException('Ya has utilizado este cupón anteriormente.');
+            }
 
-                    if ($canUse) {
-                        $result['applied_coupon_id'] = $coupon->id;
-                        if ($coupon->type === 'percent') {
-                            $result['discount_amount'] = round(($subtotal * $coupon->value) / 100, 2);
-                            // Aplicar tope máximo de descuento si está configurado
-                            if ($coupon->max_discount !== null && $result['discount_amount'] > $coupon->max_discount) {
-                                $result['discount_amount'] = round($coupon->max_discount, 2);
-                            }
-                        } elseif ($coupon->type === 'fixed') {
-                            $result['discount_amount'] = min($subtotal, $coupon->value);
-                        } elseif ($coupon->type === 'free_delivery') {
-                            $result['delivery_fee_final'] = 0.00;
-                        }
-                    }
+            // Todas las validaciones pasaron — aplicar descuento
+            $result['applied_coupon_id'] = $coupon->id;
+            if ($coupon->type === 'percent') {
+                $result['discount_amount'] = round(($subtotal * $coupon->value) / 100, 2);
+                if ($coupon->max_discount !== null && $result['discount_amount'] > $coupon->max_discount) {
+                    $result['discount_amount'] = round($coupon->max_discount, 2);
                 }
+            } elseif ($coupon->type === 'fixed') {
+                $result['discount_amount'] = min($subtotal, $coupon->value);
+            } elseif ($coupon->type === 'free_delivery') {
+                $result['delivery_fee_final'] = 0.00;
             }
         }
 

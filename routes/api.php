@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\V1\ProductController;
 use App\Http\Controllers\Api\V1\ZoneController;
 use App\Http\Controllers\Api\V1\ShippingController;
 use App\Http\Controllers\Api\V1\ReviewController;
+use App\Http\Controllers\Api\V1\LoyaltyController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -82,6 +83,13 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
 
     // Cupones — Validación pre-checkout
     Route::post('/coupons/validate', [CouponController::class, 'validateCoupon']);
+
+    // Fidelidad (Loyalty)
+    Route::prefix('loyalty')->group(function () {
+        Route::get('/profile', [LoyaltyController::class, 'profile']);
+        Route::get('/transactions', [LoyaltyController::class, 'transactions']);
+        Route::get('/coupons', [LoyaltyController::class, 'coupons']);
+    });
 
     // Shipping Fee Calculator & Coverage Check
     Route::post('/shipping/fee', [ShippingController::class, 'getFee']);

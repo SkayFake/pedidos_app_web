@@ -247,6 +247,242 @@ endpoints:
     custom: []
     httpMethods:
       - POST
+    uri: api/v1/auth/forgot-password
+    metadata:
+      custom: []
+      groupName: Autenticación
+      groupDescription: |-
+
+        Endpoints para registro, inicio de sesión y gestión de la sesión
+        de los clientes de la app móvil. Usa Laravel Sanctum con tokens Bearer.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Solicitar recuperación de contraseña (Forgot Password)'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {TOKEN_SANCTUM}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      email:
+        custom: []
+        name: email
+        description: 'El campo value debe ser un correo electrónico válido. The <code>email</code> of an existing record in the users table.'
+        required: true
+        example: qkunze@example.com
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      email: qkunze@example.com
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 3V5EgbkvZcDPa166h8fd4ae'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/v1/auth/reset-password
+    metadata:
+      custom: []
+      groupName: Autenticación
+      groupDescription: |-
+
+        Endpoints para registro, inicio de sesión y gestión de la sesión
+        de los clientes de la app móvil. Usa Laravel Sanctum con tokens Bearer.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Restablecer contraseña con OTP'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {TOKEN_SANCTUM}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      email:
+        custom: []
+        name: email
+        description: 'El campo value debe ser un correo electrónico válido. The <code>email</code> of an existing record in the users table.'
+        required: true
+        example: qkunze@example.com
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      otp:
+        custom: []
+        name: otp
+        description: 'El campo value debe contener 6 caracteres.'
+        required: true
+        example: opfuud
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      password:
+        custom: []
+        name: password
+        description: 'El campo value debe contener al menos 8 caracteres.'
+        required: true
+        example: '/dl4m{o,+]"OP>@;'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      email: qkunze@example.com
+      otp: opfuud
+      password: '/dl4m{o,+]"OP>@;'
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 3V5EgbkvZcDPa166h8fd4ae'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/v1/auth/verify-email
+    metadata:
+      custom: []
+      groupName: Autenticación
+      groupDescription: |-
+
+        Endpoints para registro, inicio de sesión y gestión de la sesión
+        de los clientes de la app móvil. Usa Laravel Sanctum con tokens Bearer.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Verificar Correo Electrónico'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {TOKEN_SANCTUM}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      email:
+        custom: []
+        name: email
+        description: 'El campo value debe ser un correo electrónico válido.'
+        required: true
+        example: qkunze@example.com
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      otp:
+        custom: []
+        name: otp
+        description: 'El campo value debe contener 6 caracteres.'
+        required: true
+        example: opfuud
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      email: qkunze@example.com
+      otp: opfuud
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 3V5EgbkvZcDPa166h8fd4ae'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/v1/auth/resend-verification-email
+    metadata:
+      custom: []
+      groupName: Autenticación
+      groupDescription: |-
+
+        Endpoints para registro, inicio de sesión y gestión de la sesión
+        de los clientes de la app móvil. Usa Laravel Sanctum con tokens Bearer.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Reenviar código de verificación de correo'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {TOKEN_SANCTUM}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      email:
+        custom: []
+        name: email
+        description: 'El campo value debe ser un correo electrónico válido.'
+        required: true
+        example: qkunze@example.com
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      email: qkunze@example.com
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 3V5EgbkvZcDPa166h8fd4ae'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
     uri: api/v1/auth/logout
     metadata:
       custom: []
@@ -346,6 +582,142 @@ endpoints:
           }
         headers: []
         description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 3V5EgbkvZcDPa166h8fd4ae'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/v1/auth/update-profile
+    metadata:
+      custom: []
+      groupName: Autenticación
+      groupDescription: |-
+
+        Endpoints para registro, inicio de sesión y gestión de la sesión
+        de los clientes de la app móvil. Usa Laravel Sanctum con tokens Bearer.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Actualizar perfil'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {TOKEN_SANCTUM}'
+      Content-Type: multipart/form-data
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        custom: []
+        name: name
+        description: 'Nombre del cliente.'
+        required: true
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      phone:
+        custom: []
+        name: phone
+        description: 'Teléfono del cliente.'
+        required: true
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      image:
+        custom: []
+        name: image
+        description: 'El campo value debe ser una imagen. El campo value no debe pesar más de 5120 kilobytes.'
+        required: false
+        example: null
+        type: file
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      name: consequatur
+      phone: consequatur
+    fileParameters:
+      image: null
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 3V5EgbkvZcDPa166h8fd4ae'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+    uri: api/v1/auth/change-password
+    metadata:
+      custom: []
+      groupName: Autenticación
+      groupDescription: |-
+
+        Endpoints para registro, inicio de sesión y gestión de la sesión
+        de los clientes de la app móvil. Usa Laravel Sanctum con tokens Bearer.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Cambiar contraseña'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {TOKEN_SANCTUM}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      current_password:
+        custom: []
+        name: current_password
+        description: 'Contraseña actual.'
+        required: true
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      new_password:
+        custom: []
+        name: new_password
+        description: 'Nueva contraseña (min 8).'
+        required: true
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      current_password: consequatur
+      new_password: consequatur
+    fileParameters: []
+    responses: []
     responseFields: []
     auth:
       - headers

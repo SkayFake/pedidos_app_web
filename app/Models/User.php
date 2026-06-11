@@ -21,6 +21,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'is_active' => 'boolean',
             'loyalty_points' => 'integer',
+            'lifetime_points' => 'integer',
             'total_completed_orders' => 'integer',
         ];
     }
@@ -74,5 +75,10 @@ class User extends Authenticatable
     public function couponUses()
     {
         return $this->hasMany(CouponUse::class);
+    }
+
+    public function userMilestones()
+    {
+        return $this->hasMany(UserMilestone::class);
     }
 }

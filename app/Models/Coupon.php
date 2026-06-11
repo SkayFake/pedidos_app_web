@@ -13,6 +13,7 @@ class Coupon extends Model
         return [
             'expires_at' => 'datetime',
             'is_active' => 'boolean',
+            'is_template' => 'boolean',
         ];
     }
 
@@ -29,5 +30,15 @@ class Coupon extends Model
     public function uses()
     {
         return $this->hasMany(CouponUse::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function parent()
+    {
+        return $this->belongsTo(Coupon::class, 'parent_coupon_id');
     }
 }

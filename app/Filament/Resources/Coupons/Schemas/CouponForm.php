@@ -62,7 +62,12 @@ class CouponForm
                     ->label('Expira'),
                 Toggle::make('is_active')
                     ->label('Activo')
+                    ->default(true)
                     ->required(),
+                Toggle::make('is_template')
+                    ->label('Es Plantilla')
+                    ->helperText('Si es plantilla, no puede ser canjeado directamente por los usuarios, solo sirve para ser clonado en recompensas.')
+                    ->default(false),
             ]);
     }
 }

@@ -42,7 +42,44 @@ class LoyaltyService
                 ]);
 
                 $order->user->increment('loyalty_points', $pointsToEarn);
+                $order->user->increment('lifetime_points', $pointsToEarn);
+                
+                // Chequear hitos (milestones)
+                $this->checkRewardMilestones($order->user);
             });
+        }
+    }
+
+    /**
+     * Verifica si el usuario alcanzó algún hito de puntos y le envía su cupón.
+     */
+    protected function checkRewardMilestones($user): void
+    {
+        // Traer hitos activos ordenados
+        $milestones = \App\Models\RewardMilestone::with('coupon')->where('is_active', true)->orderBy('points_required', 'asc')->get();
+
+        foreach ($milestones as $milestone) {
+            if ($user->lifetime_points >= $milestone->points_required) {
+                // Verificar si ya lo reclamó
+                $alreadyAchieved = \App\Models\UserMilestone::where('user_id', $user->id)
+                    ->where('milestone_id', $milestone->id)
+                    ->exists();
+
+                if (!$alreadyAchieved) {
+                    // Marcar como alcanzado
+                    \App\Models\UserMilestone::create([
+                        'user_id' => $user->id,
+                        'milestone_id' => $milestone->id,
+                        'achieved_at' => now(),
+                    ]);
+
+                    // Despachar job para generar y enviar el cupón
+                    if ($milestone->coupon) {
+                        $message = "¡Has alcanzado los {$milestone->points_required} puntos de fidelidad! Aquí tienes tu recompensa.";
+                        \App\Jobs\SendIncentiveCouponJob::dispatch($user, $milestone->coupon, $message);
+                    }
+                }
+            }
         }
     }
 

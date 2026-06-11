@@ -3,7 +3,7 @@
 API REST para la aplicación móvil de AXStore. Gestión de productos, pedidos, direcciones y autenticación de clientes.
 
 <aside>
-    <strong>Base URL</strong>: <code>http://pedidosapp.test</code>
+    <strong>Base URL</strong>: <code>http://localhost/pedidos_app/public</code>
 </aside>
 
     Esta documentación contiene toda la información necesaria para integrar la app móvil de AXStore con el backend.

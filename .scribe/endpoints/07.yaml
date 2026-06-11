@@ -1,0 +1,457 @@
+name: Pedidos
+description: |-
+
+  Endpoints para crear, consultar y cancelar pedidos del cliente autenticado.
+
+  **Seguridad**: Al crear un pedido, el backend calcula todos los montos server-side.
+  Los precios se leen directamente de la base de datos (products.base_price +
+  product_variants.price_modifier + product_extras.price). El cliente solo envía
+  IDs y cantidades.
+endpoints:
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/orders
+    metadata:
+      custom: []
+      groupName: Pedidos
+      groupDescription: |-
+
+        Endpoints para crear, consultar y cancelar pedidos del cliente autenticado.
+
+        **Seguridad**: Al crear un pedido, el backend calcula todos los montos server-side.
+        Los precios se leen directamente de la base de datos (products.base_price +
+        product_variants.price_modifier + product_extras.price). El cliente solo envía
+        IDs y cantidades.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Listar mis pedidos'
+      description: |-
+        Retorna los pedidos del cliente autenticado (activos + archivados),
+        paginados y ordenados por más reciente.
+        Opcionalmente se puede filtrar por estado.
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {TOKEN_SANCTUM}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters:
+      status:
+        custom: []
+        name: status
+        description: 'Filtrar por estado del pedido. Valores: pending, confirmed, preparing, ready_to_go, assigned, on_way, delivered, cancelled.'
+        required: false
+        example: pending
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      per_page:
+        custom: []
+        name: per_page
+        description: 'Cantidad por página (máx 50).'
+        required: false
+        example: 10
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      status: pending
+      per_page: 10
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 404
+        content: |-
+          {
+              "message": "The route pedidos_app/public/api/v1/orders could not be found."
+          }
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+        description: null
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 3V5EgbkvZcDPa166h8fd4ae'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/v1/orders/{id}'
+    metadata:
+      custom: []
+      groupName: Pedidos
+      groupDescription: |-
+
+        Endpoints para crear, consultar y cancelar pedidos del cliente autenticado.
+
+        **Seguridad**: Al crear un pedido, el backend calcula todos los montos server-side.
+        Los precios se leen directamente de la base de datos (products.base_price +
+        product_variants.price_modifier + product_extras.price). El cliente solo envía
+        IDs y cantidades.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Detalle de pedido'
+      description: |-
+        Retorna la información completa de un pedido.
+        Busca tanto en pedidos activos como en el archivo histórico.
+        Solo el dueño puede consultarlo.
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {TOKEN_SANCTUM}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'ID del pedido.'
+        required: true
+        example: 15
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 15
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 404
+        content: |-
+          {
+              "message": "The route pedidos_app/public/api/v1/orders/15 could not be found."
+          }
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+        description: null
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 3V5EgbkvZcDPa166h8fd4ae'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/v1/orders
+    metadata:
+      custom: []
+      groupName: Pedidos
+      groupDescription: |-
+
+        Endpoints para crear, consultar y cancelar pedidos del cliente autenticado.
+
+        **Seguridad**: Al crear un pedido, el backend calcula todos los montos server-side.
+        Los precios se leen directamente de la base de datos (products.base_price +
+        product_variants.price_modifier + product_extras.price). El cliente solo envía
+        IDs y cantidades.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Crear pedido'
+      description: |-
+        Crea un nuevo pedido con cálculo seguro del total server-side.
+
+        **IMPORTANTE**: El backend JAMÁS confía en montos enviados por el cliente.
+        Solo se aceptan IDs de productos, variantes, extras y sus cantidades.
+        Los precios se calculan leyendo la base de datos.
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {TOKEN_SANCTUM}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      branch_id:
+        custom: []
+        name: branch_id
+        description: 'ID de la sucursal.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      address_id:
+        custom: []
+        name: address_id
+        description: 'ID de la dirección de entrega del cliente.'
+        required: true
+        example: 3
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      lat:
+        custom: []
+        name: lat
+        description: ''
+        required: false
+        example: 11613.31890586
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      lng:
+        custom: []
+        name: lng
+        description: ''
+        required: false
+        example: 11613.31890586
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      coupon_code:
+        custom: []
+        name: coupon_code
+        description: 'Código de cupón a aplicar.'
+        required: false
+        example: BIENVENIDO10
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+      use_loyalty_points:
+        custom: []
+        name: use_loyalty_points
+        description: 'Usar puntos de lealtad para descuento.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+      notes:
+        custom: []
+        name: notes
+        description: 'Instrucciones especiales (máx 500 caracteres).'
+        required: false
+        example: 'Sin cebolla por favor'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+      items:
+        custom: []
+        name: items
+        description: 'Lista de productos a pedir.'
+        required: true
+        example:
+          - []
+        type: 'object[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'items[].product_id':
+        custom: []
+        name: 'items[].product_id'
+        description: 'ID del producto.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      'items[].variant_id':
+        custom: []
+        name: 'items[].variant_id'
+        description: 'ID de la variante (opcional).'
+        required: false
+        example: 2
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+      'items[].quantity':
+        custom: []
+        name: 'items[].quantity'
+        description: 'Cantidad (1-20).'
+        required: true
+        example: 2
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      'items[].extras':
+        custom: []
+        name: 'items[].extras'
+        description: 'Extras para este ítem.'
+        required: false
+        example:
+          - []
+        type: 'object[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      'items[].extras[].extra_id':
+        custom: []
+        name: 'items[].extras[].extra_id'
+        description: 'ID del extra.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      'items[].extras[].quantity':
+        custom: []
+        name: 'items[].extras[].quantity'
+        description: 'Cantidad del extra (1-5).'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      branch_id: 1
+      address_id: 3
+      lat: 11613.31890586
+      lng: 11613.31890586
+      coupon_code: BIENVENIDO10
+      use_loyalty_points: false
+      notes: 'Sin cebolla por favor'
+      items:
+        -
+          product_id: 1
+          variant_id: 2
+          quantity: 2
+          extras:
+            -
+              extra_id: 1
+              quantity: 1
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 3V5EgbkvZcDPa166h8fd4ae'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'api/v1/orders/{order_id}/cancel'
+    metadata:
+      custom: []
+      groupName: Pedidos
+      groupDescription: |-
+
+        Endpoints para crear, consultar y cancelar pedidos del cliente autenticado.
+
+        **Seguridad**: Al crear un pedido, el backend calcula todos los montos server-side.
+        Los precios se leen directamente de la base de datos (products.base_price +
+        product_variants.price_modifier + product_extras.price). El cliente solo envía
+        IDs y cantidades.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Cancelar pedido'
+      description: |-
+        Cancela un pedido existente. Solo se puede cancelar si el estado es `pending` o `confirmed`.
+        Una vez que el pedido está en preparación o posterior, no se puede cancelar desde la app.
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {TOKEN_SANCTUM}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      order_id:
+        custom: []
+        name: order_id
+        description: 'The ID of the order.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      order:
+        custom: []
+        name: order
+        description: 'ID del pedido a cancelar.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      order_id: 1
+      order: 16
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      cancellation_reason:
+        custom: []
+        name: cancellation_reason
+        description: 'Razón de la cancelación (máx 255 caracteres).'
+        required: false
+        example: 'Cambié de opinión'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      cancellation_reason: 'Cambié de opinión'
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 3V5EgbkvZcDPa166h8fd4ae'
+    controller: null
+    method: null
+    route: null

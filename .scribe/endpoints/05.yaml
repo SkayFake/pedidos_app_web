@@ -1,0 +1,296 @@
+name: Productos
+description: |-
+
+  Endpoints para consultar el catálogo de productos disponibles,
+  con soporte para filtrado, búsqueda y paginación.
+  Incluye lógica inteligente de productos populares y recomendados.
+endpoints:
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/products
+    metadata:
+      custom: []
+      groupName: Productos
+      groupDescription: |-
+
+        Endpoints para consultar el catálogo de productos disponibles,
+        con soporte para filtrado, búsqueda y paginación.
+        Incluye lógica inteligente de productos populares y recomendados.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Listar productos'
+      description: |-
+        Retorna un listado paginado de productos disponibles.
+        Soporta filtros por categoría, búsqueda por texto, y flags de recomendados/populares.
+
+        - `popular=true` → Ordena por más vendidos (basado en ventas reales)
+        - `recommended=true` → Productos personalizados según historial del usuario
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {TOKEN_SANCTUM}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters:
+      category_id:
+        custom: []
+        name: category_id
+        description: 'Filtrar por ID de categoría.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      branch_id:
+        custom: []
+        name: branch_id
+        description: 'Filtrar por ID de sucursal.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      search:
+        custom: []
+        name: search
+        description: 'Buscar por nombre o descripción.'
+        required: false
+        example: hamburguesa
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      recommended:
+        custom: []
+        name: recommended
+        description: 'Mostrar productos recomendados inteligentes.'
+        required: false
+        example: true
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      popular:
+        custom: []
+        name: popular
+        description: 'Mostrar productos ordenados por más vendidos.'
+        required: false
+        example: true
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      per_page:
+        custom: []
+        name: per_page
+        description: 'Cantidad de resultados por página (máx 50).'
+        required: false
+        example: 15
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      category_id: 1
+      branch_id: 1
+      search: hamburguesa
+      recommended: true
+      popular: true
+      per_page: 15
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 404
+        content: |-
+          {
+              "message": "The route pedidos_app/public/api/v1/products could not be found."
+          }
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+        description: null
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 3V5EgbkvZcDPa166h8fd4ae'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/v1/products/{product_id}'
+    metadata:
+      custom: []
+      groupName: Productos
+      groupDescription: |-
+
+        Endpoints para consultar el catálogo de productos disponibles,
+        con soporte para filtrado, búsqueda y paginación.
+        Incluye lógica inteligente de productos populares y recomendados.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Detalle de producto'
+      description: |-
+        Retorna la información completa de un producto, incluyendo sus variantes
+        y extras disponibles. Retorna 404 si el producto no está disponible.
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {TOKEN_SANCTUM}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      product_id:
+        custom: []
+        name: product_id
+        description: 'The ID of the product.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      product:
+        custom: []
+        name: product
+        description: 'ID del producto.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      product_id: 1
+      product: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 404
+        content: |-
+          {
+              "message": "The route pedidos_app/public/api/v1/products/1 could not be found."
+          }
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+        description: null
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 3V5EgbkvZcDPa166h8fd4ae'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/v1/products/{product_id}/reviews'
+    metadata:
+      custom: []
+      groupName: Productos
+      groupDescription: |-
+
+        Endpoints para consultar el catálogo de productos disponibles,
+        con soporte para filtrado, búsqueda y paginación.
+        Incluye lógica inteligente de productos populares y recomendados.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Reseñas del producto'
+      description: 'Retorna un listado paginado de las reseñas asociadas a un producto.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {TOKEN_SANCTUM}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      product_id:
+        custom: []
+        name: product_id
+        description: 'The ID of the product.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      product:
+        custom: []
+        name: product
+        description: 'ID del producto.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      product_id: 1
+      product: 1
+    queryParameters:
+      per_page:
+        custom: []
+        name: per_page
+        description: 'Cantidad de resultados por página (máx 50).'
+        required: false
+        example: 15
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      per_page: 15
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 404
+        content: |-
+          {
+              "message": "The route pedidos_app/public/api/v1/products/1/reviews could not be found."
+          }
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+        description: null
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 3V5EgbkvZcDPa166h8fd4ae'
+    controller: null
+    method: null
+    route: null
