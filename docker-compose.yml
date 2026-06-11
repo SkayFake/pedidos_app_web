@@ -16,6 +16,29 @@ services:
       - APP_DEBUG=true
       - APP_ENV=production
       - APP_URL=https://publication-missed-introduce-communist.trycloudflare.com
+      - APP_KEY=${APP_KEY}
+    volumes:
+      - storage_data:/app/public/storage/app/public
+    depends_on:
+      db:
+        condition: service_healthy
+
+  queue-worker:
+    build: .
+    command: php artisan queue:work --verbose --tries=3 --timeout=90
+    restart: always
+    environment:
+      - DB_CONNECTION=pgsql
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_DATABASE=shop_db
+      - DB_USERNAME=shop_user
+      - DB_PASSWORD=shop_password
+      - SESSION_DRIVER=file
+      - APP_DEBUG=true
+      - APP_ENV=production
+      - APP_URL=https://publication-missed-introduce-communist.trycloudflare.com
+      - APP_KEY=${APP_KEY}
     volumes:
       - storage_data:/app/public/storage/app/public
     depends_on:

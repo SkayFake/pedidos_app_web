@@ -31,7 +31,6 @@ RUN npm install && npm run build
 RUN php artisan storage:link && \
     mkdir -p /app/public/storage/app/livewire-tmp && \
     chown -R www-data:www-data /app/public/storage /app/public/bootstrap/cache /app/public/public/storage
-RUN php artisan key:generate
 
 ENV SERVER_NAME=":8000"
 
