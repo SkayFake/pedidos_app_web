@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Log;
  * Job para archivar pedidos completados de forma asíncrona.
  * Se ejecuta después de que un pedido cambia a delivered/cancelled.
  */
-class ArchiveOrderJob
+class ArchiveOrderJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
