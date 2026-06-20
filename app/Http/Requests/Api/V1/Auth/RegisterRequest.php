@@ -20,7 +20,7 @@ class RegisterRequest extends FormRequest
             'name'     => ['required', 'string', 'max:100'],
             'email'    => ['required', 'string', 'email:rfc,dns', 'max:150', 'unique:users,email'],
             'phone'    => ['required', 'string', 'max:20', 'regex:/^\+503\s?[267]\d{7}$/', 'unique:users,phone'],
-            'password' => ['required', 'string', Password::min(8)->letters()->numbers(), 'confirmed'],
+            'password' => ['required', 'string', Password::min(8)->letters()->numbers()->symbols(), 'confirmed'],
         ];
     }
 

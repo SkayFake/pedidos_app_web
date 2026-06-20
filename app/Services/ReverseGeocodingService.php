@@ -17,7 +17,7 @@ class ReverseGeocodingService
      */
     public function getMunicipalityFromCoords(float $lat, float $lng): ?string
     {
-        $apiKey = env('GOOGLE_MAPS_API_KEY');
+        $apiKey = config('services.google_maps.key');
 
         if (!$apiKey) {
             Log::warning('ReverseGeocoding: No hay API key de Google Maps configurada.');

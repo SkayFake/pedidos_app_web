@@ -24,10 +24,9 @@ class PaymentCardController extends Controller
             try {
                 $formattedCards[] = [
                     'id' => $card->id,
-                    'card_holder' => $card->card_holder,
-                    'expiry_date' => $card->expiry_date,
                     'card_type' => $card->card_type,
                     'last_four' => $card->last_four,
+                    'provider_token' => $card->provider_token,
                 ];
             } catch (\Exception $e) {
                 \Log::warning("Corrupted payment card ID {$card->id} for user " . auth()->id() . ": " . $e->getMessage());
@@ -40,28 +39,22 @@ class PaymentCardController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'card_number' => ['required', 'string', 'size:16', 'regex:/^\d+$/'],
-            'card_holder' => ['required', 'string', 'max:100'],
-            'expiry_date' => ['required', 'string', 'regex:/^(0[1-9]|1[0-2])\/\d{2}$/'],
+            'last_four' => ['required', 'string', 'size:4', 'regex:/^\d+$/'],
             'card_type' => ['required', 'string', 'max:50'],
+            'provider_token' => ['required', 'string'],
         ]);
 
-        $lastFour = substr($validated['card_number'], -4);
-
         $card = auth()->user()->paymentCards()->create([
-            'card_number' => $validated['card_number'],
-            'card_holder' => $validated['card_holder'],
-            'expiry_date' => $validated['expiry_date'],
             'card_type' => $validated['card_type'],
-            'last_four' => $lastFour,
+            'last_four' => $validated['last_four'],
+            'provider_token' => $validated['provider_token'],
         ]);
 
         $responseData = [
             'id' => $card->id,
-            'card_holder' => $card->card_holder,
-            'expiry_date' => $card->expiry_date,
             'card_type' => $card->card_type,
             'last_four' => $card->last_four,
+            'provider_token' => $card->provider_token,
         ];
 
         return $this->success($responseData, 'Tarjeta agregada exitosamente.', 201);

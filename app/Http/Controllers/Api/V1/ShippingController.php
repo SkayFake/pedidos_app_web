@@ -119,9 +119,10 @@ class ShippingController extends Controller
             ]);
         }
 
+        $escapedMunicipality = str_replace(['%', '_'], ['\%', '\_'], $municipality);
         $zone = Zone::where('is_active', true)
             ->where('is_deliverable', true)
-            ->where('name', 'LIKE', "%{$municipality}%")
+            ->where('name', 'LIKE', "%{$escapedMunicipality}%")
             ->first();
 
         if (!$zone) {

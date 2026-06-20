@@ -46,8 +46,8 @@ Route::prefix('delivery/auth')->middleware('throttle:auth')->group(function () {
 Route::get('/zones', [ZoneController::class, 'index']);
 Route::get('/branches', [\App\Http\Controllers\Api\V1\BranchController::class, 'index']);
 
-// ── Rutas Protegidas (requieren token Sanctum) ─────────────────────────
-Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
+// ── Rutas Protegidas de Cliente (requieren token Sanctum) ─────────────────────────
+Route::middleware(['auth:sanctum', 'ability:customer', 'throttle:api'])->group(function () {
 
     // Auth (sesión y perfil)
     Route::prefix('auth')->group(function () {
@@ -94,8 +94,10 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     // Shipping Fee Calculator & Coverage Check
     Route::post('/shipping/fee', [ShippingController::class, 'getFee']);
     Route::get('/shipping/check-coverage', [ShippingController::class, 'checkCoverage']);
+});
 
-    // ── Rutas Protegidas de Repartidor ─────────────────────────────────────
+// ── Rutas Protegidas de Repartidor ─────────────────────────────────────
+Route::middleware(['auth:sanctum', 'ability:delivery', 'throttle:api'])->group(function () {
     Route::prefix('delivery')->group(function () {
         // Auth de Repartidor
         Route::prefix('auth')->group(function () {

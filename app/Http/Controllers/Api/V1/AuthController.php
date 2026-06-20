@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Validation\Rules\Password;
 use App\Mail\PasswordResetMail;
 use App\Mail\EmailVerificationMail;
 
@@ -67,7 +69,7 @@ class AuthController extends Controller
      */
     public function register(RegisterRequest $request): JsonResponse
     {
-        $otp = sprintf("%06d", mt_rand(1, 999999));
+        $otp = sprintf("%06d", random_int(1, 999999));
         
         $registrationData = [
             'name'             => $request->name,
@@ -144,7 +146,7 @@ class AuthController extends Controller
         // Revocar tokens anteriores para mantener una sola sesión activa
         $user->tokens()->delete();
 
-        $token = $user->createToken('mobile-app')->plainTextToken;
+        $token = $user->createToken('mobile-app', ['customer'])->plainTextToken;
 
         return $this->success([
             'user'       => $this->formatUser($user),
@@ -245,7 +247,7 @@ class AuthController extends Controller
     {
         $request->validate([
             'current_password' => 'required|string',
-            'new_password'     => 'required|string|min:8',
+            'new_password'     => ['required', 'string', 'confirmed', Password::min(8)->letters()->numbers()->symbols()],
         ]);
 
         $user = auth()->user();
@@ -282,19 +284,20 @@ class AuthController extends Controller
             return $this->error('El código de verificación es incorrecto.', 422);
         }
 
-        // Crear el usuario finalmente en la base de datos
-        $user = User::create([
+        // Crear el usuario finalmente en la base de datos usando forceCreate
+        $user = User::forceCreate([
             'name'              => $registrationData['name'],
             'email'             => $registrationData['email'],
             'phone'             => $registrationData['phone'],
             'password'          => $registrationData['password'],
             'email_verified_at' => now(),
+            'is_active'         => true,
         ]);
 
         // Limpiar el caché
         \Illuminate\Support\Facades\Cache::forget($cacheKey);
 
-        $token = $user->createToken('mobile-app')->plainTextToken;
+        $token = $user->createToken('mobile-app', ['customer'])->plainTextToken;
 
         return $this->success([
             'user'       => $this->formatUser($user),
@@ -320,7 +323,7 @@ class AuthController extends Controller
         }
 
         // Generar nuevo OTP
-        $otp = sprintf("%06d", mt_rand(1, 999999));
+        $otp = sprintf("%06d", random_int(1, 999999));
         $registrationData['verification_otp'] = $otp;
 
         // Actualizar caché por otros 15 minutos
@@ -344,11 +347,11 @@ class AuthController extends Controller
     {
         $request->validate(['email' => 'required|email|exists:users,email']);
 
-        $otp = sprintf("%06d", mt_rand(1, 999999));
+        $otp = sprintf("%06d", random_int(1, 999999));
         
         DB::table('password_reset_tokens')->updateOrInsert(
             ['email' => $request->email],
-            ['token' => $otp, 'created_at' => now()]
+            ['token' => Hash::make($otp), 'created_at' => now()]
         );
 
         try {
@@ -368,17 +371,25 @@ class AuthController extends Controller
         $request->validate([
             'email'    => 'required|email|exists:users,email',
             'otp'      => 'required|string|size:6',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => ['required', 'string', 'confirmed', Password::min(8)->letters()->numbers()->symbols()],
         ]);
+
+        $throttleKey = 'reset_password_' . $request->email . '_' . $request->ip();
+        if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
+            $seconds = RateLimiter::availableIn($throttleKey);
+            return $this->error("Demasiados intentos fallidos. Intenta de nuevo en $seconds segundos.", 429);
+        }
 
         $reset = DB::table('password_reset_tokens')
             ->where('email', $request->email)
-            ->where('token', $request->otp)
             ->first();
 
-        if (!$reset) {
+        if (!$reset || !Hash::check($request->otp, $reset->token)) {
+            RateLimiter::hit($throttleKey, 15 * 60); // 15 mins
             return $this->error('El código es inválido o ha expirado.', 422);
         }
+
+        RateLimiter::clear($throttleKey);
 
         // Validate expiration (15 mins)
         if (\Carbon\Carbon::parse($reset->created_at)->addMinutes(15)->isPast()) {

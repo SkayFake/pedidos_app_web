@@ -114,7 +114,7 @@ class DeliveryOrderController extends Controller
     {
         $deliveryman = auth()->user();
 
-        $orders = Order::with(['user', 'address', 'branch'])
+        $orders = \App\Models\ArchivedOrder::with(['user', 'address', 'branch'])
             ->where('deliveryman_id', $deliveryman->id)
             ->whereIn('status', ['delivered', 'cancelled'])
             ->orderBy('updated_at', 'desc')

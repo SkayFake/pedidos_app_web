@@ -242,7 +242,7 @@ class OrderService
                 'latitude'               => $lat,
                 'longitude'              => $lng,
                 'coupon_id'              => $promoResult['applied_coupon_id'],
-                'otp'                    => (string) mt_rand(1000, 9999),
+                'otp'                    => (string) random_int(1000, 9999),
                 'status'                 => 'pending',
                 'subtotal'               => $promoResult['subtotal'],
                 'delivery_fee'           => $promoResult['delivery_fee_final'],

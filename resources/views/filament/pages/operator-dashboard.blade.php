@@ -63,6 +63,10 @@
             } catch(e) {}
         },
 
+        cancelModalOpen: false,
+        cancelOrderId: null,
+        cancelReason: '',
+
         openCancelModal(id) {
             this.cancelOrderId = id;
             this.cancelReason  = '';
@@ -73,19 +77,6 @@
             if (!this.cancelReason.trim()) return;
             this.$wire.cancelOrder(this.cancelOrderId, this.cancelReason);
             this.cancelModalOpen = false;
-        },
-
-        openConfirmModal(id, name, total, items) {
-            this.confirmOrderId    = id;
-            this.confirmOrderName  = name;
-            this.confirmOrderTotal = total;
-            this.confirmOrderItems = items;
-            this.confirmModalOpen  = true;
-        },
-
-        submitConfirm() {
-            this.$wire.confirmOrder(this.confirmOrderId);
-            this.confirmModalOpen = false;
         }
     }"
     x-init="init()"
@@ -737,12 +728,7 @@
                         <div class="op-actions">
                             @if($order->status === 'pending')
                                 <button class="op-btn btn-confirm"
-                                        @click="openConfirmModal(
-                                            {{ $order->id }},
-                                            @js($order->user?->name ?? 'Cliente'),
-                                            @js('$' . number_format($order->total, 2)),
-                                            @js($order->items->map(fn($i) => ['qty' => $i->quantity, 'name' => $i->product?->name ?? 'Producto'])->values()->toArray())
-                                        )">
+                                        wire:click="confirmOrder({{ $order->id }})">
                                     <svg style="width:14px;height:14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
                                     </svg>
@@ -771,50 +757,6 @@
     @endforeach
 </div>
 @endif
-
-{{-- ═══════════════════ MODAL: CONFIRMAR PEDIDO ════════════════════ --}}
-<div class="op-modal-bg" x-show="confirmModalOpen" x-transition style="display:none;">
-    <div class="op-modal" @click.stop>
-        <div class="op-modal-title" style="display: flex; align-items: center; gap: 0.5rem;">
-            <svg style="width:24px; height:24px; color:#34d399;" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"></path>
-            </svg>
-            Confirmar Pedido
-        </div>
-        <div class="op-modal-sub">Revisa el pedido antes de confirmar</div>
-
-        <div style="font-size:0.8rem;color:rgba(255,255,255,0.4);margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:0.06em;">
-            Cliente
-        </div>
-        <div style="font-size:1rem;font-weight:700;color:#e0e7ff;margin-bottom:1rem;" x-text="confirmOrderName"></div>
-
-        <div style="font-size:0.8rem;color:rgba(255,255,255,0.4);margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:0.06em;">
-            Productos
-        </div>
-        <div class="op-modal-items">
-            <template x-for="item in confirmOrderItems" :key="item.name">
-                <div class="op-modal-item">
-                    <div class="op-modal-qty" x-text="item.qty"></div>
-                    <div style="font-size:0.9rem;color:rgba(255,255,255,0.7);" x-text="item.name"></div>
-                </div>
-            </template>
-        </div>
-
-        <div class="op-modal-total">
-            Total: <span x-text="confirmOrderTotal"></span>
-        </div>
-
-        <div class="op-modal-actions">
-            <button class="op-btn btn-ghost" @click="confirmModalOpen = false">Cancelar</button>
-            <button class="op-btn btn-confirm" @click="submitConfirm()">
-                <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
-                </svg>
-                Confirmar Pedido
-            </button>
-        </div>
-    </div>
-</div>
 
 {{-- ═══════════════════ MODAL: CANCELAR PEDIDO ════════════════════ --}}
 <div class="op-modal-bg" x-show="cancelModalOpen" x-transition style="display:none;">

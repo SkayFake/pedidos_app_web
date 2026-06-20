@@ -11,7 +11,14 @@ class User extends Authenticatable
 {
     use HasApiTokens, Notifiable, SoftDeletes;
 
-    protected $guarded = ['id'];
+    protected $guarded = [
+        'id', 
+        'is_active', 
+        'loyalty_points', 
+        'lifetime_points', 
+        'total_completed_orders', 
+        'email_verified_at',
+    ];
     protected $hidden = ['password', 'remember_token'];
 
     protected function casts(): array

@@ -91,7 +91,7 @@ class GoogleAuthController extends Controller
 
             // Revocar tokens anteriores y generar nueva sesión
             $user->tokens()->delete();
-            $token = $user->createToken('mobile-app')->plainTextToken;
+            $token = $user->createToken('mobile-app', ['customer'])->plainTextToken;
 
             return $this->success([
                 'user' => $this->formatUser($user),
@@ -122,8 +122,8 @@ class GoogleAuthController extends Controller
             return $this->error('Error de validación del teléfono.', 422, $phoneValidator->errors()->toArray());
         }
 
-        // Crear el nuevo usuario
-        $user = User::create([
+        // Crear el nuevo usuario usando forceCreate para eludir $guarded
+        $user = User::forceCreate([
             'name' => $name,
             'email' => $email,
             'phone' => $phone,
@@ -133,7 +133,7 @@ class GoogleAuthController extends Controller
             'is_active' => true,
         ]);
 
-        $token = $user->createToken('mobile-app')->plainTextToken;
+        $token = $user->createToken('mobile-app', ['customer'])->plainTextToken;
 
         return $this->success([
             'user' => $this->formatUser($user),

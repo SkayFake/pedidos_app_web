@@ -19,7 +19,7 @@ class DistanceMatrixService
      */
     public function getDistanceInKm($originLat, $originLng, $destLat, $destLng)
     {
-        $apiKey = env('GOOGLE_MAPS_API_KEY');
+        $apiKey = config('services.google_maps.key');
 
         if (!$apiKey) {
             Log::warning('Google Maps API key not configured. Using direct distance fallback.');

@@ -42,7 +42,7 @@ class DeliveryAuthController extends Controller
         // Revocar tokens anteriores
         $deliveryman->tokens()->delete();
 
-        $token = $deliveryman->createToken('delivery-app')->plainTextToken;
+        $token = $deliveryman->createToken('delivery-app', ['delivery'])->plainTextToken;
 
         return $this->success([
             'deliveryman' => $this->formatDeliveryman($deliveryman),

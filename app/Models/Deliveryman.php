@@ -13,7 +13,11 @@ class Deliveryman extends Authenticatable
     use HasApiTokens, Notifiable, SoftDeletes;
 
     protected $table = 'deliverymen';
-    protected $guarded = ['id'];
+    protected $guarded = [
+        'id',
+        'is_active',
+        'is_available',
+    ];
     protected $hidden = ['password', 'remember_token'];
 
     protected function casts(): array
