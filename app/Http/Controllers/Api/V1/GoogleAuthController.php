@@ -24,19 +24,21 @@ class GoogleAuthController extends Controller
     /**
      * Iniciar sesión o registrarse con Google
      *
-     * Valida un ID Token recibido desde Google.
+     * Valida un ID Token o Access Token recibido desde Google.
      * Si el usuario ya existe, inicia sesión inmediatamente.
      * Si el usuario no existe, solicita el número de teléfono obligatorio.
      *
      * @unauthenticated
      *
-     * @bodyParam id_token string required ID Token de Google.
+     * @bodyParam id_token string optional ID Token de Google (preferido).
+     * @bodyParam access_token string optional Access Token de Google (fallback para web).
      * @bodyParam phone string optional Número de teléfono (obligatorio para el registro de nuevos usuarios).
      */
     public function googleLogin(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'id_token' => 'required|string',
+            'id_token' => 'nullable|string',
+            'access_token' => 'nullable|string',
             'phone' => 'nullable|string|max:20',
         ]);
 
@@ -45,35 +47,66 @@ class GoogleAuthController extends Controller
         }
 
         $idToken = $request->input('id_token');
+        $accessToken = $request->input('access_token');
         $phone = $request->input('phone');
 
-        // Validar el ID Token con la API de Google
-        try {
-            $response = Http::get('https://oauth2.googleapis.com/tokeninfo', [
-                'id_token' => $idToken,
-            ]);
+        if (empty($idToken) && empty($accessToken)) {
+            return $this->error('Se requiere id_token o access_token.', 422);
+        }
 
-            if (!$response->successful()) {
-                return $this->error('El token de Google no es válido o ha expirado.', 401);
+        // Intentar validar con id_token primero, luego con access_token
+        $email = null;
+        $name = null;
+        $picture = null;
+        $emailVerified = false;
+
+        if (!empty($idToken)) {
+            try {
+                $response = Http::get('https://oauth2.googleapis.com/tokeninfo', [
+                    'id_token' => $idToken,
+                ]);
+
+                if ($response->successful()) {
+                    $payload = $response->json();
+                    $email = $payload['email'] ?? null;
+                    $name = $payload['name'] ?? 'Usuario de Google';
+                    $picture = $payload['picture'] ?? null;
+                    $emailVerified = filter_var($payload['email_verified'] ?? false, FILTER_VALIDATE_BOOLEAN);
+                }
+            } catch (\Exception $e) {
+                \Log::warning('Error verificando Google ID Token: ' . $e->getMessage());
             }
+        }
 
-            $payload = $response->json();
+        // Fallback: usar access_token con Google UserInfo API
+        if (empty($email) && !empty($accessToken)) {
+            try {
+                $response = Http::withHeaders([
+                    'Authorization' => 'Bearer ' . $accessToken,
+                ])->get('https://www.googleapis.com/oauth2/v3/userinfo');
 
-            if (!isset($payload['email'])) {
-                return $this->error('No se pudo obtener el correo de Google.', 400);
+                if ($response->successful()) {
+                    $payload = $response->json();
+                    $email = $payload['email'] ?? null;
+                    $name = $payload['name'] ?? 'Usuario de Google';
+                    $picture = $payload['picture'] ?? null;
+                    $emailVerified = filter_var($payload['email_verified'] ?? false, FILTER_VALIDATE_BOOLEAN);
+                } else {
+                    \Log::error('Google UserInfo API error: ' . $response->body());
+                    return $this->error('El token de Google no es válido o ha expirado.', 401);
+                }
+            } catch (\Exception $e) {
+                \Log::error('Error verificando Google Access Token: ' . $e->getMessage());
+                return $this->error('Error de comunicación con los servidores de Google.', 500);
             }
+        }
 
-            $email = $payload['email'];
-            $name = $payload['name'] ?? 'Usuario de Google';
-            $picture = $payload['picture'] ?? null;
-            $emailVerified = filter_var($payload['email_verified'] ?? false, FILTER_VALIDATE_BOOLEAN);
+        if (empty($email)) {
+            return $this->error('No se pudo obtener el correo de Google.', 400);
+        }
 
-            if (!$emailVerified) {
-                return $this->error('El correo electrónico de Google no está verificado.', 401);
-            }
-        } catch (\Exception $e) {
-            \Log::error('Error verificando Google Token: ' . $e->getMessage());
-            return $this->error('Error de comunicación con los servidores de Google.', 500);
+        if (!$emailVerified) {
+            return $this->error('El correo electrónico de Google no está verificado.', 401);
         }
 
         // Buscar el usuario por email
