@@ -126,8 +126,8 @@ class ProductController extends Controller
                     'most_sold' => $query->withCount(['orderItems as total_sold' => function ($q) {
                                         $q->select(DB::raw('COALESCE(SUM(order_items.quantity), 0)'));
                                     }])->orderByDesc('total_sold'),
-                    'price_low'  => $query->orderBy('price', 'asc'),
-                    'price_high' => $query->orderBy('price', 'desc'),
+                    'price_low'  => $query->orderBy('base_price', 'asc'),
+                    'price_high' => $query->orderBy('base_price', 'desc'),
                     default      => $query->orderBy('name'),
                 };
             } elseif (!$request->boolean('popular')) {
