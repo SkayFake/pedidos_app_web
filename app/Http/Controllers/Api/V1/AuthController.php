@@ -143,8 +143,13 @@ class AuthController extends Controller
             return $this->error('Tu cuenta ha sido desactivada. Contacta a soporte.', 403);
         }
 
-        // Revocar tokens anteriores para mantener una sola sesión activa
-        $user->tokens()->delete();
+        // Mantener solo los 4 tokens más recientes para permitir múltiples dispositivos.
+        // Si hay 5 o más tokens activos, se elimina el más antiguo para no acumular indefinidamente.
+        $maxTokens = 5;
+        $tokenCount = $user->tokens()->count();
+        if ($tokenCount >= $maxTokens) {
+            $user->tokens()->oldest('created_at')->limit($tokenCount - $maxTokens + 1)->delete();
+        }
 
         $token = $user->createToken('mobile-app', ['customer'])->plainTextToken;
 
@@ -154,6 +159,7 @@ class AuthController extends Controller
             'token_type' => 'Bearer',
         ], 'Inicio de sesión exitoso.');
     }
+
 
     /**
      * Cerrar sesión

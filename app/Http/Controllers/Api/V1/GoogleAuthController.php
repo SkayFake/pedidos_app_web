@@ -122,8 +122,12 @@ class GoogleAuthController extends Controller
                 $user->update(['profile_photo' => $picture]);
             }
 
-            // Revocar tokens anteriores y generar nueva sesión
-            $user->tokens()->delete();
+            // Mantener solo los 4 tokens más recientes; eliminar el más antiguo si hay 5 o más.
+            $maxTokens = 5;
+            $tokenCount = $user->tokens()->count();
+            if ($tokenCount >= $maxTokens) {
+                $user->tokens()->oldest('created_at')->limit($tokenCount - $maxTokens + 1)->delete();
+            }
             $token = $user->createToken('mobile-app', ['customer'])->plainTextToken;
 
             return $this->success([
@@ -156,15 +160,28 @@ class GoogleAuthController extends Controller
         }
 
         // Crear el nuevo usuario usando forceCreate para eludir $guarded
-        $user = User::forceCreate([
-            'name' => $name,
-            'email' => $email,
-            'phone' => $phone,
-            'password' => Hash::make(Str::random(16)),
-            'email_verified_at' => now(),
-            'profile_photo' => $picture,
-            'is_active' => true,
-        ]);
+        try {
+            $user = User::forceCreate([
+                'name' => $name,
+                'email' => $email,
+                'phone' => $phone,
+                'password' => Hash::make(Str::random(16)),
+                'email_verified_at' => now(),
+                'profile_photo' => $picture,
+                'is_active' => true,
+            ]);
+        } catch (\Illuminate\Database\UniqueConstraintViolationException $e) {
+            // El email ya existe (p.ej. por un reintento o condición de carrera).
+            // Buscamos al usuario existente y lo autenticamos directamente.
+            \Log::warning("Google register fallback to login for email: {$email}. Reason: " . $e->getMessage());
+            $user = User::where('email', $email)->first();
+            if (!$user) {
+                return $this->error('No se pudo crear ni encontrar la cuenta. Intenta de nuevo.', 500);
+            }
+            if (!$user->is_active) {
+                return $this->error('Tu cuenta ha sido desactivada. Contacta a soporte.', 403);
+            }
+        }
 
         $token = $user->createToken('mobile-app', ['customer'])->plainTextToken;
 
@@ -175,6 +192,7 @@ class GoogleAuthController extends Controller
             'requires_phone' => false,
         ], 'Registro e inicio de sesión con Google exitoso.', 201);
     }
+
 
     /**
      * Formatear datos del usuario para la respuesta.
