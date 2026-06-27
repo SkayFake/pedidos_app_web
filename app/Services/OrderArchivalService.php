@@ -33,7 +33,10 @@ class OrderArchivalService
                 ->except(['id'])
                 ->toArray();
 
-            $archivedOrder = ArchivedOrder::create($orderAttributes);
+            $archivedOrder = new ArchivedOrder();
+            $archivedOrder->forceFill($orderAttributes);
+            $archivedOrder->id = $order->id;
+            $archivedOrder->save();
 
             // 2. Copiar los ítems del pedido
             $order->loadMissing(['items.extras']);
@@ -44,7 +47,10 @@ class OrderArchivalService
                     ->merge(['order_id' => $archivedOrder->id])
                     ->toArray();
 
-                $archivedItem = ArchivedOrderItem::create($itemAttributes);
+                $archivedItem = new ArchivedOrderItem();
+                $archivedItem->forceFill($itemAttributes);
+                $archivedItem->id = $item->id;
+                $archivedItem->save();
 
                 // 3. Copiar los extras de cada ítem
                 foreach ($item->extras as $extra) {
@@ -53,7 +59,10 @@ class OrderArchivalService
                         ->merge(['order_item_id' => $archivedItem->id])
                         ->toArray();
 
-                    ArchivedOrderItemExtra::create($extraAttributes);
+                    $archivedExtra = new ArchivedOrderItemExtra();
+                    $archivedExtra->forceFill($extraAttributes);
+                    $archivedExtra->id = $extra->id;
+                    $archivedExtra->save();
                 }
             }
 

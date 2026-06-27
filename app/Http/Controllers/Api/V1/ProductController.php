@@ -67,13 +67,15 @@ class ProductController extends Controller
                 $query->where('category_id', $request->integer('category_id'));
             }
 
-            // Búsqueda por nombre o descripción — ILIKE para case-insensitive en PostgreSQL
+            // Búsqueda por nombre o descripción — compatible con MySQL/PostgreSQL
             if ($request->filled('search')) {
                 $search = $request->string('search')->trim();
                 $escapedSearch = str_replace(['%', '_'], ['\%', '\_'], $search);
-                $query->where(function ($q) use ($escapedSearch) {
-                    $q->where('name', 'ilike', "%{$escapedSearch}%")
-                      ->orWhere('description', 'ilike', "%{$escapedSearch}%");
+                $driver = DB::connection()->getDriverName();
+                $likeOperator = ($driver === 'pgsql') ? 'ilike' : 'like';
+                $query->where(function ($q) use ($escapedSearch, $likeOperator) {
+                    $q->where('name', $likeOperator, "%{$escapedSearch}%")
+                      ->orWhere('description', $likeOperator, "%{$escapedSearch}%");
                 });
             }
 

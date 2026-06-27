@@ -13,8 +13,9 @@ class OrderResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'        => $this->id,
-            'status'    => $this->status,
+            'id'           => $this->id,
+            'status'       => $this->status,
+            'order_status' => $this->status,   // alias for Flutter model compatibility
             'latitude'  => $this->latitude,
             'longitude' => $this->longitude,
             // OTP se omite intencionalmente para repartidores — solo se expone al cliente
@@ -83,7 +84,9 @@ class OrderResource extends JsonResource
             'delivered_at'     => $this->delivered_at?->format('d M Y, h:i A'),
             'delivered_at_iso' => $this->delivered_at?->toIso8601String(),
             'cancelled_at'     => $this->cancelled_at?->format('d M Y, h:i A'),
-            'created_at'       => $this->created_at?->format('d M Y, h:i A'),
+            // created_at en ambos formatos: legible y ISO para filtros de periodo en Flutter
+            'created_at'       => $this->created_at?->toIso8601String(),
+            'created_at_fmt'   => $this->created_at?->format('d M Y, h:i A'),
             'reviewed_at'      => $this->reviewed_at?->format('d M Y, h:i A'),
 
             // Repartidor (para pantalla de reseña en Flutter)

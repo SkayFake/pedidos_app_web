@@ -114,18 +114,22 @@ class DeliveryOrderController extends Controller
     {
         $deliveryman = auth()->user();
 
-        $orders = \App\Models\ArchivedOrder::with(['user', 'address', 'branch'])
+        $orders = \App\Models\ArchivedOrder::with(['user', 'address', 'branch', 'items.product'])
             ->where('deliveryman_id', $deliveryman->id)
             ->whereIn('status', ['delivered', 'cancelled'])
             ->orderBy('updated_at', 'desc')
             ->get();
 
         $totalEarnings = $orders->where('status', 'delivered')->sum('deliveryman_payout');
-        
-        // Calcular ganancias solo de hoy
+
+        // Ganancias de hoy: usar delivered_at si existe, sino created_at
+        $todayStart = now()->startOfDay();
         $todayEarnings = $orders->where('status', 'delivered')
-                                ->where('delivered_at', '>=', now()->startOfDay())
-                                ->sum('deliveryman_payout');
+            ->filter(function ($o) use ($todayStart) {
+                $date = $o->delivered_at ?? $o->created_at;
+                return $date && $date->gte($todayStart);
+            })
+            ->sum('deliveryman_payout');
 
         return $this->success([
             'total_earnings' => round($totalEarnings, 2),
