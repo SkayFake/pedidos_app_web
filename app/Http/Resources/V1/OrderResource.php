@@ -84,6 +84,7 @@ class OrderResource extends JsonResource
             'delivered_at'     => $this->delivered_at?->format('d M Y, h:i A'),
             'delivered_at_iso' => $this->delivered_at?->toIso8601String(),
             'cancelled_at'     => $this->cancelled_at?->format('d M Y, h:i A'),
+            'cancelled_at_iso' => $this->cancelled_at?->toIso8601String(),
             // created_at en ambos formatos: legible y ISO para filtros de periodo en Flutter
             'created_at'       => $this->created_at?->toIso8601String(),
             'created_at_fmt'   => $this->created_at?->format('d M Y, h:i A'),

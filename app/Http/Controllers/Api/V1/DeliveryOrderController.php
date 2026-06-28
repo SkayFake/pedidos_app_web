@@ -110,19 +110,27 @@ class DeliveryOrderController extends Controller
     /**
      * Historial de Entregas y Ganancias
      */
-    public function history(): JsonResponse
+    public function history(\Illuminate\Http\Request $request): JsonResponse
     {
         $deliveryman = auth()->user();
 
+        // 1. Obtener mes y año. Si no existen, tomamos el mes/año actual por defecto.
+        $month = $request->input('month') ?: now()->month;
+        $year  = $request->input('year') ?: now()->year;
+
+        // 2. Aplicamos el filtro a la consulta en la base de datos
         $orders = \App\Models\ArchivedOrder::with(['user', 'address', 'branch', 'items.product'])
             ->where('deliveryman_id', $deliveryman->id)
             ->whereIn('status', ['delivered', 'cancelled'])
+            ->whereMonth('created_at', $month)
+            ->whereYear('created_at', $year)
             ->orderBy('updated_at', 'desc')
             ->get();
 
+        // 3. Este total_earnings ahora es la suma SOLO de los pedidos filtrados (ej. este mes)
         $totalEarnings = $orders->where('status', 'delivered')->sum('deliveryman_payout');
 
-        // Ganancias de hoy: usar delivered_at si existe, sino created_at
+        // Ganancias de hoy: calcular solo si estamos viendo el mes/año actual
         $todayStart = now()->startOfDay();
         $todayEarnings = $orders->where('status', 'delivered')
             ->filter(function ($o) use ($todayStart) {
